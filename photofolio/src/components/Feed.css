@@ -1,0 +1,106 @@
+.post{
+    background-color: white;
+    margin: 2em 1em 0em 2em;
+    width: 90%;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+
+}
+
+.post img{
+    max-width: 100%;
+}
+
+.postHead{
+    /* background-color: aqua; */
+    display: block;
+    margin: 1em;
+}
+
+.postUsername{
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 18px;
+    margin-left:60px;
+}
+
+.postTime{
+    font-family: 'Lato';
+    font-style: normal;
+    font-size: 14px;
+    line-height: 0px;
+    margin-left:60px;
+    color: slategrey;
+}
+
+.postActions{
+    /* background-color:paleturquoise; */
+    display: flex;
+    column-gap:1em;
+    margin: 1em;
+}
+
+.postStats{
+    /* background-color: aquamarine; */
+    display: flex;
+    flex-direction: column;
+}
+
+.stats{
+    display: flex;
+    flex-direction: row;
+    /* background-color: blue; */
+    height: 2em;
+    width: 8em;
+    border-right: 1px solid lightslategrey;
+    justify-content: start;
+    align-items: center;
+    column-gap: 0.5em
+}
+
+.stats img{
+    height:20px
+}
+.stats p{
+    font-size: 15px;
+    text-align: center;
+}
+
+.postComment{
+    display: flex;
+    align-items: center;
+    /* background-color: burlywood; */
+    width: 80%;
+}
+
+.postComment input{
+    border-radius: 10px;
+    border: 1px solid lightslategrey;
+    padding: 0.5em;
+    width: 80%;
+}
+
+.postComment button{
+    border-radius: 8px;
+    border: 1px solid lightslategrey;
+    width: 4em;
+    height: 2.5em;
+    margin: 0 5px 0 0;
+    background-color:white;
+}
+
+.postComment button:hover{
+    background-color: rgb(237, 237, 237);
+    transition-duration: 200ms;
+}
+
+.postComment button:active{
+    background-color: rgb(170, 170, 170);
+}
+
+.postComment button img{
+    width: 1.5em;
+    filter: brightness(4);
+}
