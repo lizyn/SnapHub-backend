@@ -13,7 +13,7 @@ function Navbar () {
                 <li><img src={profileIcon} alt='profile'></img>Profile</li>
                 <li><img src={newIcon} alt='new'></img>New Post</li>
                 <li><img src={homeIcon} alt='home'></img>Home</li>
-                
+
             </ul>
         </nav>
     )

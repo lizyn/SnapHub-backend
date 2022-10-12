@@ -7,8 +7,8 @@ import searchIcon from '../icons/Search.svg'
 import NewIcon from '../icons/New.svg'
 import Fab from "@mui/material/Fab";
 import {ThemeProvider, createTheme} from '@mui/material/styles'
-import TextField from '@mui/material/TextField';
-import Feed from "./Feed";
+import FeedList from "./FeedList";
+
 
 function HomePage() {
 
@@ -62,8 +62,7 @@ function HomePage() {
                     </div>
                     
                     <div className="feed">
-                        <p>Feed</p>
-                        <Feed></Feed>
+                        <FeedList></FeedList>
                     </div>
                 </div>
             </div>

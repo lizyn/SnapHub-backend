@@ -1,5 +1,5 @@
 .post{
-    background-color: aliceblue;
+    background-color: white;
     margin: 1em 1em 0em 2em;
     width: 90%;
     border-radius: 10px;
@@ -12,7 +12,7 @@
 }
 
 .postHead{
-    background-color: aqua;
+    /* background-color: aqua; */
     display: block;
     margin: 1em;
 }
@@ -36,14 +36,14 @@
 }
 
 .postActions{
-    background-color:paleturquoise;
+    /* background-color:paleturquoise; */
     display: flex;
     column-gap:1em;
     margin: 1em;
 }
 
 .postStats{
-    background-color: aquamarine;
+    /* background-color: aquamarine; */
     display: flex;
     flex-direction: column;
 }
@@ -71,7 +71,7 @@
 .postComment{
     display: flex;
     align-items: center;
-    background-color: burlywood;
+    /* background-color: burlywood; */
     width: 80%;
 }
 
@@ -88,8 +88,19 @@
     width: 4em;
     height: 2.5em;
     margin: 0 5px 0 0;
+    background-color:white;
+}
+
+.postComment button:hover{
+    background-color: rgb(237, 237, 237);
+    transition-duration: 200ms;
+}
+
+.postComment button:active{
+    background-color: rgb(170, 170, 170);
 }
 
 .postComment button img{
     width: 1.5em;
+    filter: brightness(4);
 }

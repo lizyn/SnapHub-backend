@@ -5,9 +5,10 @@
     width: 100%;
     background: #FFDD2B;
     box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.2);
+    z-index: 1310;
 }
 
-ul{
+.Navbar ul{
     list-style-type: none;
     margin: 0;
     padding-right: 40px;
@@ -15,7 +16,7 @@ ul{
     
 }
 
-li{
+.Navbar li{
     float: right;
     max-height: 10px;
     padding: 26px 36px 30px 36px;
@@ -27,23 +28,27 @@ li{
     
     /* overflow:hidden */
 }
-
+/* 
 li a {
     display: block;
     font-family: 'Lato';
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
-  }
+  } */
 
-li img {
+  .Navbar li img {
     float: left;
     width: 20px;
     height: 20px;
     padding-right: 10px;
 }
 
-li:hover{
+.Navbar li:hover{
     background-color: #f8c50f;
-    transition-duration: 300ms;
+    transition-duration: 200ms;
+}
+
+.Navbar li:active{
+    background-color: #ffdf6d;
 }
