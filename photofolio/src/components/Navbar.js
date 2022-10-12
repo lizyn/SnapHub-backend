@@ -5,9 +5,7 @@ import homeIcon from '../icons/Home.svg'
 import newIcon from '../icons/New.svg'
 import profileIcon from '../icons/Person.svg'
 import logoutIcon from '../icons/Arrow_Export.svg'
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
 function Navbar () {
-
     return(
         <nav className="Navbar">
             <ul>

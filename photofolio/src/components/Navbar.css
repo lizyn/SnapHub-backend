@@ -40,6 +40,7 @@ li img {
     float: left;
     width: 20px;
     height: 20px;
+    padding-right: 10px;
 }
 
 li:hover{
