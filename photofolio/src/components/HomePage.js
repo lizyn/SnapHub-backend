@@ -31,8 +31,6 @@ function HomePage() {
     return (
         <div className="flex1">
             <Navbar />
-            {/* <h1>1</h1>
-            <h1>Homepage </h1> */}
             <div className="main">
 
                 <div className="users-section">

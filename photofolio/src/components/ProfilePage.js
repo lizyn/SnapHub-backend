@@ -109,7 +109,7 @@ function ProfilePage() {
           <div>
           </div>
           <ThemeProvider theme={orange}>
-            <Fab variant="extended" color="primary"><img src={NewIcon} class="newPostSign" alt="new"></img>New Post</Fab>
+            <Fab variant="extended" color="primary" sx={{}}><img src={NewIcon} class="newPostSign" alt="new"></img>New Post</Fab>
           </ThemeProvider>
         </div>
 

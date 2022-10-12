@@ -5,6 +5,7 @@ function FeedList () {
     return(
         <div>
             <Feed></Feed>
+            <Feed></Feed>
         </div>
     )
 }

@@ -24,9 +24,11 @@ h3{
 .users-section {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  /* align-items: flex-start; */
+  justify-content:flex-start;
   margin: 1em;
   flex-basis: 40%;
+  /* background-color:antiquewhite; */
 }
 
 .right-section {
@@ -49,6 +51,7 @@ h3{
   flex-basis: 21em;
   align-self: flex-end;
   order: 1;
+  margin-left: 2em;
 }
 
 .searchbar input[type=text] {
@@ -89,20 +92,23 @@ h3{
   flex-direction: column;
   justify-content: flex-start;
   /* background-color: darksalmon; */
-  margin-top: 2em;
+  margin-top: 1em;
 }
 
 .recommendations{
   display: flex;
   flex-direction: column;
-  background-color:rosybrown;
+  /* background-color:rosybrown; */
   margin-top: 2em;
-  flex-basis: 70%;
+  flex-basis: 40%;
 }
 
 .userList{
-  margin-top: 2em;
-  /* background-color: darkkhaki; */
+  margin-top: 1em;
+  background-color: darkkhaki;
+  flex-basis: 20em;
+  padding: 2em;
+  border-radius: 10px;
 
 }
 
