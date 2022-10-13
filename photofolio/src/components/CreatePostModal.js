@@ -61,8 +61,22 @@ function CreatePostModal() {
                 onBlur={() => {if (caption==="") {setCaption(defaultCaption)}}}
               />
             </div>
+            <hr/>
+            <div>
+              <input
+                value={"Add Tags…"}
+              />
+              <div>
+                <button>
+                  #Beach
+                </button>
+                <button>
+                  #EmbraceNature
+                </button>
+              </div>
+            </div>
+            <hr/>
           </div>
-          <hr/>
           <div className="actions center">
             <button 
               className="secondary-button"
