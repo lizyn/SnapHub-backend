@@ -19,12 +19,11 @@ function CreatePostModal() {
     >
       {close => (
         <div>
-          <button className="modal-close-button" onClick={close}>
+          <button className="transparent-button modal-close-button" onClick={close}>
             &times;
           </button>
-          <div className="modal-header">CREATING A POST</div>
+          <div className="modal-header">creating a post</div>
           <div className="content">
-            {/* TODO: Replace with a Component <UploadButton> */}
             <div>
               <button 
                 className='upload-arrow-button'

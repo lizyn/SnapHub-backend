@@ -16,7 +16,7 @@ function UserRow(props) {
         }
         <div className='username'>{name}</div>
         {showFollow &&
-          <button className='white-button right' onClick={follow}>
+          <button className='transparent-button right' onClick={follow}>
           Follow
           </button>
         }
