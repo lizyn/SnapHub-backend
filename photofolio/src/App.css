@@ -70,6 +70,7 @@
   
   background: #FFC148;
   border-radius: 8.42859px;  
+  border: none;
 }
 
 .secondary-button {
@@ -80,6 +81,7 @@
 
   background: #C1C1C1;
   border-radius: 8.42859px;
+  border: none;
 }
 
 .transparent-button {
