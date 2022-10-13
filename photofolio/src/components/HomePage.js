@@ -54,7 +54,7 @@ function HomePage() {
                         </div>
                         <div className="newpost">
                             <ThemeProvider theme={orange}>
-                            <Fab variant="extended" color="primary" sx={{mb: 20}}><img src={NewIcon} class="newPostSign" alt="new"></img>New Post</Fab>
+                            <Fab variant="extended" color="primary" sx={{mb: 20}}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
                             </ThemeProvider>
                         </div>
                     </div>
