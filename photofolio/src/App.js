@@ -1,11 +1,31 @@
+
+import './App.css';
+import React, { useState } from 'react';
+import FollowRecommendation from './components/FollowRecommendation';
+import CreatePostModal from './components/CreatePostModal';
+
 import logo from './logo.svg';
 // import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import ProfilePage from './components/ProfilePage'
-import './App.css';
+
 import HomePage from './components/HomePage';
 
+
 function App() {
+  const [postModalOpen, setPostModalOpen] = useState(false);
+  const closePostModal = () => setPostModalOpen(false);
   return (
+
+    //<div>
+    //  <FollowRecommendation/>
+    //  <div>
+    //    <button type="button" className="button" onClick={() => setPostModalOpen(o => !o)}>
+    //      New Post
+    //    </button>
+    //    <CreatePostModal closeModal={closePostModal} open={postModalOpen}/>
+    //  </div>
+    //</div>
+
     <ProfilePage />
     // <div className="App">
     //   <header className="App-header">
@@ -23,7 +43,9 @@ function App() {
     //     </a>
     //   </header>
     // </div>
+
   );
 }
+
 
 export default App;
