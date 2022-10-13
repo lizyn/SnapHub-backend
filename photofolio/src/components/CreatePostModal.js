@@ -52,9 +52,9 @@ function CreatePostModal() {
             </div>
             <hr/>
             <div>
-              <input
+              <textarea
                 className='modal-input gray-text'
-                aria-multiline={true}       
+                style={{height: "10em"}}
                 value={caption}
                 onChange={(e) => setCaption(e.target.value)}
                 onFocus={() => {if (caption===defaultCaption) {setCaption("")}}}
