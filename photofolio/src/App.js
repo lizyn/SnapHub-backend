@@ -12,7 +12,7 @@ import HomePage from './components/HomePage';
 
 
 function App() {
-  const [postModalOpen, setPostModalOpen] = useState(false);
+  const [postModalIsOpen, setPostModalOpen] = useState(false);
   const closePostModal = () => setPostModalOpen(false);
   return (
 
@@ -26,7 +26,8 @@ function App() {
     //  </div>
     //</div>
 
-    <ProfilePage />
+    // <ProfilePage />
+    <HomePage postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal}/>
     // <div className="App">
     //   <header className="App-header">
     //     <img src={logo} className="App-logo" alt="logo" />

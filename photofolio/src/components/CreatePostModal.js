@@ -69,7 +69,7 @@ function CreatePostModal(props) {
               <div>
                 <input
                   value={"Add Tags…"}
-                  onChange={e=>e}
+                  onChange={e=>e} // TODO
                 />
                 <div>
                   <button>

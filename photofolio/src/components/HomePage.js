@@ -8,9 +8,10 @@ import NewIcon from '../icons/New.svg'
 import Fab from "@mui/material/Fab";
 import {ThemeProvider, createTheme} from '@mui/material/styles'
 import FeedList from "./FeedList";
+import CreatePostModal from "./CreatePostModal";
 
 
-function HomePage() {
+function HomePage(props) {
 
     const orange = createTheme({
         status: {
@@ -31,6 +32,7 @@ function HomePage() {
     return (
         <div className="flex1">
             <Navbar />
+            <CreatePostModal closeModal={props.closePostModal} open={props.postModalIsOpen}/>
             <div className="main">
 
                 <div className="users-section">
@@ -54,7 +56,7 @@ function HomePage() {
                         </div>
                         <div className="newpost">
                             <ThemeProvider theme={orange}>
-                            <Fab variant="extended" color="primary" sx={{mb: 20}}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
+                            <Fab variant="extended" color="primary" sx={{mb: 20}}><img src={NewIcon} className="newPostSign" alt="new" onClick={() => props.setPostModalOpen(o => !o)}></img>New Post</Fab>
                             </ThemeProvider>
                         </div>
                     </div>
