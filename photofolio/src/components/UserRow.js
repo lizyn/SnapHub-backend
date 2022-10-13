@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import Button from '@mui/material/Button'
 
 
 function UserRow(props) {
@@ -16,9 +17,12 @@ function UserRow(props) {
         }
         <div className='username'>{name}</div>
         {showFollow &&
-          <button className='transparent-button right' onClick={follow}>
-          Follow
-          </button>
+          // <button className='transparent-button right' onClick={follow}>
+          // Follow
+          // </button>
+          <Button variant='outlined' size='small' sx={{marginLeft: 'auto'}} onClick={follow}>
+            Follow
+          </Button>
         }
       </div>
     </div>

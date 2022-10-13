@@ -56,9 +56,9 @@ function HomePage(props) {
                             <input type="text" placeholder="Tag, user, etc..." name="search"></input>
                             <button type="submit"><img src={searchIcon} alt="search"></img> Search </button>
                         </div>
-                        <div className="newpost">
+                        <div className="newpost" onClick={() => props.setPostModalOpen(o => !o)}>
                             <ThemeProvider theme={orange}>
-                            <Fab variant="extended" color="primary" sx={{mb: 20}}><img src={NewIcon} className="newPostSign" alt="new" onClick={() => props.setPostModalOpen(o => !o)}></img>New Post</Fab>
+                            <Fab variant="extended" color="primary" sx={{mb: 20}}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
                             </ThemeProvider>
                         </div>
                     </div>

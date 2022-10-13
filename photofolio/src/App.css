@@ -101,6 +101,7 @@
 
 .popup-overlay {
   background: rgba(111, 111, 111, 0.25);
+  z-index: 1000;
 }
 
 .popup-content {
@@ -109,7 +110,9 @@
   border: 0.842859px solid #E0E0E0;
   border-radius: 8.42859px;  
   width: 70%;
-  /* height: 70%; */
+  max-height: 100vh;
+  overflow-y: auto;
+  z-index: 1000;
 }
 
 .modal-close-button {
