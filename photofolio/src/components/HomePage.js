@@ -9,6 +9,7 @@ import Fab from "@mui/material/Fab";
 import {ThemeProvider, createTheme} from '@mui/material/styles'
 import FeedList from "./FeedList";
 import CreatePostModal from "./CreatePostModal";
+import FollowRecommendation from "./FollowRecommendation";
 
 
 function HomePage(props) {
@@ -44,6 +45,7 @@ function HomePage(props) {
                         <p>Recommended for you</p>
                         <div className="userList">
                             <p>Recommneded Users to follow</p>
+                            <FollowRecommendation/>
                         </div>
                     </div>
                 </div>

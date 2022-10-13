@@ -12,12 +12,12 @@ function FollowRecommendation(props) {
     users.push({profilePicUrl: defaultAvatar, name: "Default Name"});
   }
   return (
-      <div className='user-recommend'>
-        Recommended for you
+      // <div className='user-recommend'>
+      //   Recommended for you
         <div className='user-recommend-card'>
           <UserList users={users} ring={false} showFollow={true}/>
         </div>
-      </div>   
+      // </div>   
   )
 }
 
