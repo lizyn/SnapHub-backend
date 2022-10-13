@@ -26,10 +26,20 @@ function CreatePostModal() {
           <div className="content">
             {/* TODO: Replace with a Component <UploadButton> */}
             <div>
-              <button className='upload-arrow-button'>
-                <img src={uploadArrorw} width={"30px"}/>
+              <button 
+                className='upload-arrow-button'
+                onClick={handleUpload}
+              >
+                <img src={uploadArrorw} alt="upload arrow" width={"30px"}/>
               </button></div>
-            <div><button className='primary-button'>Upload A File</button></div>
+            <div>
+              <button 
+                className='primary-button'
+                onClick={handleUpload}
+              >
+                Upload A File
+              </button>
+            </div>
             <UserRow profilePicUrl={user.profilePicUrl} name={user.name} ring={true}/>
             <div>
               <input
@@ -37,7 +47,7 @@ function CreatePostModal() {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 onFocus={() => {if (title===defaultTitle) {setTitle("")}}}
-                onBlur={() => {if (title=="") {setTitle(defaultTitle)}}}
+                onBlur={() => {if (title==="") {setTitle(defaultTitle)}}}
               />
             </div>
             <hr/>
@@ -69,3 +79,7 @@ function CreatePostModal() {
 }
 
 export default CreatePostModal;
+
+function handleUpload() {
+  console.log("file uploaded");
+}
