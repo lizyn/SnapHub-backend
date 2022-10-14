@@ -108,8 +108,10 @@
   box-sizing: border-box;
   background: #FFFFFF;
   border: 0.842859px solid #E0E0E0;
-  border-radius: 8.42859px;  
-  width: 70%;
+  border-radius: 8.42859px;
+  max-width: 100vw;
+  overflow-x: auto;
+  /* width: 70%; */
   max-height: 100vh;
   overflow-y: auto;
   z-index: 1000;

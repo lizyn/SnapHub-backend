@@ -150,13 +150,15 @@ export default function CreatePostModal(props) {
                 />
               </div>
               <hr/> */}
-              <div>
+              <Box
+                sx={{ zoom: '80%', mt: '.5em' }}
+              >
                 <TextField id="tags" label="Add Tags…" size="small" variant="outlined" sx={{ mb: '.5em' }} />
-                <div>
+                <Box>
                   <Chip label='#Beach' />
                   <Chip label='#EmbraceNature' />
-                </div>
-              </div>
+                </Box>
+              </Box>
               {/* <Divider light={false}/> */}
               <Grid container justifyContent="center">
                 <Button
