@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Popup from 'reactjs-popup';
 import UserRow from './UserRow';
 import uploadArrow from '../images/uploadArrow.png'
-import avatar1 from '../images/avatar1.png'
+import avatar4 from '../images/avatar4.png'
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -35,18 +35,15 @@ const theme = createTheme({
 });
 
 export default function CreatePostModal(props) {
-  const defaultTitle = 'Title…';
-  const defaultCaption = 'Caption…';
-  const [title, setTitle] = useState(defaultTitle);
-  const [caption, setCaption] = useState(defaultCaption);
+  const [title, setTitle] = useState("");
+  const [caption, setCaption] = useState("");
   const [file, setFile] = useState();
-  const user = { profilePicUrl: avatar1, name: "Alfonso Schleifer" };
+  const user = { profilePicUrl: avatar4, name: "Tatiana Dokidis" };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFile(URL.createObjectURL(file));
-    console.log(file);
-    //   console.log("file uploaded");
+    // console.log(file);
   }
 
   const handleSubmit = () => {
@@ -144,6 +141,8 @@ export default function CreatePostModal(props) {
                     autoFocus
                     size='small'
                     variant='standard'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                   />
                   <TextField
                     margin="normal"
@@ -156,6 +155,8 @@ export default function CreatePostModal(props) {
                     id="post-caption"
                     size='small'
                     variant='standard'
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
                   />
                 </Box>
                 {/* <div>
@@ -166,19 +167,7 @@ export default function CreatePostModal(props) {
                     onFocus={() => {if (title===defaultTitle) {setTitle("")}}}
                     onBlur={() => {if (title==="") {setTitle(defaultTitle)}}}
                   />
-                </div>
-                <hr/>
-                <div>
-                  <textarea
-                    className='modal-input gray-text'
-                    style={{height: "10em"}}
-                    value={caption}
-                    onChange={(e) => setCaption(e.target.value)}
-                    onFocus={() => {if (caption===defaultCaption) {setCaption("")}}}
-                    onBlur={() => {if (caption==="") {setCaption(defaultCaption)}}}
-                  />
-                </div>
-                <hr/> */}
+                </div> */}
                 <Box
                   sx={{ zoom: '80%', mt: 1, mb: 8 }}
                 >
