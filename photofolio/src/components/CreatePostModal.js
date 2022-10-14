@@ -15,6 +15,7 @@ import Grid from '@mui/material/Grid';
 import Chip from '@mui/material/Chip'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
+import post1 from '../images/post1.jpg'
 
 
 function handleUpload() {
@@ -46,7 +47,7 @@ export default function CreatePostModal(props) {
   const defaultCaption = 'Caption…';
   const [title, setTitle] = useState(defaultTitle);
   const [caption, setCaption] = useState(defaultCaption);
-
+  const [media, setMedia] = useState(post1);
   const user = { profilePicUrl: avatar1, name: "Alfonso Schleifer" };
 
   return (
@@ -59,25 +60,39 @@ export default function CreatePostModal(props) {
             sm={4}
             md={7}
           >
-            <Box
+            <Box justifyContent='center'
               sx={{
-                my: 8,
+                mb: 8,
+                mt: 2,
                 mx: 4,
                 display: 'flex',
                 flexDirection: 'column',
+                height: '90%',
               }}
             >
               <div className="modal-header">creating a post</div>
-              <Box textAlign='center' sx={{ my: 16 }}>
-                <Button
-                  // className='upload-arrow-button'
-                  variant='outlined'
-                  onClick={handleUpload}
-                >
-                  <img src={uploadArrow} alt="upload arrow" width={"30px"} />
-                </Button>
+              <Box
+                textAlign='center'
+                alignItems="center"
+                justifyContent='center'
+                sx={{ my: 6, mx: 1, margin: 'auto', display: 'flex' }}
+              >
+                {media &&
+                  <img src={media} style={{ height: '100%', maxWidth: '100%', borderRadius: '3px' }} />
+                }
+                {!media &&
+                  <Button
+                    // className='upload-arrow-button'
+                    variant='outlined'
+                    onClick={handleUpload}
+                  >
+                    <img src={uploadArrow} alt="upload arrow" width={"30px"}
+                      sx={{ margin: 'auto', display: 'flex' }}
+                    />
+                  </Button>
+                }
               </Box>
-              <Grid container justifyContent="center">
+              <Box sx={{ display: 'flex' }} justifyContent="center">
                 <Button
                   variant='contained'
                   onClick={handleUpload}
@@ -85,12 +100,11 @@ export default function CreatePostModal(props) {
                 >
                   Upload A File
                 </Button>
-              </Grid>
+              </Box>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={8} md={5} sx={{ borderLeft: 1 }}>
+          <Grid item xs={12} sm={8} md={5} sx={{ borderLeft: 1, borderColor: '#D2D2D2' }}>
             <Button
-              // className="transparent-button modal-close-button"
               onClick={props.closeModal}
               sx={{ float: "right", fontSize: "24px" }}
             >
@@ -98,69 +112,73 @@ export default function CreatePostModal(props) {
             </Button>
             <Box
               sx={{
-                my: 8,
+                mt: 8,
+                mb: 3,
                 mx: 4,
                 display: 'flex',
                 flexDirection: 'column',
               }}
             >
               <UserRow profilePicUrl={user.profilePicUrl} name={user.name} ring={true} />
-              <Box component="form" noValidate onSubmit={handleSubmit}>
-                <TextField
-                  // margin="normal"
-                  fullWidth
-                  id="post-title"
-                  label="Title…"
-                  name="title"
-                  autoFocus
-                  size='small'
-                  variant='standard'
-                />
-                <TextField
-                  margin="normal"
-                  fullWidth
-                  multiline
-                  minRows={5}
-                  maxRows={8}
-                  name="caption"
-                  label="Caption…"
-                  id="post-caption"
-                  size='small'
-                  variant='standard'
-                />
-              </Box>
-              {/* <div>
-                <input
-                  className='modal-input gray-text'
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  onFocus={() => {if (title===defaultTitle) {setTitle("")}}}
-                  onBlur={() => {if (title==="") {setTitle(defaultTitle)}}}
-                />
-              </div>
-              <hr/>
-              <div>
-                <textarea
-                  className='modal-input gray-text'
-                  style={{height: "10em"}}
-                  value={caption}
-                  onChange={(e) => setCaption(e.target.value)}
-                  onFocus={() => {if (caption===defaultCaption) {setCaption("")}}}
-                  onBlur={() => {if (caption==="") {setCaption(defaultCaption)}}}
-                />
-              </div>
-              <hr/> */}
-              <Box
-                sx={{ zoom: '80%', mt: '.5em' }}
-              >
-                <TextField id="tags" label="Add Tags…" size="small" variant="outlined" sx={{ mb: '.5em' }} />
-                <Box>
-                  <Chip label='#Beach' />
-                  <Chip label='#EmbraceNature' />
+              <Box sx={{ mx: 2 }}>
+                <Box component="form" noValidate onSubmit={handleSubmit}
+                >
+                  <TextField
+                    // margin="normal"
+                    fullWidth
+                    id="post-title"
+                    label="Title…"
+                    name="title"
+                    autoFocus
+                    size='small'
+                    variant='standard'
+                  />
+                  <TextField
+                    margin="normal"
+                    fullWidth
+                    multiline
+                    minRows={8}
+                    maxRows={12}
+                    name="caption"
+                    label="Caption…"
+                    id="post-caption"
+                    size='small'
+                    variant='standard'
+                  />
                 </Box>
+                {/* <div>
+                  <input
+                    className='modal-input gray-text'
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    onFocus={() => {if (title===defaultTitle) {setTitle("")}}}
+                    onBlur={() => {if (title==="") {setTitle(defaultTitle)}}}
+                  />
+                </div>
+                <hr/>
+                <div>
+                  <textarea
+                    className='modal-input gray-text'
+                    style={{height: "10em"}}
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    onFocus={() => {if (caption===defaultCaption) {setCaption("")}}}
+                    onBlur={() => {if (caption==="") {setCaption(defaultCaption)}}}
+                  />
+                </div>
+                <hr/> */}
+                <Box
+                  sx={{ zoom: '80%', mt: 1, mb: 8 }}
+                >
+                  <TextField id="tags" label="Add Tags…" size="small" variant="outlined" sx={{ mb: 2 }} />
+                  <Box>
+                    <Chip label='#Beach' />
+                    <Chip label='#EmbraceNature' />
+                  </Box>
+                </Box>
+                <Divider sx={{ bgcolor: '#D2D2D2' }} />
               </Box>
-              {/* <Divider light={false}/> */}
-              <Grid container justifyContent="center">
+              <Box sx={{ display: 'flex' }} justifyContent="center">
                 <Button
                   type="submit"
                   variant="contained" disabled
@@ -168,15 +186,15 @@ export default function CreatePostModal(props) {
                   onClick={() => {
                     console.log('Post Created');
                   }}
-                  sx={{ mt: '1em' }}
+                  sx={{ mt: 2, px: 5 }}
                 >
                   Post
                 </Button>
-              </Grid>
+              </Box>
             </Box>
           </Grid>
         </Grid>
       </ThemeProvider>
-    </Popup>
+    </Popup >
   );
 }
