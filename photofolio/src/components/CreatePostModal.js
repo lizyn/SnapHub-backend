@@ -43,7 +43,8 @@ export default function CreatePostModal(props) {
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFile(URL.createObjectURL(file));
-    // console.log(file);
+    console.log(file);
+    console.log(typeof (file))
   }
 
   const handleSubmit = () => {
@@ -75,10 +76,10 @@ export default function CreatePostModal(props) {
                 textAlign='center'
                 alignItems="center"
                 justifyContent='center'
-                sx={{ my: 6, mx: 1, margin: 'auto', display: 'flex' }}
+                sx={{ my: 6, mx: 2, margin: 'auto', display: 'flex', maxHeight: "70%" }}
               >
                 {file &&
-                  <img src={file} style={{ height: '100%', maxWidth: '100%', borderRadius: '3px' }} />
+                  <img src={file} style={{ maxHeight: '100%', width: '100%', borderRadius: '3px' }} />
                 }
                 {!file &&
                   <Button
@@ -87,6 +88,7 @@ export default function CreatePostModal(props) {
                   >
                     <input
                       type="file"
+                      accept="image/*"
                       hidden
                       onChange={handleFileChange}
                     />
@@ -105,6 +107,7 @@ export default function CreatePostModal(props) {
                   Upload A File
                   <input
                     type="file"
+                    accept="image/*"
                     hidden
                     onChange={handleFileChange}
                   />
@@ -182,11 +185,9 @@ export default function CreatePostModal(props) {
               <Box sx={{ display: 'flex' }} justifyContent="center">
                 <Button
                   type="submit"
-                  variant="contained" disabled
-                  // className="secondary-button"
-                  onClick={() => {
-                    console.log('Post Created');
-                  }}
+                  variant="contained"
+                  disabled={file === undefined}
+                  onClick={handleSubmit}
                   sx={{ mt: 2, px: 5 }}
                 >
                   Post
