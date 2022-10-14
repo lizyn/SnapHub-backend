@@ -16,6 +16,7 @@ import Chip from '@mui/material/Chip'
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Divider from '@mui/material/Divider';
 import post1 from '../images/post1.jpg'
+import CardMedia from '@mui/material/CardMedia'
 
 
 const theme = createTheme({
@@ -38,13 +39,18 @@ export default function CreatePostModal(props) {
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
   const [file, setFile] = useState();
+  const [fileType, setFileType] = useState("img");
   const user = { profilePicUrl: avatar4, name: "Tatiana Dokidis" };
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setFile(URL.createObjectURL(file));
+    if (file.type.startsWith('image')) {
+      setFileType('img');
+    } else {
+      setFileType('video');
+    }
     console.log(file);
-    console.log(typeof (file))
   }
 
   const handleSubmit = () => {
@@ -79,7 +85,9 @@ export default function CreatePostModal(props) {
                 sx={{ my: 6, mx: 2, margin: 'auto', display: 'flex', maxHeight: "70%" }}
               >
                 {file &&
-                  <img src={file} style={{ maxHeight: '100%', width: '100%', borderRadius: '3px' }} />
+                  <CardMedia component={fileType} controls={fileType === 'video'} src={file}
+                    style={{ height: '100%', maxWidth: '100%', borderRadius: '3px' }} />
+                  // <img src={file} style={{ height: '100%', maxWidth: '100%', borderRadius: '3px' }} />
                 }
                 {!file &&
                   <Button
@@ -88,7 +96,7 @@ export default function CreatePostModal(props) {
                   >
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/*,video/mp4,video/x-m4v,video/*"
                       hidden
                       onChange={handleFileChange}
                     />
@@ -107,7 +115,7 @@ export default function CreatePostModal(props) {
                   Upload A File
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/mp4,video/x-m4v,video/*"
                     hidden
                     onChange={handleFileChange}
                   />
