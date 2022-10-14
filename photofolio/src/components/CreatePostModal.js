@@ -18,14 +18,6 @@ import Divider from '@mui/material/Divider';
 import post1 from '../images/post1.jpg'
 
 
-function handleUpload() {
-  console.log("file uploaded");
-}
-
-function handleSubmit() {
-  console.log("submitted");
-}
-
 const theme = createTheme({
   status: {
     danger: '#e53e3e',
@@ -47,8 +39,19 @@ export default function CreatePostModal(props) {
   const defaultCaption = 'Caption…';
   const [title, setTitle] = useState(defaultTitle);
   const [caption, setCaption] = useState(defaultCaption);
-  const [media, setMedia] = useState(post1);
+  const [file, setFile] = useState();
   const user = { profilePicUrl: avatar1, name: "Alfonso Schleifer" };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFile(URL.createObjectURL(file));
+    console.log(file);
+    //   console.log("file uploaded");
+  }
+
+  const handleSubmit = () => {
+    console.log("submitted");
+  }
 
   return (
     <Popup open={props.open} closeOnDocumentClick onClose={props.closeModal}>
@@ -77,15 +80,19 @@ export default function CreatePostModal(props) {
                 justifyContent='center'
                 sx={{ my: 6, mx: 1, margin: 'auto', display: 'flex' }}
               >
-                {media &&
-                  <img src={media} style={{ height: '100%', maxWidth: '100%', borderRadius: '3px' }} />
+                {file &&
+                  <img src={file} style={{ height: '100%', maxWidth: '100%', borderRadius: '3px' }} />
                 }
-                {!media &&
+                {!file &&
                   <Button
-                    // className='upload-arrow-button'
                     variant='outlined'
-                    onClick={handleUpload}
+                    component='label'
                   >
+                    <input
+                      type="file"
+                      hidden
+                      onChange={handleFileChange}
+                    />
                     <img src={uploadArrow} alt="upload arrow" width={"30px"}
                       sx={{ margin: 'auto', display: 'flex' }}
                     />
@@ -95,10 +102,15 @@ export default function CreatePostModal(props) {
               <Box sx={{ display: 'flex' }} justifyContent="center">
                 <Button
                   variant='contained'
-                  onClick={handleUpload}
+                  component='label'
                   sx={{ float: 'bottom' }}
                 >
                   Upload A File
+                  <input
+                    type="file"
+                    hidden
+                    onChange={handleFileChange}
+                  />
                 </Button>
               </Box>
             </Box>
