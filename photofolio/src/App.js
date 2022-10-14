@@ -1,13 +1,11 @@
 
 import './App.css';
 import React, { useState } from 'react';
-import FollowRecommendation from './components/FollowRecommendation';
-import CreatePostModal from './components/CreatePostModal';
+// import CreatePostModal from './components/CreatePostModal';
 
-import logo from './logo.svg';
-// import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
+// import logo from './logo.svg';
+import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
 import ProfilePage from './components/ProfilePage'
-
 import HomePage from './components/HomePage';
 
 
@@ -27,7 +25,7 @@ function App() {
     //</div>
 
     // <ProfilePage />
-    <HomePage postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal}/>
+    <HomePage postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal} />
     // <div className="App">
     //   <header className="App-header">
     //     <img src={logo} className="App-logo" alt="logo" />
