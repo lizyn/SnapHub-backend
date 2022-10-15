@@ -1,5 +1,6 @@
 import './App.css';
 import React, { useState } from 'react';
+import { Alert } from '@mui/material';
 import Navbar from './components/Navbar';
 // import CreatePostModal from './components/CreatePostModal';
 // import logo from './logo.svg';
@@ -10,6 +11,8 @@ import Navbar from './components/Navbar';
 function App() {
   const [postModalIsOpen, setPostModalOpen] = useState(false);
   const closePostModal = () => setPostModalOpen(false);
+  const [alert, setAlert] = useState(false);
+  // console.log(alert);
   return (
     // <div>
     //  <FollowRecommendation/>
@@ -22,11 +25,28 @@ function App() {
     // </div>
 
     // <ProfilePage />
-    <Navbar
-      postModalIsOpen={postModalIsOpen}
-      setPostModalOpen={setPostModalOpen}
-      closePostModal={closePostModal}
-    />
+    <div>
+      {alert && (
+        <Alert
+          severity="success"
+          sx={{
+            position: 'absolute',
+            top: '10%',
+            left: '40%',
+            zIndex: 3,
+            margin: 'auto'
+          }}
+        >
+          Your post has been successfully created!
+        </Alert>
+      )}
+      <Navbar
+        postModalIsOpen={postModalIsOpen}
+        setPostModalOpen={setPostModalOpen}
+        closePostModal={closePostModal}
+        setAlert={setAlert}
+      />
+    </div>
     // <HomePage postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal} />
     // <div className="App">
     //   <header className="App-header">

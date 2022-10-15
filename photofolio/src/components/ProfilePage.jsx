@@ -17,10 +17,11 @@ function ProfilePage(props) {
   ProfilePage.propTypes = {
     closePostModal: PropTypes.func.isRequired,
     postModalIsOpen: PropTypes.bool.isRequired,
-    setPostModalOpen: PropTypes.func.isRequired
+    setPostModalOpen: PropTypes.func.isRequired,
+    setAlert: PropTypes.func.isRequired
   };
 
-  const { closePostModal, postModalIsOpen, setPostModalOpen } = props;
+  const { closePostModal, postModalIsOpen, setPostModalOpen, setAlert } = props;
 
   const itemData = [
     {
@@ -91,8 +92,11 @@ function ProfilePage(props) {
 
   return (
     <div>
-      {/* <Navbar /> */}
-      <CreatePostModal closeModal={closePostModal} open={postModalIsOpen} />
+      <CreatePostModal
+        closeModal={closePostModal}
+        open={postModalIsOpen}
+        setAlert={setAlert}
+      />
       <div className="profileMain">
         <div className="profileUser">
           <Avatar

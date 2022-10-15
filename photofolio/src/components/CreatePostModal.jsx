@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Popup from 'reactjs-popup';
 import Button from '@mui/material/Button';
 // import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
+import { TextField } from '@mui/material';
 // import FormControlLabel from '@mui/material/FormControlLabel';
 // import Checkbox from '@mui/material/Checkbox';
 // import Link from '@mui/material/Link';
@@ -38,7 +38,8 @@ const theme = createTheme({
 export default function CreatePostModal(props) {
   CreatePostModal.propTypes = {
     open: PropTypes.bool.isRequired,
-    closeModal: PropTypes.func.isRequired
+    closeModal: PropTypes.func.isRequired,
+    setAlert: PropTypes.func.isRequired
   };
 
   const [title, setTitle] = useState('');
@@ -46,7 +47,7 @@ export default function CreatePostModal(props) {
   const [file, setFile] = useState();
   const [fileType, setFileType] = useState('img');
   const user = { profilePicUrl: avatar4, name: 'Tatiana Dokidis' };
-  const { open, closeModal } = props;
+  const { open, closeModal, setAlert } = props;
 
   const handleFileChange = (event) => {
     const newFile = event.target.files[0];
@@ -56,11 +57,16 @@ export default function CreatePostModal(props) {
     } else {
       setFileType('video');
     }
-    console.log(newFile);
+    // console.log(newFile);
   };
 
   const handleSubmit = () => {
-    console.log('submitted');
+    // console.log('submitted');
+    closeModal();
+    setAlert(true);
+    setTimeout(() => {
+      setAlert(false);
+    }, 5000);
   };
 
   return (
