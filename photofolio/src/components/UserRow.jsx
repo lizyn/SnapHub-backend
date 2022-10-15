@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 
@@ -15,9 +15,19 @@ function UserRow(props) {
     showFollow: false
   };
   const { profilePicUrl, name, ring, showFollow } = props;
-  // const profilePicUrl = defaultAvatar;
-  // const username = props.name;
-  const follow = () => {};
+  const [followBtn, setFollowBtn] = useState('outlined');
+  const [followed, setFollowed] = useState(false);
+
+  const handleFollowBtnClick = () => {
+    if (followed) {
+      // unfollow
+      setFollowBtn('outlined');
+    } else {
+      // follow;
+      setFollowBtn('contained');
+    }
+    setFollowed((o) => !o);
+  };
 
   return (
     <div className="user-row">
@@ -34,16 +44,13 @@ function UserRow(props) {
         )}
         <div className="username">{name}</div>
         {showFollow && (
-          // <button className='transparent-button right' onClick={follow}>
-          // Follow
-          // </button>
           <Button
-            variant="outlined"
+            variant={followBtn}
             size="small"
             sx={{ marginLeft: 'auto' }}
-            onClick={follow}
+            onClick={handleFollowBtnClick}
           >
-            Follow
+            {followed && 'followed'} {!followed && 'follow'}
           </Button>
         )}
       </div>
