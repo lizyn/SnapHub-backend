@@ -47,7 +47,7 @@ export default function CreatePostModal(props) {
   const [title, setTitle] = useState(defaultTitle);
   const [caption, setCaption] = useState(defaultCaption);
 
-  const user = {profilePicUrl: avatar1, name: "Alfonso Schleifer"};
+  const user = { profilePicUrl: avatar1, name: "Alfonso Schleifer" };
 
   return (
     <Popup open={props.open} closeOnDocumentClick onClose={props.closeModal}>
@@ -67,32 +67,32 @@ export default function CreatePostModal(props) {
                 flexDirection: 'column',
               }}
             >
-              <div item className="modal-header">creating a post</div>
-              <Box textAlign='center' sx={{my:16}}>
+              <div className="modal-header">creating a post</div>
+              <Box textAlign='center' sx={{ my: 16 }}>
                 <Button
                   // className='upload-arrow-button'
                   variant='outlined'
                   onClick={handleUpload}
                 >
-                  <img src={uploadArrow} alt="upload arrow" width={"30px"}/>
+                  <img src={uploadArrow} alt="upload arrow" width={"30px"} />
                 </Button>
               </Box>
               <Grid container justifyContent="center">
-                <Button 
+                <Button
                   variant='contained'
                   onClick={handleUpload}
-                  sx={{float: 'bottom'}}
+                  sx={{ float: 'bottom' }}
                 >
                   Upload A File
                 </Button>
               </Grid>
             </Box>
           </Grid>
-          <Grid item xs={12} sm={8} md={5} sx={{borderLeft: 1}}>
-            <Button 
+          <Grid item xs={12} sm={8} md={5} sx={{ borderLeft: 1 }}>
+            <Button
               // className="transparent-button modal-close-button"
               onClick={props.closeModal}
-              sx={{float: "right", fontSize:"24px"}}
+              sx={{ float: "right", fontSize: "24px" }}
             >
               &times;
             </Button>
@@ -104,7 +104,7 @@ export default function CreatePostModal(props) {
                 flexDirection: 'column',
               }}
             >
-              <UserRow profilePicUrl={user.profilePicUrl} name={user.name} ring={true}/>
+              <UserRow profilePicUrl={user.profilePicUrl} name={user.name} ring={true} />
               <Box component="form" noValidate onSubmit={handleSubmit}>
                 <TextField
                   // margin="normal"
@@ -151,7 +151,7 @@ export default function CreatePostModal(props) {
               </div>
               <hr/> */}
               <div>
-                <TextField id="tags" label="Add Tags…" size="small" variant="outlined" sx={{mb: '.5em'}}/>
+                <TextField id="tags" label="Add Tags…" size="small" variant="outlined" sx={{ mb: '.5em' }} />
                 <div>
                   <Chip label='#Beach' />
                   <Chip label='#EmbraceNature' />
@@ -159,22 +159,22 @@ export default function CreatePostModal(props) {
               </div>
               {/* <Divider light={false}/> */}
               <Grid container justifyContent="center">
-                <Button 
+                <Button
                   type="submit"
                   variant="contained" disabled
                   // className="secondary-button"
                   onClick={() => {
                     console.log('Post Created');
                   }}
-                  sx={{mt: '1em'}}
+                  sx={{ mt: '1em' }}
                 >
-                  Post 
+                  Post
                 </Button>
               </Grid>
             </Box>
           </Grid>
         </Grid>
-      </ThemeProvider>   
+      </ThemeProvider>
     </Popup>
   );
 }

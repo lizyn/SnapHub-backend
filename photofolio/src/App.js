@@ -4,9 +4,10 @@ import React, { useState } from 'react';
 // import CreatePostModal from './components/CreatePostModal';
 
 // import logo from './logo.svg';
-import { BrowserRouter as Router, Link, Route } from 'react-router-dom';
-import ProfilePage from './components/ProfilePage'
-import HomePage from './components/HomePage';
+// import { BrowserRouter as Router, Switch, Link, Route } from 'react-router-dom';
+// import ProfilePage from './components/ProfilePage'
+// import HomePage from './components/HomePage';
+import Navbar from './components/Navbar';
 
 
 function App() {
@@ -25,7 +26,8 @@ function App() {
     //</div>
 
     // <ProfilePage />
-    <HomePage postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal} />
+    <Navbar postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal} />
+    // <HomePage postModalIsOpen={postModalIsOpen} setPostModalOpen={setPostModalOpen} closePostModal={closePostModal} />
     // <div className="App">
     //   <header className="App-header">
     //     <img src={logo} className="App-logo" alt="logo" />

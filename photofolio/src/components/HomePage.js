@@ -32,7 +32,7 @@ function HomePage(props) {
 
   return (
     <div className="flex1">
-      <Navbar {...props} />
+      {/* <Navbar {...props} /> */}
       <CreatePostModal closeModal={props.closePostModal} open={props.postModalIsOpen} />
       <div className="main">
         <div className="users-section">
