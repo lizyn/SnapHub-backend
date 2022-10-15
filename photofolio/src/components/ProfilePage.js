@@ -10,8 +10,9 @@ import likeIcon from '../icons/Like.svg';
 import followerIcon from "../icons/People.svg";
 import ImageList from '@mui/material/ImageList';
 import ImageListItem from '@mui/material/ImageListItem';
+import CreatePostModal from "./CreatePostModal";
 
-function ProfilePage() {
+function ProfilePage(props) {
 
   const itemData = [
     {
@@ -82,7 +83,8 @@ function ProfilePage() {
 
   return (
     <div>
-      <Navbar />
+      {/* <Navbar /> */}
+      <CreatePostModal closeModal={props.closePostModal} open={props.postModalIsOpen} />
       <div className="profileMain">
         <div className="profileUser">
           <Avatar alt='me' className="Avatar" src={userMe} sx={{ width: 100, height: 100 }}></Avatar>
@@ -108,15 +110,22 @@ function ProfilePage() {
           </div>
           <div>
           </div>
-          <ThemeProvider theme={orange}>
-            <Fab variant="extended" color="primary" sx={{}}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
-          </ThemeProvider>
+          <div className="newpost" onClick={() => props.setPostModalOpen(o => !o)}>
+            <ThemeProvider theme={orange}>
+              <Fab variant="extended" color="primary" sx={{}}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
+            </ThemeProvider>
+          </div>
+          {/* <div className="newpost" onClick={() => props.setPostModalOpen(o => !o)}>
+              <ThemeProvider theme={orange}>
+                <Fab variant="extended" color="primary" sx={{ mb: 20 }}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
+              </ThemeProvider>
+            </div> */}
         </div>
 
         <div className="profileActivity">
           <ImageList sx={{ width: 1100, height: 1500, overflow: "hidden" }} cols={3} gap={0}>
             {itemData.map((item) => (
-              <ImageListItem key={item.img} sx={{width: "95% !important", height: "95% !important"}}>
+              <ImageListItem key={item.img} sx={{ width: "95% !important", height: "95% !important" }}>
                 <img
                   src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
                   srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}

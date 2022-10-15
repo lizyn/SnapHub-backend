@@ -121,8 +121,8 @@ export default function CreatePostModal(props) {
                   />
                 </Button>
               </Box>
-            </Box>
-          </Grid>
+            </Box >
+          </Grid >
           <Grid item xs={12} sm={8} md={5} sx={{ borderLeft: 1, borderColor: '#D2D2D2' }}>
             <Button
               onClick={props.closeModal}
@@ -203,8 +203,9 @@ export default function CreatePostModal(props) {
               </Box>
             </Box>
           </Grid>
-        </Grid>
-      </ThemeProvider>
+        </Grid >
+      </ThemeProvider >
+
     </Popup >
   );
 }
