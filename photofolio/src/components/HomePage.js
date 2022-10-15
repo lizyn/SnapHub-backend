@@ -41,11 +41,8 @@ function HomePage(props) {
             <h3>Tatiana Dokidis</h3>
           </div>
           <div className="recommendations">
-            <p>Recommended for you</p>
-            <div className="userList">
-              <p>Recommneded Users to follow</p>
-              <FollowRecommendation />
-            </div>
+            <div style={{ marginBottom: '.5em' }}>Recommended for you</div>
+            <FollowRecommendation />
           </div>
         </div>
 
@@ -67,7 +64,7 @@ function HomePage(props) {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 

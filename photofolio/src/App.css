@@ -108,9 +108,11 @@
   box-sizing: border-box;
   background: #FFFFFF;
   border: 0.842859px solid #E0E0E0;
-  border-radius: 8.42859px;  
+  border-radius: 8.42859px;
+  max-width: 95vw;
+  overflow-x: auto;
   width: 70%;
-  max-height: 100vh;
+  max-height: 95vh;
   overflow-y: auto;
   z-index: 1000;
 }
@@ -147,9 +149,9 @@
   font-weight: 400;
   font-size: 25.2858px;
   line-height: 30px;
-  text-transform: uppercase;
-  
+  text-transform: uppercase; 
   color: #C0C0C0;  
+  /* text-align: left; */
 }
 
 .modal-input {
