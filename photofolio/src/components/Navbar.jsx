@@ -20,10 +20,11 @@ function Navbar(props) {
   Navbar.propTypes = {
     closePostModal: PropTypes.func.isRequired,
     postModalIsOpen: PropTypes.bool.isRequired,
-    setPostModalOpen: PropTypes.func.isRequired
+    setPostModalOpen: PropTypes.func.isRequired,
+    setAlert: PropTypes.func.isRequired
   };
 
-  const { closePostModal, postModalIsOpen, setPostModalOpen } = props;
+  const { closePostModal, postModalIsOpen, setPostModalOpen, setAlert } = props;
 
   return (
     <Router>
@@ -79,6 +80,7 @@ function Navbar(props) {
               postModalIsOpen={postModalIsOpen}
               setPostModalOpen={setPostModalOpen}
               closePostModal={closePostModal}
+              setAlert={setAlert}
             />
           </Route>
           <Router path="/profile">
@@ -86,6 +88,7 @@ function Navbar(props) {
               postModalIsOpen={postModalIsOpen}
               setPostModalOpen={setPostModalOpen}
               closePostModal={closePostModal}
+              setAlert={setAlert}
             />
           </Router>
         </Switch>

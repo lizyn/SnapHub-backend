@@ -16,10 +16,11 @@ function HomePage(props) {
   HomePage.propTypes = {
     closePostModal: PropTypes.func.isRequired,
     postModalIsOpen: PropTypes.bool.isRequired,
-    setPostModalOpen: PropTypes.func.isRequired
+    setPostModalOpen: PropTypes.func.isRequired,
+    setAlert: PropTypes.func.isRequired
   };
 
-  const { closePostModal, postModalIsOpen, setPostModalOpen } = props;
+  const { closePostModal, postModalIsOpen, setPostModalOpen, setAlert } = props;
   const orange = createTheme({
     status: {
       danger: '#e53e3e'
@@ -38,8 +39,11 @@ function HomePage(props) {
 
   return (
     <div className="flex1">
-      {/* <Navbar {...props} /> */}
-      <CreatePostModal closeModal={closePostModal} open={postModalIsOpen} />
+      <CreatePostModal
+        closeModal={closePostModal}
+        open={postModalIsOpen}
+        setAlert={setAlert}
+      />
       <div className="main">
         <div className="users-section">
           <div className="user">

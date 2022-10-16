@@ -5,8 +5,7 @@ import avatar2 from '../images/avatar2.png';
 import avatar3 from '../images/avatar3.png';
 import defaultAvatar from '../images/defaultAvatar.png';
 
-function FollowRecommendation(props) {
-  console.log(props);
+function FollowRecommendation() {
   const users = [
     { profilePicUrl: avatar1, name: 'Alfonso Schleifer', id: 1 },
     { profilePicUrl: avatar2, name: 'Erin Rhiel Madsen', id: 2 },
