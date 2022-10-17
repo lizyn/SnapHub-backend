@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 function UserRow(props) {
   UserRow.propTypes = {
-    profilePicUrl: PropTypes.string.isRequired,
+    avatar: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     ring: PropTypes.bool,
     showFollow: PropTypes.bool
@@ -14,7 +14,7 @@ function UserRow(props) {
     ring: false,
     showFollow: false
   };
-  const { profilePicUrl, name, ring, showFollow } = props;
+  const { avatar, name, ring, showFollow } = props;
   const [followBtn, setFollowBtn] = useState('outlined');
   const [followed, setFollowed] = useState(false);
 
@@ -35,13 +35,11 @@ function UserRow(props) {
         {ring && (
           <img
             className="profile-pic profile-pic-ring"
-            src={profilePicUrl}
+            src={avatar}
             alt={name}
           />
         )}
-        {!ring && (
-          <img className="profile-pic" src={profilePicUrl} alt={name} />
-        )}
+        {!ring && <img className="profile-pic" src={avatar} alt={name} />}
         <div className="username">{name}</div>
         {showFollow && (
           <Button
