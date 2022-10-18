@@ -15,6 +15,7 @@ import profileIcon from '../icons/Person.svg';
 import logoutIcon from '../icons/Arrow_Export.svg';
 import HomePage from './HomePage';
 import ProfilePage from './ProfilePage';
+import Login from './Login';
 
 function Navbar(props) {
   Navbar.propTypes = {
@@ -73,7 +74,13 @@ function Navbar(props) {
 
         <Switch>
           <Route exact path="/">
-            <Redirect to="/home" />
+            <Redirect to="/login" />
+          </Route>
+          <Route exact path="/logout">
+            <Redirect to="/login" />
+          </Route>
+          <Route path="/login">
+            <Login />
           </Route>
           <Route path="/home">
             <HomePage
