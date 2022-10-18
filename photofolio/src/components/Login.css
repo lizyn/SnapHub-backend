@@ -1,25 +1,24 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-
-body {
-    min-height: 100vh;
-    background-color: white;
-    z-index: 1800;
-}
+/* .login-background {
+    background-color:aqua;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 2000;
+} */
 
 .login-main {
-    /* background-color:aqua; */
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  column-gap: 4rem;
-  min-height: 100vh; 
-  padding: 1rem 0.5rem;
+    background-color:white;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: 4rem;
+    min-height: 100vh; 
+    padding: 1rem 0.5rem;
+    z-index: 1800;
 }
 
 section {
@@ -123,9 +122,11 @@ button {
 .errmsg {
     background-color: lightpink;
     color: firebrick;
-    font-weight: bold;
+    font-family: Verdana;
+    font-weight: normal;
     padding: 0.5rem;
     margin-bottom: 0.5rem;
+    border-radius: 10px;
 }
 
 .line {

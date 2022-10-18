@@ -84,7 +84,6 @@ function Login() {
               autoComplete="off"
               onChange={(e) => setUser(e.target.value)}
               value={user}
-              // value=""
               required
             />
           </label>
