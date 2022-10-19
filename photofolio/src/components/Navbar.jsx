@@ -16,6 +16,7 @@ import logoutIcon from '../icons/Arrow_Export.svg';
 import HomePage from './HomePage';
 import ProfilePage from './ProfilePage';
 import Login from './Login';
+import Register from './Register';
 
 function Navbar(props) {
   Navbar.propTypes = {
@@ -81,6 +82,9 @@ function Navbar(props) {
           </Route>
           <Route path="/login">
             <Login />
+          </Route>
+          <Route path="/register">
+            <Register />
           </Route>
           <Route path="/home">
             <HomePage
