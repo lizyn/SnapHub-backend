@@ -6,11 +6,11 @@ import Fab from '@mui/material/Fab';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FeedList from './FeedList';
 import CreatePostModal from './CreatePostModal';
-import FollowRecommendation from './FollowRecommendation';
 
 import userMe from '../images/userMe.jpg';
 import searchIcon from '../icons/Search.svg';
 import NewIcon from '../icons/New.svg';
+import UserList from './UserList';
 
 function HomePage(props) {
   HomePage.propTypes = {
@@ -57,7 +57,7 @@ function HomePage(props) {
           </div>
           <div className="recommendations">
             <div style={{ marginBottom: '.5em' }}>Recommended for you</div>
-            <FollowRecommendation />
+            <UserList />
           </div>
         </div>
 
