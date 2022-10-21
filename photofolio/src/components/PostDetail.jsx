@@ -19,7 +19,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 1000,
-  height: 600,
+  maxHeight: 600,
   bgcolor: 'background.paper',
   borderRadius: '10px',
   boxShadow: 24
@@ -47,23 +47,41 @@ function PostDetail() {
         aria-describedby="post-description"
       >
         <Box className="post-detail-text" sx={style}>
-          <div className="post-detail">
+          <div className="post-detail-left">
             <img
-              src="https://images.unsplash.com/photo-1566371486490-560ded23b5e4"
+              src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee"
               alt="post"
             />
-            <div className="post-detail-head">
+            <div className="post-detail-description">
               <Avatar
                 alt="me"
                 className="Avatar"
                 src={userOther1}
-                sx={{ width: 50, height: 50 }}
+                sx={{
+                  width: 70,
+                  height: 70,
+                  position: 'absolute',
+                  top: '77%',
+                  left: '2%'
+                }}
               />
-              <p className="postUsername">title</p>
-              <p className="postTime">20 minutes ago</p>
+              <p className="post-detail-description-user">title</p>
+              <div className="post-detail-description-text">
+                <p>text description</p>
+              </div>
             </div>
           </div>
           <div className="post-detail-right">
+            <div className="post-detail-userhead">
+              <Avatar
+                alt="me"
+                className="Avatar"
+                src={userOther1}
+                sx={{ width: 60, height: 60 }}
+              />
+              <p className="postUsername">User</p>
+              <p className="postTime">20 minutes ago</p>
+            </div>
             <div className="post-detail-comments">
               <h1>comment</h1>
               <h1>comment</h1>
