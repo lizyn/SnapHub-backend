@@ -74,10 +74,9 @@ textarea {
   /* border-radius: 0.5rem; */
 }
 
-label,
-button {
-  margin-top: 1rem;
-}
+/* label, button {
+  margin-top: 1rem;  // this changes the behavior of all label and buttons, better use with a smaller scope
+} */
 
 button {
   padding: 0.5rem;
