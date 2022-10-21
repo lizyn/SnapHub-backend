@@ -13,7 +13,7 @@
     z-index: 1800;
 }
 
-section {
+.register-main section {
     width: 100%;
     max-width: 450px;
     min-height: 500px;
@@ -25,7 +25,7 @@ section {
     /* background-color: rgba(0,0,0,0.4); */
 }
 
-form {
+.register-main form {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -35,7 +35,7 @@ form {
     padding: 0rem 2rem 2rem 2rem;
 }
 
-a, a:visited {
+.register-main a, a:visited {
     color: rgb(255, 156, 7);
 }
 
@@ -55,10 +55,10 @@ a, a:visited {
     padding: 1rem 0 0 0;
 }
 
-input[type="text"],
-input[type="password"],
-button,
-textarea {
+.register-main input[type="text"],
+.register-main input[type="password"],
+.register-main button,
+.register-main textarea {
     display: block;
   font-family: 'Lato';
   font-style: normal;
@@ -68,11 +68,11 @@ textarea {
   /* border-radius: 0.5rem; */
 }
 
-label {
+.register-main label {
   display: block;
 }
 
-button {
+.register-main button {
     margin-top: 1rem;
   padding: 0.5rem;
   background-color: rgb(255, 211, 54);
