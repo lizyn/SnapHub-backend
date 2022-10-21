@@ -6,12 +6,12 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
-import axios from '../api/axios';
+// import axios from '../api/axios';
 import './Register.css';
 
 const USER_REGEX = /^[A-z][A-z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
-const REGISTER_URL = '/register';
+// const REGISTER_URL = '/register';
 
 function Register() {
   const userRef = useRef();
@@ -57,28 +57,23 @@ function Register() {
       setErrMsg('Invalid Entry');
       return;
     }
-    try{
-      const response = await axios.post("http://localhost:3500/account",
-      {user,pwd},{
-      headers: { 'Content-Type': 'application/json' },
-      withCredentials: true
-      });
-      console.log(JSON.stringify({user,pwd}));
+    try {
+      console.log(JSON.stringify({ user, pwd }));
       setSuccess(true);
-    }catch(err){
-      console.error(err)
+    } catch (err) {
+      console.error(err);
     }
     // console.log(user,pwd);
     // setSuccess(true);
     // try {
-      // const response = await axios.post(
-      //   REGISTER_URL,
-      //   JSON.stringify({ user, pwd }),
-      //   {
-      //     headers: { 'Content-Type': 'application/json' },
-      //     withCredentials: true
-      //   }
-      // );
+    // const response = await axios.post(
+    //   REGISTER_URL,
+    //   JSON.stringify({ user, pwd }),
+    //   {
+    //     headers: { 'Content-Type': 'application/json' },
+    //     withCredentials: true
+    //   }
+    // );
     //   // TODO: remove console.logs before deployment
     //   console.log(JSON.stringify(response.data));
     //   // console.log(JSON.stringify(response))
