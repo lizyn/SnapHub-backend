@@ -17,6 +17,7 @@ import HomePage from './HomePage';
 import ProfilePage from './ProfilePage';
 import Login from './Login';
 import Register from './Register';
+import PostDetail from './PostDetail';
 
 function Navbar(props) {
   Navbar.propTypes = {
@@ -101,6 +102,9 @@ function Navbar(props) {
               closePostModal={closePostModal}
               setAlert={setAlert}
             />
+          </Router>
+          <Router path="/postdetail">
+            <PostDetail />
           </Router>
         </Switch>
       </div>
