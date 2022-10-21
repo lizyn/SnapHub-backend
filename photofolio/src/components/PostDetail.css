@@ -1,0 +1,136 @@
+.post-modal-main {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+    margin-top: 10rem;
+}
+
+.post-detail-left {
+    display: flex;
+    flex-direction: column;
+    width: 94rem;
+    height: 30rem;
+}
+
+.post-detail-left img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    background-color:black;
+}
+.post-detail-description{
+    display: flex;
+    flex-direction: column;
+    gap:0 !important
+}
+.post-detail-description-user{
+    margin-left: 6.5rem;
+    margin-bottom: 0 !important;
+    font-family: Verdana;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.post-detail-description-text{
+    margin-left: 6.5rem;
+    height: 2rem;
+    width: 80%;
+    overflow-y:scroll;
+}
+.post-detail-description-text p{
+    font-family: Verdana;
+    font-size: 12px;
+}
+
+.post-detail-right {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.post-detail-actions{
+    border-top: 1px solid lightgrey;
+    padding: 0.92rem 0.8rem 1rem 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-detail-postStats{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1em;
+}
+
+.post-detail-stats{
+    display: flex;
+    flex-direction: row;
+    height: 2em;
+    margin-left: 1.1em;
+    width:fit-content;
+    padding-right: 1em;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 0.5em
+}
+
+.css-79ws1d-MuiModal-root {
+    z-index:2000;
+}
+
+.post-detail-stats p{
+    font-size: 15px;
+    text-align: center;
+} 
+
+.post-detail-comments {
+    max-height: 80%;
+    overflow: scroll;
+    background-color:aqua;
+    padding-right: 1rem;
+}
+
+.post-detail-post-comment {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.post-detail-post-comment input{
+    border-radius: 10px;
+    border: 1px solid lightslategrey;
+    padding: 0.5em;
+    width: 74%;
+    overflow-x: scroll;
+}
+
+.post-detail-post-comment button{
+    border-radius: 8px;
+    border: 1px solid lightslategrey;
+    width: 4em;
+    height: 2.5em;
+    margin: 0 5px 0 0;
+    background-color:white;
+}
+
+.post-detail-post-comment button:hover{
+    background-color: rgb(237, 237, 237);
+    transition-duration: 200ms;
+}
+
+.post-detail-post-comment button:active{
+    background-color: rgb(170, 170, 170);
+}
+
+.post-detail-post-comment button img{
+    width: 1.5em;
+    filter: brightness(4);
+}
+
+.post-detail-userhead {
+    margin: 1rem 0 0 0.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid lightgrey;
+}

@@ -21,7 +21,7 @@
     z-index: 1800;
 }
 
-section {
+.login-main section {
     width: 100%;
     max-width: 450px;
     min-height: 500px;
@@ -33,7 +33,7 @@ section {
     /* background-color: rgba(0,0,0,0.4); */
 }
 
-form {
+.login-main form {
     display: flex;
     flex-direction: column;
     justify-content: space-evenly;
@@ -42,7 +42,7 @@ form {
     padding: 0rem 2rem 2rem 2rem;
 }
 
-a, a:visited {
+.login-main a, a:visited {
     color: rgb(255, 156, 7);
 }
 
@@ -62,10 +62,10 @@ a, a:visited {
     padding: 1rem 0 0 0;
 }
 
-input[type="text"],
-input[type="password"],
-button,
-textarea {
+.login-main input[type="text"],
+.login-main input[type="password"],
+.login-main button,
+.login-main textarea {
   font-family: 'Lato';
   font-style: normal;
   font-size: 22px;
@@ -74,11 +74,13 @@ textarea {
   /* border-radius: 0.5rem; */
 }
 
-/* label, button {
-  margin-top: 1rem;  // this changes the behavior of all label and buttons, better use with a smaller scope
-} */
+.login-main label,
+.login-main button {
+  margin-top: 1rem;
+}
 
-button {
+
+.login-main button {
   padding: 0.5rem;
   background-color: rgb(255, 211, 54);
   border: none;
