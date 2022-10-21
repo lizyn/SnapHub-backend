@@ -46,7 +46,7 @@ export default function CreatePostModal(props) {
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState();
   const [fileType, setFileType] = useState('img');
-  const user = { avatar: avatar4, name: 'Tatiana Dokidis' };
+  const user = { avatar: avatar4, name: 'Tatiana Dokidis', userId: 1 };
   const { open, closeModal, setAlert } = props;
 
   const handleFileChange = (event) => {
@@ -169,7 +169,7 @@ export default function CreatePostModal(props) {
                 flexDirection: 'column'
               }}
             >
-              <UserRow avatar={user.avatar} name={user.name} ring />
+              <UserRow avatar={user.avatar} name={user.name} userId={1} ring />
               <Box sx={{ mx: 2 }}>
                 <Box component="form" noValidate onSubmit={handleSubmit}>
                   <TextField
