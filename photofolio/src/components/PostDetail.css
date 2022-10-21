@@ -6,18 +6,94 @@
     margin-top: 10rem;
     background-color:aquamarine;
 }
-.post-modal-main div{
-    background-color:blue;
-}
 
 .post-detail {
     display: flex;
     flex-direction: column;
     width: 60%;
     height: 100%;
-    /* background-color:brown; */
+    background-color:brown;
 }
+.post-detail-right {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.post-detail-actions{
+    display: flex;
+    flex-direction: column;
+}
+
+.post-detail-postStats{
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 1em;
+}
+
+.post-detail-stats{
+    display: flex;
+    flex-direction: row;
+    height: 2em;
+    margin-left: 1.1em;
+    width:fit-content;
+    padding-right: 1em;
+    justify-content: flex-start;
+    align-items: center;
+    column-gap: 0.5em
+}
+
+.post-detail-stats img{
+    height:20px
+}
+.post-detail-stats p{
+    font-size: 15px;
+    text-align: center;
+} 
+
 .post-detail-comments {
+    max-height: 80%;
+    overflow: scroll;
     background-color:aqua;
-    width: 10rem;
+    margin: 1.5rem 0 1.5rem 1.5rem;
+    padding-right: 1rem;
+}
+
+.post-detail-post-comment {
+    display: flex;
+    justify-content: center;
+    background-color: burlywood;
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
+
+.post-detail-post-comment input{
+    border-radius: 10px;
+    border: 1px solid lightslategrey;
+    padding: 0.5em;
+    width: 74%;
+    overflow-x: scroll;
+}
+
+.post-detail-post-comment button{
+    border-radius: 8px;
+    border: 1px solid lightslategrey;
+    width: 4em;
+    height: 2.5em;
+    margin: 0 5px 0 0;
+    background-color:white;
+}
+
+.post-detail-post-comment button:hover{
+    background-color: rgb(237, 237, 237);
+    transition-duration: 200ms;
+}
+
+.post-detail-post-comment button:active{
+    background-color: rgb(170, 170, 170);
+}
+
+.post-detail-post-comment button img{
+    width: 1.5em;
+    filter: brightness(4);
 }

@@ -14,7 +14,7 @@ const style = {
   position: 'absolute',
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'space-between',
+  justifyContent: 'flex-start',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
@@ -48,6 +48,10 @@ function PostDetail() {
       >
         <Box className="post-detail-text" sx={style}>
           <div className="post-detail">
+            <img
+              src="https://images.unsplash.com/photo-1566371486490-560ded23b5e4"
+              alt="post"
+            />
             <div className="post-detail-head">
               <Avatar
                 alt="me"
@@ -58,22 +62,31 @@ function PostDetail() {
               <p className="postUsername">title</p>
               <p className="postTime">20 minutes ago</p>
             </div>
-            <img
-              src="https://images.unsplash.com/photo-1566371486490-560ded23b5e4"
-              alt="post"
-            />
-            <div className="postActions">
-              <div className="postStats">
-                <div className="stats">
+          </div>
+          <div className="post-detail-right">
+            <div className="post-detail-comments">
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+              <h1>comment</h1>
+            </div>
+            <div className="post-detail-actions">
+              <div className="post-detail-postStats">
+                <div className="post-detail-stats">
                   <img src={likeIcon} alt="like" />
                   <p>26 Likes</p>
                 </div>
-                <div className="stats">
+                <div className="post-detail-stats">
                   <img src={commentIcon} alt="comment" />
                   <p>4 Comments</p>
                 </div>
               </div>
-              <div className="postComment">
+              <div className="post-detail-post-comment">
                 <button type="submit">
                   <img src={sendIcon} alt="send comment" />
                 </button>
@@ -84,9 +97,6 @@ function PostDetail() {
                 />
               </div>
             </div>
-          </div>
-          <div className="post-detail-comments">
-            <p>hi</p>
           </div>
         </Box>
       </Modal>
