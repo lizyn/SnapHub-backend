@@ -1,8 +1,9 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
+// import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { Avatar } from '@mui/material';
 import userOther1 from '../images/userOther1.jpg';
 import likeIcon from '../icons/Like.svg';
@@ -22,24 +23,27 @@ const style = {
   maxHeight: 600,
   bgcolor: 'background.paper',
   borderRadius: '10px',
-  boxShadow: 24
+  boxShadow: 24,
+  zIndex: 4000
 };
 
-function PostDetail() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+function PostDetail(props) {
+  PostDetail.propTypes = {
+    open: PropTypes.bool.isRequired,
+    setOpen: PropTypes.func.isRequired
+  };
 
-  //   PostDetail.propTypes = {
-  //     Id: PropTypes.number.isRequired,
-  //     title: PropTypes.string.isRequired,
-  //     img: PropTypes.string.isRequired,
-  //     userId: PropTypes.number.isRequired
-  //   };
+  const { open, setOpen } = props;
+
+  const handleClose = (e, r) => {
+    if (r === 'backdropClick') {
+      setOpen(false);
+    }
+  };
 
   return (
     <div className="post-modal-main">
-      <Button onClick={handleOpen}>Open modal</Button>
+      {/* <Button onClick={handleOpen}>Open modal</Button> */}
       <Modal
         open={open}
         onClose={handleClose}

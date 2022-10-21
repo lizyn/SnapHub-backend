@@ -11,6 +11,11 @@
     max-width: 100%;
 }
 
+.post button{
+    padding: 0;
+    border: 0;
+}
+
 .postHead{
     /* background-color: aqua; */
     display: block;
