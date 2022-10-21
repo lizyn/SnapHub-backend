@@ -4,9 +4,10 @@ export default axios.create({
   baseURL: 'http://localhost:3500'
 });
 
+const baseURL = 'http://localhost:3500';
 export const fetchPosts = async () => {
   try {
-    const response = await axios.get(`http://localhost:3500/posts`);
+    const response = await axios.get(`${baseURL}/posts`);
     return response.data;
     // the data is stored in the mockData
     // field of the response
@@ -18,12 +19,24 @@ export const fetchPosts = async () => {
 
 export const fetchPhotos = async () => {
   try {
-    const response = await axios.get(`http://localhost:3500/photos`);
+    const response = await axios.get(`${baseURL}/photos`);
     return response.data;
     // the data is stored in the mockData
     // field of the response
   } catch (err) {
     console.error(err);
-    return false;
+    return err;
+  }
+};
+
+export const fetchUsers = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/users`);
+    return response.data;
+    // the data is stored in the mockData
+    // field of the response
+  } catch (err) {
+    console.error(err);
+    return err;
   }
 };

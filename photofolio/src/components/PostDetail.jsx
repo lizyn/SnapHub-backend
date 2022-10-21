@@ -1,9 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
-// import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-// import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { Avatar } from '@mui/material';
 import userOther1 from '../images/userOther1.jpg';
 import likeIcon from '../icons/Like.svg';
