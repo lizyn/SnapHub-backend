@@ -33,7 +33,7 @@ function App() {
             position: 'absolute',
             top: '10%',
             left: '40%',
-            zIndex: 3,
+            zIndex: 1000,
             margin: 'auto'
           }}
         >

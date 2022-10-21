@@ -76,6 +76,7 @@
     column-gap: 0.5em
 }
 
+
 .MuiModal-root {
     z-index:3000 !important;
 }
@@ -90,7 +91,6 @@
     overflow-y: scroll;
     overflow-x:hidden;
     overflow-wrap: break-word;
-    /* background-color:aqua; */
     padding-right: 1rem;
 }
 

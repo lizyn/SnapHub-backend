@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import Popup from 'reactjs-popup';
-import Button from '@mui/material/Button';
+import {
+  TextField,
+  Button,
+  Box,
+  Grid,
+  Chip,
+  Divider,
+  CardMedia
+} from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import axios from '../api/axios';
 // import CssBaseline from '@mui/material/CssBaseline';
-import { TextField } from '@mui/material';
 // import FormControlLabel from '@mui/material/FormControlLabel';
 // import Checkbox from '@mui/material/Checkbox';
 // import Link from '@mui/material/Link';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Chip from '@mui/material/Chip';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import Divider from '@mui/material/Divider';
 // import Avatar from '@mui/material/Avatar';
-import CardMedia from '@mui/material/CardMedia';
 import UserRow from './UserRow';
+import { rootUrl } from './Config';
 import uploadArrow from '../images/uploadArrow.png';
 import avatar4 from '../images/avatar4.png';
-// import post1 from '../images/post1.jpg';
 
 const theme = createTheme({
   status: {
@@ -60,9 +63,28 @@ export default function CreatePostModal(props) {
     // console.log(newFile);
   };
 
+  const uploadPost = async () => {
+    const params = {
+      title,
+      caption,
+      userId: user.id,
+      photos: ['https://example.org/image']
+    };
+    try {
+      const response = await axios.post(`${rootUrl}/posts`, params);
+      console.log(response);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const handleSubmit = () => {
     // console.log('submitted');
     closeModal();
+    setTitle('');
+    setCaption('');
+    setFile();
+    uploadPost();
     setAlert(true);
     setTimeout(() => {
       setAlert(false);

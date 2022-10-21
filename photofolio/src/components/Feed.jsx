@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+
 import PropTypes from 'prop-types';
 import './Feed.css';
 import { Avatar } from '@mui/material';
 import PostDetail from './PostDetail';
-// import userOther1 from '../images/userOther1.jpg';
+
 import likeIcon from '../icons/Like.svg';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
@@ -26,12 +27,12 @@ function Feed(props) {
   };
 
   const { avatar, author, img, likes, commentIds, title } = props;
-
   const [detailOpen, setDetailOpen] = useState(false);
 
   const handleClick = () => {
     setDetailOpen(true);
   };
+  
   return (
     <div>
       <div style={{ display: 'none' }}>
@@ -86,6 +87,7 @@ function Feed(props) {
               />
             </div>
           </div>
+
         </div>
       </div>
     </div>

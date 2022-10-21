@@ -82,6 +82,7 @@ function PostDetail(props) {
     }
   };
 
+
   const populateComments = () => {
     const allComments = [];
     commentList.forEach((comment) => {
@@ -101,6 +102,7 @@ function PostDetail(props) {
   // console.log(author);
 
   const allComments = populateComments();
+
   return (
     <div className="post-modal-main">
       {/* <Button onClick={handleOpen}>Open modal</Button> */}
@@ -137,6 +139,7 @@ function PostDetail(props) {
               <Avatar
                 alt="me"
                 className="Avatar"
+
                 src={avatar}
                 sx={{ width: 60, height: 60 }}
               />
