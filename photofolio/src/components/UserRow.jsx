@@ -1,29 +1,51 @@
 import React, { useState } from 'react';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
+import { rootUrl } from './Config';
+import axios from '../api/axios';
 
 function UserRow(props) {
   UserRow.propTypes = {
-    profilePicUrl: PropTypes.string.isRequired,
+    avatar: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     ring: PropTypes.bool,
-    showFollow: PropTypes.bool
+    showFollow: PropTypes.bool,
+    userId: PropTypes.number.isRequired
   };
 
   UserRow.defaultProps = {
     ring: false,
     showFollow: false
   };
-  const { profilePicUrl, name, ring, showFollow } = props;
+  const { avatar, name, ring, showFollow, userId } = props;
   const [followBtn, setFollowBtn] = useState('outlined');
   const [followed, setFollowed] = useState(false);
-
+  const [followId, setFollowId] = useState();
+  const currentUserId = 1;
+  const toggleFollow = async (userIdToFollow, isFollow) => {
+    const params = {
+      userId: userIdToFollow,
+      followerId: currentUserId
+    };
+    try {
+      if (isFollow) {
+        const response = await axios.post(`${rootUrl}/follows`, params);
+        setFollowId(response.data.id);
+        console.log(response);
+      } else if (followId) {
+        const response = await axios.delete(`${rootUrl}/follows/${followId}`);
+        console.log(response);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const handleFollowBtnClick = () => {
     if (followed) {
-      // unfollow
+      toggleFollow(userId, false);
       setFollowBtn('outlined');
     } else {
-      // follow;
+      toggleFollow(userId, true);
       setFollowBtn('contained');
     }
     setFollowed((o) => !o);
@@ -35,13 +57,11 @@ function UserRow(props) {
         {ring && (
           <img
             className="profile-pic profile-pic-ring"
-            src={profilePicUrl}
+            src={avatar}
             alt={name}
           />
         )}
-        {!ring && (
-          <img className="profile-pic" src={profilePicUrl} alt={name} />
-        )}
+        {!ring && <img className="profile-pic" src={avatar} alt={name} />}
         <div className="username">{name}</div>
         {showFollow && (
           <Button
