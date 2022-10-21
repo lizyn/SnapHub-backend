@@ -1,12 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Avatar } from '@mui/material';
-import userOther1 from '../images/userOther1.jpg';
+// import userOther1 from '../images/userOther1.jpg';
 import likeIcon from '../icons/Like.svg';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
+import { fetchComments } from '../api/axios';
 import './PostDetail.css';
 
 const style = {
@@ -28,10 +29,38 @@ const style = {
 function PostDetail(props) {
   PostDetail.propTypes = {
     open: PropTypes.bool.isRequired,
-    setOpen: PropTypes.func.isRequired
+    setOpen: PropTypes.func.isRequired,
+    author: PropTypes.string.isRequired,
+    img: PropTypes.string,
+    avatar: PropTypes.string,
+    likes: PropTypes.number.isRequired,
+    commentIds: PropTypes.number
   };
 
-  const { open, setOpen } = props;
+  PostDetail.defaultProps = {
+    img: '/',
+    avatar: '/',
+    commentIds: 'no comments'
+  };
+
+  const { open, setOpen, img, author, avatar, likes, commentIds } = props;
+
+  const [comments, setComments] = useState([]);
+  const firstRendering = useRef(true);
+
+  useEffect(() => {
+    async function fetchData() {
+      const commentsData = await fetchComments();
+      setComments(commentsData);
+    }
+
+    if (firstRendering.current) {
+      firstRendering.current = false;
+      fetchData();
+    }
+  });
+
+  const commentList = comments.filter((x) => commentIds.includes(x.id));
 
   const handleClose = (e, r) => {
     if (r === 'backdropClick') {
@@ -39,6 +68,17 @@ function PostDetail(props) {
     }
   };
 
+  const populateComments = () => {
+    const allComments = [];
+    commentList.forEach((comment) => {
+      allComments.push(<p key={comment.id}>{comment.text}</p>);
+    });
+    return allComments;
+  };
+
+  // console.log(author);
+
+  const allComments = populateComments();
   return (
     <div className="post-modal-main">
       {/* <Button onClick={handleOpen}>Open modal</Button> */}
@@ -50,15 +90,12 @@ function PostDetail(props) {
       >
         <Box className="post-detail-text" sx={style}>
           <div className="post-detail-left">
-            <img
-              src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee"
-              alt="post"
-            />
+            <img src={img} className="post-detail-image" alt="post" />
             <div className="post-detail-description">
               <Avatar
                 alt="me"
                 className="Avatar"
-                src={userOther1}
+                src={avatar}
                 sx={{
                   width: 70,
                   height: 70,
@@ -67,7 +104,7 @@ function PostDetail(props) {
                   left: '2%'
                 }}
               />
-              <p className="post-detail-description-user">title</p>
+              <p className="post-detail-description-user">Title</p>
               <div className="post-detail-description-text">
                 <p>text description</p>
               </div>
@@ -78,28 +115,18 @@ function PostDetail(props) {
               <Avatar
                 alt="me"
                 className="Avatar"
-                src={userOther1}
+                src={avatar}
                 sx={{ width: 60, height: 60 }}
               />
-              <p className="postUsername">User</p>
+              <p className="postUsername">{author}</p>
               <p className="postTime">20 minutes ago</p>
             </div>
-            <div className="post-detail-comments">
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-              <h1>comment</h1>
-            </div>
+            <div className="post-detail-comments">{allComments}</div>
             <div className="post-detail-actions">
               <div className="post-detail-postStats">
                 <div className="post-detail-stats">
                   <img src={likeIcon} alt="like" />
-                  <p>26 Likes</p>
+                  <p>{likes} Likes</p>
                 </div>
                 <div className="post-detail-stats">
                   <img src={commentIcon} alt="comment" />

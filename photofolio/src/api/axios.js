@@ -40,3 +40,15 @@ export const fetchUsers = async () => {
     return err;
   }
 };
+
+export const fetchComments = async () => {
+  try {
+    const response = await axios.get(`${baseURL}/comments`);
+    return response.data;
+    // the data is stored in the mockData
+    // field of the response
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};

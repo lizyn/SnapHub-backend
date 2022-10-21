@@ -48,6 +48,8 @@ function FeedList() {
           img={photo.src}
           key={post.id}
           avatar={user.avatar}
+          likes={post.likes}
+          commentIds={post.comments}
         />
       );
       postId.current += 1;
