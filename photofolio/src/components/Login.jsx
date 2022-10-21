@@ -4,6 +4,7 @@ import useAuth from '../hooks/useAuth';
 import axios from '../api/axios';
 import LoginImage from './LoginImage';
 import './Login.css';
+import { getListSubheaderUtilityClass } from '@mui/material';
 
 const LOGIN_URL = '/login';
 
@@ -20,6 +21,7 @@ function Login() {
   const [user, setUser] = useState('');
   const [pwd, setPwd] = useState('');
   const [errMsg, setErrMsg] = useState('');
+  const [success, setSuccess] = useState(false);
 
   // useEffect(() => {
   //     userRef.current.focus();
@@ -31,40 +33,66 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    try {
-      const response = await axios.post(
-        LOGIN_URL,
-        JSON.stringify({ user, pwd }),
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true
-        }
-      );
-      console.log(JSON.stringify(response.data ? response.data : undefined));
-      const { accessToken } = response.data;
-      const { roles } = response.data;
-      setAuth({ user, pwd, roles, accessToken });
-      setUser('');
-      setPwd('');
-      history.push(from, { replace: true });
-    } catch (err) {
+    try{
+    const response = await axios.get('http://localhost:3500/account');
+    const example = response.data;
+    console.log(example);
+    const result = example.filter((x) =>(x.user == user)&&(x.pwd == pwd))
+    console.log(result);
+    setUser("");
+    setPwd("");
+    setSuccess(true);
+  }catch (err) {
       if (!err.response) {
         setErrMsg('No Server Response');
       } else if (err.response.status === 400) {
         setErrMsg('Missing Username or Password');
-      } else if (err.response.status === 401) {
-        setErrMsg('Unauthorized');
       } else {
         setErrMsg('Login Failed');
       }
       errRef.current.focus();
     }
+    // try {
+    //   const response = await axios.post(
+    //     LOGIN_URL,
+    //     JSON.stringify({ user, pwd }),
+    //     {
+    //       headers: { 'Content-Type': 'application/json' },
+    //       withCredentials: true
+    //     }
+    //   );
+    //   console.log(JSON.stringify(response.data ? response.data : undefined));
+    //   const { accessToken } = response.data;
+    //   const { roles } = response.data;
+    //   setAuth({ user, pwd, roles, accessToken });
+    //   setUser('');
+    //   setPwd('');
+    //   history.push(from, { replace: true });
+    // } catch (err) {
+    //   if (!err.response) {
+    //     setErrMsg('No Server Response');
+    //   } else if (err.response.status === 400) {
+    //     setErrMsg('Missing Username or Password');
+    //   } else if (err.response.status === 401) {
+    //     setErrMsg('Unauthorized');
+    //   } else {
+    //     setErrMsg('Login Failed');
+    //   }
+    //   errRef.current.focus();
+    // }
   };
 
   return (
     <div className="login-main">
       <LoginImage />
+      {success ? (
+        <section>
+          <h1>Success!</h1>
+          <p>
+            <Link to="/home">Go to Homepage</Link>
+          </p>
+        </section>
+      ) : (
       <section>
         <p
           ref={errRef}
@@ -107,6 +135,7 @@ function Login() {
           </span>
         </p>
       </section>
+      )}
     </div>
   );
 }

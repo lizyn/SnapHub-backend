@@ -78,7 +78,7 @@ function HomePage(props) {
                 <Fab
                   variant="extended"
                   color="primary"
-                  sx={{ mb: 20 }}
+                  sx={{ mb: 20, zIndex: 999 }}
                   onClick={() => setPostModalOpen((o) => !o)}
                 >
                   <img src={NewIcon} className="newPostSign" alt="new" />

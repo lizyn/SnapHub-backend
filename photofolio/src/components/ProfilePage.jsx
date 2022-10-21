@@ -134,6 +134,7 @@ function ProfilePage(props) {
               <Fab
                 variant="extended"
                 color="primary"
+                sx={{ zIndex: 999 }}
                 onClick={() => setPostModalOpen((o) => !o)}
               >
                 <img src={NewIcon} className="newPostSign" alt="new" />
