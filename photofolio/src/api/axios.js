@@ -29,9 +29,13 @@ export const fetchPhotos = async () => {
   }
 };
 
-export const fetchUsers = async () => {
+export const fetchUsers = async (userId) => {
+  let URL = `${baseURL}/users/`;
+  if (userId) {
+    URL = `${baseURL}/users/${userId}`;
+  }
   try {
-    const response = await axios.get(`${baseURL}/users`);
+    const response = await axios.get(URL);
     return response.data;
     // the data is stored in the mockData
     // field of the response

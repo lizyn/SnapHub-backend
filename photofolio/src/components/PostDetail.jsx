@@ -8,6 +8,7 @@ import likeIcon from '../icons/Like.svg';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
 import { fetchComments } from '../api/axios';
+import CommentRow from './CommentRow';
 import './PostDetail.css';
 
 const style = {
@@ -31,19 +32,32 @@ function PostDetail(props) {
     open: PropTypes.bool.isRequired,
     setOpen: PropTypes.func.isRequired,
     author: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
     img: PropTypes.string,
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
-    commentIds: PropTypes.number
+    commentIds: PropTypes.arrayOf(PropTypes.number),
+    commentNum: PropTypes.number
   };
 
   PostDetail.defaultProps = {
     img: '/',
     avatar: '/',
-    commentIds: 'no comments'
+    commentIds: 'no comments',
+    commentNum: 0
   };
 
-  const { open, setOpen, img, author, avatar, likes, commentIds } = props;
+  const {
+    open,
+    setOpen,
+    img,
+    author,
+    avatar,
+    likes,
+    commentIds,
+    title,
+    commentNum
+  } = props;
 
   const [comments, setComments] = useState([]);
   const firstRendering = useRef(true);
@@ -71,7 +85,15 @@ function PostDetail(props) {
   const populateComments = () => {
     const allComments = [];
     commentList.forEach((comment) => {
-      allComments.push(<p key={comment.id}>{comment.text}</p>);
+      allComments.push(
+        <CommentRow
+          key={comment.id}
+          userId={comment.userId}
+          commentText={comment.text}
+        >
+          {comment.text}
+        </CommentRow>
+      );
     });
     return allComments;
   };
@@ -104,7 +126,7 @@ function PostDetail(props) {
                   left: '2%'
                 }}
               />
-              <p className="post-detail-description-user">Title</p>
+              <p className="post-detail-description-user">{title}</p>
               <div className="post-detail-description-text">
                 <p>text description</p>
               </div>
@@ -130,7 +152,7 @@ function PostDetail(props) {
                 </div>
                 <div className="post-detail-stats">
                   <img src={commentIcon} alt="comment" />
-                  <p>4 Comments</p>
+                  <p>{commentNum} Comments</p>
                 </div>
               </div>
               <div className="post-detail-post-comment">

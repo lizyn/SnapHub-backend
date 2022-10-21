@@ -1,0 +1,16 @@
+.comment-row-main {
+    display: flex;
+    flex-direction: row;
+    column-gap: 1rem;
+    background-color: white;
+    width: 100%;
+    /* margin-left: 0.8rem; */
+    padding: 1.2rem 0.4rem 1rem 0.8rem;
+    align-items: center;
+    border-top: solid 0.4px lightgray;
+    border-bottom: solid 0.4px lightgray;
+}
+
+.comment-row-main p {
+    color:rgb(81, 81, 81);
+}

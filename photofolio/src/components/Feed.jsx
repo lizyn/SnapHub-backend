@@ -15,14 +15,7 @@ function Feed(props) {
     img: PropTypes.string,
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
-    // comments: PropTypes.arrayOf(
-    //   PropTypes.shape({
-    //     id: PropTypes.number,
-    //     test: PropTypes.string,
-    //     postId: 1,
-    //     userId: 3
-    //   })
-    // )
+    title: PropTypes.string.isRequired,
     commentIds: PropTypes.arrayOf(PropTypes.number)
   };
 
@@ -32,7 +25,7 @@ function Feed(props) {
     commentIds: 'no comments'
   };
 
-  const { avatar, author, img, likes, commentIds } = props;
+  const { avatar, author, img, likes, commentIds, title } = props;
 
   const [detailOpen, setDetailOpen] = useState(false);
 
@@ -50,6 +43,8 @@ function Feed(props) {
           img={img}
           likes={likes}
           commentIds={commentIds}
+          title={title}
+          commentNum={commentIds.length}
         />
       </div>
       <div>
@@ -77,7 +72,7 @@ function Feed(props) {
               </div>
               <div className="stats">
                 <img src={commentIcon} alt="comment" />
-                <p>4 Comments</p>
+                <p>{commentIds.length} Comments</p>
               </div>
             </div>
             <div className="postComment">

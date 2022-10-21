@@ -50,6 +50,7 @@ function FeedList() {
           avatar={user.avatar}
           likes={post.likes}
           commentIds={post.comments}
+          title={post.title}
         />
       );
       postId.current += 1;
