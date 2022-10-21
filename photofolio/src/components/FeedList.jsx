@@ -1,19 +1,21 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Feed from './Feed';
+import { fetchPosts, fetchPhotos } from '../api/axios';
 
 function FeedList() {
   const [posts, setPosts] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const postId = useRef(0);
   const firstRendering = useRef(true);
 
   useEffect(() => {
-    // get the list of students from the backend
     async function fetchData() {
       const postsData = await fetchPosts();
       setPosts(postsData);
+      const photoData = await fetchPhotos();
+      setPhotos(photoData);
     }
-    // only load data on the first rendering or
-    // when a new post is created
+
     if (firstRendering.current) {
       firstRendering.current = false;
       fetchData();
@@ -21,12 +23,14 @@ function FeedList() {
   });
 
   const postsList = posts;
+  const photoList = photos;
+
+  console.log(posts);
   const populateFeeds = () => {
     const feeds = [];
     postsList.forEach((post) => {
-      feeds.push(
-        <Feed title={post.text} img={post.photo.src} key={postId.current} />
-      );
+      const photo = photoList.filter((x) => x.postId === post.id);
+      feeds.push(<Feed title={post.title} img={photo.src} key={post.id} />);
       postId.current += 1;
     });
     return feeds;
