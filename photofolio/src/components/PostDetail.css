@@ -75,9 +75,10 @@
     column-gap: 0.5em
 }
 
-.post-detail-stats img{
-    height:20px
+.MuiModal-root{
+    z-index: 2000;
 }
+
 .post-detail-stats p{
     font-size: 15px;
     text-align: center;
