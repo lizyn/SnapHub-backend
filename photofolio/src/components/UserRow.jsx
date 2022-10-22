@@ -6,7 +6,7 @@ import axios from '../api/axios';
 
 function UserRow(props) {
   UserRow.propTypes = {
-    avatar: PropTypes.string.isRequired,
+    avatar: PropTypes.string,
     name: PropTypes.string.isRequired,
     ring: PropTypes.bool,
     showFollow: PropTypes.bool,
@@ -14,6 +14,8 @@ function UserRow(props) {
   };
 
   UserRow.defaultProps = {
+    avatar:
+      'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1185.jpg',
     ring: false,
     showFollow: false
   };

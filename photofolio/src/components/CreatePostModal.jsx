@@ -20,7 +20,6 @@ import axios from '../api/axios';
 import UserRow from './UserRow';
 import { rootUrl } from './Config';
 import uploadArrow from '../images/uploadArrow.png';
-import avatar4 from '../images/avatar4.png';
 
 const theme = createTheme({
   status: {
@@ -48,8 +47,12 @@ export default function CreatePostModal(props) {
   const [title, setTitle] = useState('');
   const [caption, setCaption] = useState('');
   const [file, setFile] = useState();
+  const [submit, setSubmit] = useState(false);
   const [fileType, setFileType] = useState('img');
-  const user = { avatar: avatar4, name: 'Tatiana Dokidis', userId: 1 };
+  const user = {
+    name: 'Tatiana Dokidis',
+    userId: 1
+  };
   const { open, closeModal, setAlert } = props;
 
   const handleFileChange = (event) => {
@@ -57,10 +60,11 @@ export default function CreatePostModal(props) {
     setFile(URL.createObjectURL(newFile));
     if (newFile.type.startsWith('image')) {
       setFileType('img');
+      setSubmit(true);
     } else {
       setFileType('video');
+      setSubmit(true);
     }
-    // console.log(newFile);
   };
 
   const uploadPost = async () => {
@@ -139,6 +143,8 @@ export default function CreatePostModal(props) {
                   <Button variant="outlined" component="label">
                     <input
                       type="file"
+                      name="file1"
+                      id="file1"
                       accept="image/*,video/mp4,video/x-m4v,video/*"
                       hidden
                       onChange={handleFileChange}
@@ -161,6 +167,8 @@ export default function CreatePostModal(props) {
                   Upload A File
                   <input
                     type="file"
+                    name="file2"
+                    id="file2"
                     accept="image/*,video/mp4,video/x-m4v,video/*"
                     hidden
                     onChange={handleFileChange}
@@ -191,7 +199,7 @@ export default function CreatePostModal(props) {
                 flexDirection: 'column'
               }}
             >
-              <UserRow avatar={user.avatar} name={user.name} userId={1} ring />
+              <UserRow name={user.name} userId={1} ring />
               <Box sx={{ mx: 2 }}>
                 <Box component="form" noValidate onSubmit={handleSubmit}>
                   <TextField
@@ -247,9 +255,10 @@ export default function CreatePostModal(props) {
               </Box>
               <Box sx={{ display: 'flex' }} justifyContent="center">
                 <Button
+                  id="submit"
                   type="submit"
                   variant="contained"
-                  disabled={file === undefined}
+                  disabled={!submit}
                   onClick={handleSubmit}
                   sx={{ mt: 2, px: 5 }}
                 >
