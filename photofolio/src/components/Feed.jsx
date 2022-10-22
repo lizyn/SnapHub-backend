@@ -32,7 +32,6 @@ function Feed(props) {
   const handleClick = () => {
     setDetailOpen(true);
   };
-  
   return (
     <div>
       <div style={{ display: 'none' }}>
@@ -87,7 +86,6 @@ function Feed(props) {
               />
             </div>
           </div>
-
         </div>
       </div>
     </div>
