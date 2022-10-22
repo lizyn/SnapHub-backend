@@ -10,13 +10,14 @@
     display: flex;
     flex-direction: column;
     width: 94rem;
-    height: 30rem;
+    height: 100rem;
 }
 
-.post-detail-left img {
+.post-detail-image {
     width: 100%;
-    height: 100%;
+    height: 30%;
     object-fit: contain;
+    border-top-left-radius: 10px;
     background-color:black;
 }
 .post-detail-description{
@@ -75,8 +76,9 @@
     column-gap: 0.5em
 }
 
-.css-79ws1d-MuiModal-root {
-    z-index:2000;
+
+.MuiModal-root {
+    z-index:3000 !important;
 }
 
 .post-detail-stats p{
@@ -85,9 +87,10 @@
 } 
 
 .post-detail-comments {
-    max-height: 80%;
-    overflow: scroll;
-    background-color:aqua;
+    height: 80%;
+    overflow-y: scroll;
+    overflow-x:hidden;
+    overflow-wrap: break-word;
     padding-right: 1rem;
 }
 

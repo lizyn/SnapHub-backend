@@ -17,9 +17,18 @@
 }
 
 .postHead{
-    /* background-color: aqua; */
-    display: block;
-    margin: 1em;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    margin: 0 0 1em 1em;
+    padding-top: 1em;
+}
+
+.post-head-detail{
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    margin-left: 1em;
 }
 
 .postUsername{
@@ -27,8 +36,7 @@
     font-style: normal;
     font-weight: 400;
     font-size: 18px;
-    line-height: 18px;
-    margin-left:60px;
+    line-height: 0px;
 }
 
 .postTime{
@@ -36,7 +44,6 @@
     font-style: normal;
     font-size: 14px;
     line-height: 0px;
-    margin-left:60px;
     color: slategrey;
 }
 
