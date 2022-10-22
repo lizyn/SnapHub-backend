@@ -7,8 +7,18 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
+import renderer from 'react-test-renderer';
 
 import UserRow from './UserRow';
+
+// snapshot testing
+test('Post Modal matches snapshot', () => {
+  const component = renderer.create(
+    <UserRow avatar="" name="" userId={1} showFollow />
+  );
+  const tree = component.toJSON();
+  expect(tree).toMatchSnapshot();
+});
 
 test('renders component with Follow button', () => {
   render(<UserRow avatar="" name="" userId={1} showFollow />);
@@ -27,6 +37,6 @@ it('test', async () => {
   // manually trigger the callback
   const followBtn = screen.getByRole('button', { name: 'follow' });
   userEvent.click(followBtn);
-  // re-rendering
-  // followBtn = screen.getByRole('button', { name: 'unfollow' });
+  const unfollowBtn = screen.getByRole('button', { name: 'followed' });
+  userEvent.click(unfollowBtn);
 });
