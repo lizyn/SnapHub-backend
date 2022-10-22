@@ -58,7 +58,6 @@
 .followerStats div{
     display: flex;
     justify-content: start;
-    flex-basis: 12;
     padding-right: 5em;
     border-right: 1px solid lightgray;
 }
