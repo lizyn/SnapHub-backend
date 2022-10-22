@@ -82,7 +82,6 @@ function PostDetail(props) {
     }
   };
 
-
   const populateComments = () => {
     const allComments = [];
     commentList.forEach((comment) => {
@@ -139,7 +138,6 @@ function PostDetail(props) {
               <Avatar
                 alt="me"
                 className="Avatar"
-
                 src={avatar}
                 sx={{ width: 60, height: 60 }}
               />
