@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import './Feed.css';
-import { Avatar } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
+import LikeIconFilled from '@mui/icons-material/ThumbUp';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PostDetail from './PostDetail';
 
-import likeIcon from '../icons/Like.svg';
-import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
 // import post1 from '../images/post1.jpg';
 
@@ -28,9 +30,14 @@ function Feed(props) {
 
   const { avatar, author, img, likes, commentIds, title } = props;
   const [detailOpen, setDetailOpen] = useState(false);
+  const [postLiked, setPostLiked] = useState(false);
 
   const handleClick = () => {
     setDetailOpen(true);
+  };
+
+  const handleLikeClick = () => {
+    setPostLiked(!postLiked);
   };
   return (
     <div>
@@ -67,11 +74,21 @@ function Feed(props) {
           <div className="postActions">
             <div className="postStats">
               <div className="stats">
-                <img src={likeIcon} alt="like" />
-                <p>{likes} Likes</p>
+                <IconButton
+                  onClick={handleLikeClick}
+                  aria-label="like"
+                  sx={{ curser: 'pointer' }}
+                >
+                  {postLiked ? (
+                    <LikeIconFilled sx={{ color: 'orange!important' }} />
+                  ) : (
+                    <LikeIconOutlined />
+                  )}
+                </IconButton>
+                <p>{postLiked ? `${likes + 1} Likes` : `${likes} Likes`}</p>
               </div>
               <div className="stats">
-                <img src={commentIcon} alt="comment" />
+                <ForumOutlinedIcon />
                 <p>{commentIds.length} Comments</p>
               </div>
             </div>

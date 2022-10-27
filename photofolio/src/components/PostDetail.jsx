@@ -4,7 +4,9 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Avatar } from '@mui/material';
 // import userOther1 from '../images/userOther1.jpg';
-import likeIcon from '../icons/Like.svg';
+import IconButton from '@mui/material/IconButton';
+import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
+import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
 import { fetchComments } from '../api/axios';
@@ -61,6 +63,7 @@ function PostDetail(props) {
 
   const [comments, setComments] = useState([]);
   const firstRendering = useRef(true);
+  const [postLiked, setPostLiked] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -80,6 +83,10 @@ function PostDetail(props) {
     if (r === 'backdropClick') {
       setOpen(false);
     }
+  };
+
+  const handleLikeClick = () => {
+    setPostLiked(!postLiked);
   };
 
   const populateComments = () => {
@@ -148,8 +155,22 @@ function PostDetail(props) {
             <div className="post-detail-actions">
               <div className="post-detail-postStats">
                 <div className="post-detail-stats">
-                  <img src={likeIcon} alt="like" />
-                  <p>{likes} Likes</p>
+                  <IconButton
+                    onClick={handleLikeClick}
+                    aria-label="like"
+                    sx={{ curser: 'pointer' }}
+                  >
+                    {postLiked ? (
+                      <LikeIconFilled
+                        sx={{
+                          color: 'orange!important'
+                        }}
+                      />
+                    ) : (
+                      <LikeIconOutlined />
+                    )}
+                  </IconButton>
+                  <p>{postLiked ? `${likes + 1} Likes` : `${likes} Likes`}</p>
                 </div>
                 <div className="post-detail-stats">
                   <img src={commentIcon} alt="comment" />
