@@ -56,3 +56,19 @@ export const fetchComments = async () => {
     return err;
   }
 };
+
+export const likePosts = async (postId, likeUpdate) => {
+  try {
+    const currentData = await axios.get(`${baseURL}/posts/${postId}`);
+    const response = await axios.put(`${baseURL}/posts/${postId}`, {
+      ...currentData.data,
+      likes: likeUpdate
+    });
+    return response.data;
+    // the data is stored in the mockData
+    // field of the response
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};

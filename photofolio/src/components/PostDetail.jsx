@@ -9,7 +9,7 @@ import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
-import { fetchComments } from '../api/axios';
+import { fetchComments, likePosts } from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
 
@@ -39,7 +39,8 @@ function PostDetail(props) {
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
     commentIds: PropTypes.arrayOf(PropTypes.number),
-    commentNum: PropTypes.number
+    commentNum: PropTypes.number,
+    postId: PropTypes.number.isRequired
   };
 
   PostDetail.defaultProps = {
@@ -58,7 +59,8 @@ function PostDetail(props) {
     likes,
     commentIds,
     title,
-    commentNum
+    commentNum,
+    postId
   } = props;
 
   const [comments, setComments] = useState([]);
@@ -86,7 +88,12 @@ function PostDetail(props) {
   };
 
   const handleLikeClick = () => {
-    setPostLiked(!postLiked);
+    setPostLiked((currentLike) => !currentLike);
+    if (!postLiked) {
+      likePosts(postId, likes + 1);
+    } else {
+      likePosts(postId, likes);
+    }
   };
 
   const populateComments = () => {

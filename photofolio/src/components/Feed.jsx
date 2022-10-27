@@ -8,6 +8,7 @@ import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PostDetail from './PostDetail';
+import { likePosts } from '../api/axios';
 
 import sendIcon from '../icons/Send.svg';
 // import post1 from '../images/post1.jpg';
@@ -19,7 +20,8 @@ function Feed(props) {
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    commentIds: PropTypes.arrayOf(PropTypes.number)
+    commentIds: PropTypes.arrayOf(PropTypes.number),
+    postId: PropTypes.number.isRequired
   };
 
   Feed.defaultProps = {
@@ -28,7 +30,7 @@ function Feed(props) {
     commentIds: 'no comments'
   };
 
-  const { avatar, author, img, likes, commentIds, title } = props;
+  const { avatar, author, img, likes, commentIds, title, postId } = props;
   const [detailOpen, setDetailOpen] = useState(false);
   const [postLiked, setPostLiked] = useState(false);
 
@@ -37,8 +39,14 @@ function Feed(props) {
   };
 
   const handleLikeClick = () => {
-    setPostLiked(!postLiked);
+    setPostLiked((currentLike) => !currentLike);
+    if (!postLiked) {
+      likePosts(postId, likes + 1);
+    } else {
+      likePosts(postId, likes);
+    }
   };
+
   return (
     <div>
       <div style={{ display: 'none' }}>
@@ -52,6 +60,7 @@ function Feed(props) {
           commentIds={commentIds}
           title={title}
           commentNum={commentIds.length}
+          postId={postId}
         />
       </div>
       <div>

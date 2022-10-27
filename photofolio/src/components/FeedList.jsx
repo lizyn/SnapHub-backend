@@ -51,6 +51,7 @@ function FeedList() {
           likes={post.likes}
           commentIds={post.comments}
           title={post.title}
+          postId={post.id}
         />
       );
       postId.current += 1;
