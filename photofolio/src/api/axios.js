@@ -45,9 +45,9 @@ export const fetchUsers = async (userId) => {
   }
 };
 
-export const fetchComments = async () => {
+export const fetchComments = async (postId) => {
   try {
-    const response = await axios.get(`${baseURL}/comments`);
+    const response = await axios.get(`${baseURL}/posts/${postId}/comments`);
     return response.data;
     // the data is stored in the mockData
     // field of the response
@@ -67,6 +67,36 @@ export const likePosts = async (postId, likeUpdate) => {
     return response.data;
     // the data is stored in the mockData
     // field of the response
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
+
+export const createComment = async (userId, postId, text) => {
+  try {
+    const response = await axios.post(`${baseURL}/comments`, {
+      id: 0,
+      userId,
+      postId,
+      text
+    });
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
+
+export const addCommentToPost = async (userId, postId, text) => {
+  try {
+    const response = await axios.post(`${baseURL}/comments`, {
+      id: 0,
+      userId,
+      postId,
+      text
+    });
+    return response.data;
   } catch (err) {
     console.error(err);
     return err;
