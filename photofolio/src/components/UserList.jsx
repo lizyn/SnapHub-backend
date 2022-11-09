@@ -5,6 +5,7 @@ import defaultAvatar from '../images/defaultAvatar.png';
 import { rootUrl } from './Config';
 
 function UserList() {
+  const currentUserId = 1;
   const numUser = 6;
   const [users, setUsers] = useState([]);
 
@@ -23,12 +24,15 @@ function UserList() {
 
   const getUsers = async (num) => {
     try {
-      const response = await axios.get(`${rootUrl}/users?limit=${numUser}`);
-      const usersData = response.data.slice(1, numUser + 1); // reserve id=1 for the current logged in user
+      const response = await axios.get(
+        `${rootUrl}/follower-suggestions?userId=${currentUserId}&limit=${numUser}`
+      );
+      const usersData = response.data[0].suggestedUsers.slice(0, numUser);
       const dummyUsers = genDummyUsers(num - usersData.length);
       setUsers([...usersData, ...dummyUsers]);
+      // return response;
     } catch (err) {
-      console.error(err);
+      // return err;
     }
   };
 
