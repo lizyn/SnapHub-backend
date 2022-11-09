@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 import Feed from './Feed';
 import { fetchPosts, fetchPhotos, fetchUsers } from '../api/axios';
 
@@ -49,12 +50,13 @@ function FeedList() {
           postId={post.id}
         />
       );
-      // postId.current += 1;
     });
     return feeds;
   };
-
-  const feeds = populateFeeds();
+  let feeds = <CircularProgress />;
+  if (userList !== [] && postsList !== [] && photoList !== []) {
+    feeds = populateFeeds();
+  }
 
   return <div>{feeds}</div>;
 }
