@@ -17,9 +17,13 @@ export const fetchPosts = async () => {
   }
 };
 
-export const fetchPhotos = async () => {
+export const fetchPhotos = async (userId) => {
+  let urlTail = '/photos';
+  if (userId) {
+    urlTail = `/user/${userId}/photos`;
+  }
   try {
-    const response = await axios.get(`${baseURL}/photos`);
+    const response = await axios.get(`${baseURL}${urlTail}`);
     return response.data;
     // the data is stored in the mockData
     // field of the response
@@ -33,6 +37,22 @@ export const fetchUsers = async (userId) => {
   let URL = `${baseURL}/users/`;
   if (userId) {
     URL = `${baseURL}/users/${userId}`;
+  }
+  try {
+    const response = await axios.get(URL);
+    return response.data;
+    // the data is stored in the mockData
+    // field of the response
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
+
+export const fetchUserPost = async (userId) => {
+  let URL = `${baseURL}/users/`;
+  if (userId) {
+    URL = `${baseURL}/users/${userId}/posts`;
   }
   try {
     const response = await axios.get(URL);

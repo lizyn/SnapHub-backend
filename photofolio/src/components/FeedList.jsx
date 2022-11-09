@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Feed from './Feed';
 import { fetchPosts, fetchPhotos, fetchUsers } from '../api/axios';
 
@@ -6,10 +6,9 @@ function FeedList() {
   const [posts, setPosts] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [users, setUsers] = useState([]);
-  const postId = useRef(0);
-  const firstRendering = useRef(true);
 
   useEffect(() => {
+    setPosts([]);
     async function fetchData() {
       const postsData = await fetchPosts();
       setPosts(postsData);
@@ -21,22 +20,18 @@ function FeedList() {
     }
 
     async function fetchUserData() {
-      const photoData = await fetchUsers();
-      setUsers(photoData);
+      const userData = await fetchUsers();
+      setUsers(userData);
     }
-
-    if (firstRendering.current) {
-      firstRendering.current = false;
-      fetchData();
-      fetchPhotoData();
-      fetchUserData();
-    }
-  });
+    fetchData();
+    fetchPhotoData();
+    fetchUserData();
+  }, []);
 
   const postsList = posts;
   const photoList = photos;
   const userList = users;
-  // console.log(userList);
+
   const populateFeeds = () => {
     const feeds = [];
     postsList.forEach((post) => {
@@ -54,7 +49,7 @@ function FeedList() {
           postId={post.id}
         />
       );
-      postId.current += 1;
+      // postId.current += 1;
     });
     return feeds;
   };

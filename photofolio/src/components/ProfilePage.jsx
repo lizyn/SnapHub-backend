@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './ProfilePage.css';
 import { Avatar, Fab } from '@mui/material';
@@ -12,6 +12,7 @@ import likeIcon from '../icons/Like.svg';
 import followerIcon from '../icons/People.svg';
 import NewIcon from '../icons/New.svg';
 import userMe from '../images/userMe.jpg';
+import { fetchPhotos } from '../api/axios';
 
 function ProfilePage(props) {
   ProfilePage.propTypes = {
@@ -23,56 +24,88 @@ function ProfilePage(props) {
 
   const { closePostModal, postModalIsOpen, setPostModalOpen, setAlert } = props;
 
-  const itemData = [
-    {
-      img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
-      title: 'Breakfast'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
-      title: 'Burger'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
-      title: 'Camera'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
-      title: 'Coffee'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
-      title: 'Hats'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
-      title: 'Honey'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
-      title: 'Basketball'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
-      title: 'Fern'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
-      title: 'Mushrooms'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
-      title: 'Tomato basil'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
-      title: 'Sea star'
-    },
-    {
-      img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
-      title: 'Bike'
+  const user = {
+    name: 'Tatiana Dokidis',
+    userId: 1,
+    userProfile:
+      'https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/119.jpg'
+  };
+
+  // const itemData = [
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1551963831-b3b1ca40c98e',
+  //     title: 'Breakfast'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1551782450-a2132b4ba21d',
+  //     title: 'Burger'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1522770179533-24471fcdba45',
+  //     title: 'Camera'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c',
+  //     title: 'Coffee'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1533827432537-70133748f5c8',
+  //     title: 'Hats'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1558642452-9d2a7deb7f62',
+  //     title: 'Honey'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1516802273409-68526ee1bdd6',
+  //     title: 'Basketball'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1518756131217-31eb79b20e8f',
+  //     title: 'Fern'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1597645587822-e99fa5d45d25',
+  //     title: 'Mushrooms'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1567306301408-9b74779a11af',
+  //     title: 'Tomato basil'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1471357674240-e1a485acb3e1',
+  //     title: 'Sea star'
+  //   },
+  //   {
+  //     img: 'https://images.unsplash.com/photo-1589118949245-7d38baf380d6',
+  //     title: 'Bike'
+  //   }
+  // ];
+
+  // const [userPosts, setUserPosts] = useState([]);
+  const [photos, setPhotos] = useState([]);
+
+  useEffect(() => {
+    setPhotos([]);
+    // async function fetchPostsData() {
+    //   const postsData = await fetchUserPost(user.userId);
+    //   setUserPosts(postsData);
+    // }
+
+    async function fetchPhotoData() {
+      const photoData = await fetchPhotos(user.userId);
+      setPhotos(photoData);
     }
-  ];
+    // fetchPostsData();
+    fetchPhotoData();
+  }, []);
+
+  console.log(photos);
+  // const itemData = [];
+  // const photoList = photos;
+  // userPosts.forEach((post) => {
+  //   itemData.push(photoList.find((x) => x.postId === post.id));
+  // });
 
   const orange = createTheme({
     status: {
@@ -151,19 +184,20 @@ function ProfilePage(props) {
 
         <div className="profileActivity">
           <ImageList
-            sx={{ width: 1100, height: 1500, overflow: 'hidden' }}
+            sx={{ width: 1100, height: 300, overflow: 'hidden' }}
             cols={3}
             gap={0}
           >
-            {itemData.map((item) => (
+            {photos.map((item) => (
               <ImageListItem
-                key={item.img}
-                sx={{ width: '95% !important', height: '95% !important' }}
+                key={item.id}
+                sx={{ width: '95% !important', height: '90% !important' }}
               >
                 <img
-                  src={`${item.img}?w=164&h=164&fit=crop&auto=format`}
-                  srcSet={`${item.img}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
-                  alt={item.title}
+                  src={`${item.src}?w=164&h=164&fit=crop&auto=format`}
+                  srcSet={`${item.src}?w=164&h=164&fit=crop&auto=format&dpr=2 2x`}
+                  alt={item.alt}
+                  loading="lazy"
                 />
               </ImageListItem>
             ))}
