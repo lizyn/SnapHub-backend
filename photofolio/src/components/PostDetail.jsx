@@ -8,7 +8,12 @@ import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
-import { fetchComments, likePosts, createComment } from '../api/axios';
+import {
+  fetchComments,
+  likePosts,
+  createComment,
+  deleteComment
+} from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
 
@@ -62,6 +67,7 @@ function PostDetail(props) {
   const [postLiked, setPostLiked] = useState(false);
   const [commentInput, setCommentInput] = useState('');
   const [commentSubmit, setCommentSubmit] = useState('');
+  const [postDeleted, setPostDeleted] = useState(-1);
 
   useEffect(() => {
     async function fetchData() {
@@ -69,7 +75,7 @@ function PostDetail(props) {
       setComments(commentsData);
     }
     fetchData();
-  }, [commentSubmit]);
+  }, [commentSubmit, postDeleted]);
 
   const handleClose = (e, r) => {
     if (r === 'backdropClick') {
@@ -86,6 +92,11 @@ function PostDetail(props) {
     }
   };
 
+  const handleCommentDelete = (commentId) => {
+    deleteComment(commentId);
+    setPostDeleted(commentId);
+  };
+
   // console.log(comments);
 
   const populateComments = () => {
@@ -96,6 +107,8 @@ function PostDetail(props) {
           key={comment.id}
           userId={comment.userId}
           commentText={comment.text}
+          commentId={comment.id}
+          commentDel={handleCommentDelete}
         >
           {comment.text}
         </CommentRow>
@@ -109,16 +122,15 @@ function PostDetail(props) {
   };
 
   const handleCommentSubmit = () => {
+    console.log('called');
     createComment(1, postId, commentInput);
     setCommentSubmit(commentInput);
-    console.log('clicked');
   };
 
   const allComments = populateComments();
 
   return (
     <div className="post-modal-main">
-      {/* <Button onClick={handleOpen}>Open modal</Button> */}
       <Modal
         open={open}
         onClose={handleClose}

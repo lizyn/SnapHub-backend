@@ -87,25 +87,13 @@ function ProfilePage(props) {
 
   useEffect(() => {
     setPhotos([]);
-    // async function fetchPostsData() {
-    //   const postsData = await fetchUserPost(user.userId);
-    //   setUserPosts(postsData);
-    // }
 
     async function fetchPhotoData() {
       const photoData = await fetchPhotos(user.userId);
       setPhotos(photoData);
     }
-    // fetchPostsData();
     fetchPhotoData();
   }, []);
-
-  console.log(photos);
-  // const itemData = [];
-  // const photoList = photos;
-  // userPosts.forEach((post) => {
-  //   itemData.push(photoList.find((x) => x.postId === post.id));
-  // });
 
   const orange = createTheme({
     status: {
@@ -175,11 +163,6 @@ function ProfilePage(props) {
               </Fab>
             </ThemeProvider>
           </div>
-          {/* <div className="newpost" onClick={() => props.setPostModalOpen(o => !o)}>
-              <ThemeProvider theme={orange}>
-                <Fab variant="extended" color="primary" sx={{ mb: 20 }}><img src={NewIcon} className="newPostSign" alt="new"></img>New Post</Fab>
-              </ThemeProvider>
-            </div> */}
         </div>
 
         <div className="profileActivity">
