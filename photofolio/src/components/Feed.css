@@ -52,6 +52,7 @@
     display: flex;
     column-gap:1em;
     margin: 1em;
+    padding-bottom: 1em;
 }
 
 .postStats{
@@ -72,9 +73,19 @@
     column-gap: 0.5em
 }
 
-.stats img{
-    height:20px
+.stats button{
+    height: 1.2em;
+    width: 1.4em
 }
+
+.stats svg{
+    height: 1.1em;
+    width: 1.2em;
+    color:rgb(120, 120, 120)
+}
+
+
+
 .stats p{
     font-size: 15px;
     text-align: center;

@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 
 import PropTypes from 'prop-types';
 import './Feed.css';
-import { Avatar } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
+import LikeIconFilled from '@mui/icons-material/ThumbUp';
+import ForumOutlinedIcon from '@mui/icons-material/ForumOutlined';
 import PostDetail from './PostDetail';
+import { likePosts } from '../api/axios';
 
-import likeIcon from '../icons/Like.svg';
-import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
 // import post1 from '../images/post1.jpg';
 
@@ -17,7 +20,8 @@ function Feed(props) {
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
-    commentIds: PropTypes.arrayOf(PropTypes.number)
+    commentIds: PropTypes.arrayOf(PropTypes.number),
+    postId: PropTypes.number.isRequired
   };
 
   Feed.defaultProps = {
@@ -26,12 +30,23 @@ function Feed(props) {
     commentIds: 'no comments'
   };
 
-  const { avatar, author, img, likes, commentIds, title } = props;
+  const { avatar, author, img, likes, commentIds, title, postId } = props;
   const [detailOpen, setDetailOpen] = useState(false);
+  const [postLiked, setPostLiked] = useState(false);
 
   const handleClick = () => {
     setDetailOpen(true);
   };
+
+  const handleLikeClick = () => {
+    setPostLiked((currentLike) => !currentLike);
+    if (!postLiked) {
+      likePosts(postId, likes + 1);
+    } else {
+      likePosts(postId, likes);
+    }
+  };
+
   return (
     <div>
       <div style={{ display: 'none' }}>
@@ -45,6 +60,7 @@ function Feed(props) {
           commentIds={commentIds}
           title={title}
           commentNum={commentIds.length}
+          postId={postId}
         />
       </div>
       <div>
@@ -67,11 +83,21 @@ function Feed(props) {
           <div className="postActions">
             <div className="postStats">
               <div className="stats">
-                <img src={likeIcon} alt="like" />
-                <p>{likes} Likes</p>
+                <IconButton
+                  onClick={handleLikeClick}
+                  aria-label="like"
+                  sx={{ curser: 'pointer' }}
+                >
+                  {postLiked ? (
+                    <LikeIconFilled sx={{ color: 'orange!important' }} />
+                  ) : (
+                    <LikeIconOutlined />
+                  )}
+                </IconButton>
+                <p>{postLiked ? `${likes + 1} Likes` : `${likes} Likes`}</p>
               </div>
               <div className="stats">
-                <img src={commentIcon} alt="comment" />
+                <ForumOutlinedIcon />
                 <p>{commentIds.length} Comments</p>
               </div>
             </div>

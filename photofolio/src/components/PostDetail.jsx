@@ -1,13 +1,14 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { Avatar } from '@mui/material';
-// import userOther1 from '../images/userOther1.jpg';
-import likeIcon from '../icons/Like.svg';
+import IconButton from '@mui/material/IconButton';
+import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
+import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
-import { fetchComments } from '../api/axios';
+import { fetchComments, likePosts, createComment } from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
 
@@ -36,15 +37,12 @@ function PostDetail(props) {
     img: PropTypes.string,
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
-    commentIds: PropTypes.arrayOf(PropTypes.number),
-    commentNum: PropTypes.number
+    postId: PropTypes.number.isRequired
   };
 
   PostDetail.defaultProps = {
     img: '/',
-    avatar: '/',
-    commentIds: 'no comments',
-    commentNum: 0
+    avatar: '/'
   };
 
   const {
@@ -54,27 +52,24 @@ function PostDetail(props) {
     author,
     avatar,
     likes,
-    commentIds,
     title,
-    commentNum
+    // commentNum,
+    postId
   } = props;
 
   const [comments, setComments] = useState([]);
-  const firstRendering = useRef(true);
+  // const commentsUpdated = useRef(false);
+  const [postLiked, setPostLiked] = useState(false);
+  const [commentInput, setCommentInput] = useState('');
+  const [commentSubmit, setCommentSubmit] = useState('');
 
   useEffect(() => {
     async function fetchData() {
-      const commentsData = await fetchComments();
+      const commentsData = await fetchComments(postId);
       setComments(commentsData);
     }
-
-    if (firstRendering.current) {
-      firstRendering.current = false;
-      fetchData();
-    }
-  });
-
-  const commentList = comments.filter((x) => commentIds.includes(x.id));
+    fetchData();
+  }, [commentSubmit]);
 
   const handleClose = (e, r) => {
     if (r === 'backdropClick') {
@@ -82,9 +77,20 @@ function PostDetail(props) {
     }
   };
 
+  const handleLikeClick = () => {
+    setPostLiked((currentLike) => !currentLike);
+    if (!postLiked) {
+      likePosts(postId, likes + 1);
+    } else {
+      likePosts(postId, likes);
+    }
+  };
+
+  // console.log(comments);
+
   const populateComments = () => {
     const allComments = [];
-    commentList.forEach((comment) => {
+    comments.forEach((comment) => {
       allComments.push(
         <CommentRow
           key={comment.id}
@@ -98,7 +104,15 @@ function PostDetail(props) {
     return allComments;
   };
 
-  // console.log(author);
+  const handleCommentChange = (e) => {
+    setCommentInput(e.target.value);
+  };
+
+  const handleCommentSubmit = () => {
+    createComment(1, postId, commentInput);
+    setCommentSubmit(commentInput);
+    console.log('clicked');
+  };
 
   const allComments = populateComments();
 
@@ -148,22 +162,37 @@ function PostDetail(props) {
             <div className="post-detail-actions">
               <div className="post-detail-postStats">
                 <div className="post-detail-stats">
-                  <img src={likeIcon} alt="like" />
-                  <p>{likes} Likes</p>
+                  <IconButton
+                    onClick={handleLikeClick}
+                    aria-label="like"
+                    sx={{ curser: 'pointer' }}
+                  >
+                    {postLiked ? (
+                      <LikeIconFilled
+                        sx={{
+                          color: 'orange!important'
+                        }}
+                      />
+                    ) : (
+                      <LikeIconOutlined />
+                    )}
+                  </IconButton>
+                  <p>{postLiked ? `${likes + 1} Likes` : `${likes} Likes`}</p>
                 </div>
                 <div className="post-detail-stats">
                   <img src={commentIcon} alt="comment" />
-                  <p>{commentNum} Comments</p>
+                  <p>{comments.length} Comments</p>
                 </div>
               </div>
               <div className="post-detail-post-comment">
-                <button type="submit">
+                <button type="submit" onClick={handleCommentSubmit}>
                   <img src={sendIcon} alt="send comment" />
                 </button>
                 <input
                   type="text"
                   placeholder="Post a comment"
                   name="postComment"
+                  onChange={handleCommentChange}
                 />
               </div>
             </div>

@@ -51,6 +51,7 @@
     width: 100%;
 }
 
+
 .post-detail-actions{
     border-top: 1px solid lightgrey;
     padding: 0.92rem 0.8rem 1rem 0;
@@ -80,6 +81,16 @@
 .MuiModal-root {
     z-index:3000 !important;
 }
+
+.post-detail-stats svg {
+   height: 1.2em;
+   width: 2.2em;
+   color: rgb(50, 50, 50);
+}
+.post-detail-stats button {
+    height: 1.2em;
+    width: 2em;
+ }
 
 .post-detail-stats p{
     font-size: 15px;
