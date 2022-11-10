@@ -8,6 +8,7 @@ import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
+import axios from '../api/axios';
 import {
   fetchComments,
   likePosts,
@@ -16,6 +17,8 @@ import {
 } from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
+import {useHistory} from 'react-router-dom';
+import EditPostModals from './EditPostModal';
 
 const style = {
   position: 'absolute',
@@ -58,6 +61,12 @@ function PostDetail(props) {
   const [commentSubmit, setCommentSubmit] = useState('');
   const [postDeleted, setPostDeleted] = useState(false);
   const [commentEdited, setCommentEdited] = useState(false);
+  const [postModalIsOpen, setPostModalOpen] = useState(false);
+  const [testState, setTestState] = useState(false);
+  const closePostModal = () => setPostModalOpen(false);
+  const closeEditPostModal = () => setTestState(false);
+  const [alert, setAlert] = useState(false);
+  const history = useHistory();
 
   useEffect(() => {
     async function fetchData() {
@@ -81,6 +90,22 @@ function PostDetail(props) {
       likePosts(postId, likes);
     }
   };
+
+  const handleEdit = async (id) => {
+    setOpen(false);
+    setTestState((x)=> !x);
+  }
+
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`/posts/${id}`);
+      const postsList = posts.filter(post => post.id !== id);
+      setPosts(postsList);
+      history.push('/home');
+    } catch (err) {
+      console.log(`Error: ${err.message}`);
+    }
+  }
 
   const handleCommentDelete = (commentId) => {
     deleteComment(commentId);
@@ -120,6 +145,14 @@ function PostDetail(props) {
 
   return (
     <div className="post-modal-main">
+      <EditPostModals
+        closeModal={closeEditPostModal}
+        open={testState}
+        setAlert={setAlert}
+        postId = {postId}
+        title = {title}
+        img = {img}
+      />
       <Modal
         open={open}
         onClose={handleClose}
@@ -158,6 +191,12 @@ function PostDetail(props) {
               />
               <p className="postUsername">{author}</p>
               <p className="postTime">20 minutes ago</p>
+            </div>
+            <div>
+              <button onClick= {() => handleEdit(postId)}> Edit Post </button>
+            </div>
+            <div>
+              <button className="deleteButton" onClick={() => handleDelete(postId)}> Delete Post </button>
             </div>
             <div className="post-detail-comments">{allComments}</div>
             <div className="post-detail-actions">
