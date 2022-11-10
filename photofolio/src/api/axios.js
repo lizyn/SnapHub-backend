@@ -121,3 +121,16 @@ export const deleteComment = async (commentId) => {
     return err;
   }
 };
+
+export const editComment = async (commentId, commentEdit) => {
+  try {
+    const currentData = await axios.get(`${baseURL}/comments/${commentId}`);
+    const response = await axios.put(`${baseURL}/comments/${commentId}`, {
+      ...currentData.data,
+      text: commentEdit
+    });
+    return response.status;
+  } catch (err) {
+    return err;
+  }
+};

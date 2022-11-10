@@ -50,24 +50,14 @@ function PostDetail(props) {
     avatar: '/'
   };
 
-  const {
-    open,
-    setOpen,
-    img,
-    author,
-    avatar,
-    likes,
-    title,
-    // commentNum,
-    postId
-  } = props;
+  const { open, setOpen, img, author, avatar, likes, title, postId } = props;
 
   const [comments, setComments] = useState([]);
-  // const commentsUpdated = useRef(false);
   const [postLiked, setPostLiked] = useState(false);
   const [commentInput, setCommentInput] = useState('');
   const [commentSubmit, setCommentSubmit] = useState('');
-  const [postDeleted, setPostDeleted] = useState(-1);
+  const [postDeleted, setPostDeleted] = useState(false);
+  const [commentEdited, setCommentEdited] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -75,7 +65,7 @@ function PostDetail(props) {
       setComments(commentsData);
     }
     fetchData();
-  }, [commentSubmit, postDeleted]);
+  }, [commentSubmit, postDeleted, commentEdited]);
 
   const handleClose = (e, r) => {
     if (r === 'backdropClick') {
@@ -94,10 +84,8 @@ function PostDetail(props) {
 
   const handleCommentDelete = (commentId) => {
     deleteComment(commentId);
-    setPostDeleted(commentId);
+    setPostDeleted((currentDelete) => !currentDelete);
   };
-
-  // console.log(comments);
 
   const populateComments = () => {
     const allComments = [];
@@ -109,6 +97,7 @@ function PostDetail(props) {
           commentText={comment.text}
           commentId={comment.id}
           commentDel={handleCommentDelete}
+          commentEd={setCommentEdited}
         >
           {comment.text}
         </CommentRow>
@@ -122,9 +111,9 @@ function PostDetail(props) {
   };
 
   const handleCommentSubmit = () => {
-    console.log('called');
     createComment(1, postId, commentInput);
     setCommentSubmit(commentInput);
+    setCommentInput('');
   };
 
   const allComments = populateComments();
@@ -204,6 +193,7 @@ function PostDetail(props) {
                   type="text"
                   placeholder="Post a comment"
                   name="postComment"
+                  value={commentInput}
                   onChange={handleCommentChange}
                 />
               </div>

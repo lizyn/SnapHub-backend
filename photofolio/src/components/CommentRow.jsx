@@ -5,7 +5,7 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Avatar } from '@mui/material';
-import { fetchUsers } from '../api/axios';
+import { fetchUsers, editComment } from '../api/axios';
 import './CommentRow.css';
 
 function CommentRow(props) {
@@ -13,14 +13,17 @@ function CommentRow(props) {
     userId: PropTypes.number.isRequired,
     commentText: PropTypes.string.isRequired,
     commentId: PropTypes.number.isRequired,
-    commentDel: PropTypes.func.isRequired
+    commentDel: PropTypes.func.isRequired,
+    commentEd: PropTypes.func.isRequired
   };
 
-  const { userId, commentText, commentId, commentDel } = props;
+  const { userId, commentText, commentId, commentDel, commentEd } = props;
 
   const [anchorEl, setAnchorEl] = useState(false);
   const open = Boolean(anchorEl);
   const [commenter, setCommenter] = useState([]);
+  const [editing, setEditing] = useState(false);
+  const [commentEdit, setCommentEdit] = useState(commentText);
 
   useEffect(() => {
     setCommenter([]);
@@ -40,43 +43,80 @@ function CommentRow(props) {
   };
 
   const handleEditClick = () => {
+    setEditing(true);
     handleEditClose();
   };
+
+  const handleCommentEdit = (e) => {
+    setCommentEdit(e.target.value);
+  };
+
+  const handleEditSave = async () => {
+    // send edit comment axios request, set await so that refreshing happens after the change
+    await editComment(commentId, commentEdit);
+    commentEd((currentEdited) => !currentEdited);
+    // turn off editing mode
+    setEditing(false);
+  };
+
   const handleDeleteClick = () => {
     commentDel(commentId);
     handleEditClose();
   };
 
   return (
-    <div className="comment-row-main">
-      <div className="comment-row-left">
-        <Avatar src={commenter.avatar} />
-        <p>{commentText}</p>
-      </div>
-      <div>
-        <IconButton
-          className="comment-row-button"
-          id="edit-button"
-          aria-controls={open ? 'edit-drop-down' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}
-          onClick={handleCommentMenuClick}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="edit-drop-down"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleEditClose}
-          MenuListProps={{
-            'aria-labelledby': 'edit-button'
-          }}
-        >
-          <MenuItem onClick={handleEditClick}>Edit</MenuItem>
-          <MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
-        </Menu>
-      </div>
+    <div>
+      {editing && ( // if editing is true, change comment text area to editing mode
+        <div className="comment-row-main">
+          <div className="comment-row-left">
+            <Avatar src={commenter.avatar} />
+            <input
+              type="text"
+              placeholder={commentText}
+              name="editComment"
+              value={commentEdit}
+              onChange={handleCommentEdit}
+            />
+          </div>
+          <div>
+            <IconButton onClick={handleEditSave}>
+              <p>Save</p>
+            </IconButton>
+          </div>
+        </div>
+      )}
+      {!editing && ( // else just display the comment as usual
+        <div className="comment-row-main">
+          <div className="comment-row-left">
+            <Avatar src={commenter.avatar} />
+            <p>{commentEdit}</p>
+          </div>
+          <div>
+            <IconButton
+              className="comment-row-button"
+              id="edit-button"
+              aria-controls={open ? 'edit-drop-down' : undefined}
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              onClick={handleCommentMenuClick}
+            >
+              <MoreVertIcon />
+            </IconButton>
+            <Menu
+              id="edit-drop-down"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleEditClose}
+              MenuListProps={{
+                'aria-labelledby': 'edit-button'
+              }}
+            >
+              <MenuItem onClick={handleEditClick}>Edit</MenuItem>
+              <MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
+            </Menu>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
