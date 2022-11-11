@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import parse from 'html-react-parser';
 import IconButton from '@mui/material/IconButton';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Menu from '@mui/material/Menu';
@@ -65,6 +66,7 @@ function CommentRow(props) {
   };
 
   return (
+
     <div>
       {editing && ( // if editing is true, change comment text area to editing mode
         <div className="comment-row-main">
@@ -88,8 +90,8 @@ function CommentRow(props) {
       {!editing && ( // else just display the comment as usual
         <div className="comment-row-main">
           <div className="comment-row-left">
-            <Avatar src={commenter.avatar} />
-            <p>{commentEdit}</p>
+           <Avatar src={commenter.avatar} />
+            <p style={{ fontFamily: 'sans-serif' }}>{parse(commentText)}</p>
           </div>
           <div>
             <IconButton

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
@@ -6,6 +7,8 @@ import { Avatar } from '@mui/material';
 import IconButton from '@mui/material/IconButton';
 import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
+import { MentionsInput, Mention } from 'react-mentions';
+import { rootUrl } from './Config';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
 import axios from '../api/axios';
@@ -59,6 +62,20 @@ function PostDetail(props) {
   const [postLiked, setPostLiked] = useState(false);
   const [commentInput, setCommentInput] = useState('');
   const [commentSubmit, setCommentSubmit] = useState('');
+  const [mentionCandidates, setMentionCandidates] = useState([]);
+
+  const getMentionCandidates = async (num) => {
+    try {
+      const response = await axios.get(`${rootUrl}/users?limit=${num}`);
+      const candidates = response.data.map((user) => ({
+        id: user.id,
+        display: `${user.firstName} ${user.lastName}`
+      }));
+      setMentionCandidates(candidates);
+    } catch (err) {
+      // return err;
+    }
+  };
   const [postDeleted, setPostDeleted] = useState(false);
   const [commentEdited, setCommentEdited] = useState(false);
   const [postModalIsOpen, setPostModalOpen] = useState(false);
@@ -68,6 +85,7 @@ function PostDetail(props) {
   const [alert, setAlert] = useState(false);
   const history = useHistory();
 
+
   useEffect(() => {
     async function fetchData() {
       const commentsData = await fetchComments(postId);
@@ -75,6 +93,10 @@ function PostDetail(props) {
     }
     fetchData();
   }, [commentSubmit, postDeleted, commentEdited]);
+
+  useEffect(() => {
+    getMentionCandidates(12);
+  }, []);
 
   const handleClose = (e, r) => {
     if (r === 'backdropClick') {
@@ -135,10 +157,24 @@ function PostDetail(props) {
     setCommentInput(e.target.value);
   };
 
+  const convertMentionInComment = (comment) => {
+    let clickableComment = comment;
+    clickableComment = clickableComment
+      .split('@@@^')
+      .join('<a href="/profile/');
+    clickableComment = clickableComment.split('@@@|').join('">@');
+    clickableComment = clickableComment.split('$@@@').join('</a>');
+    clickableComment = `@${clickableComment}`;
+    console.log(clickableComment);
+    return clickableComment;
+  };
+
   const handleCommentSubmit = () => {
-    createComment(1, postId, commentInput);
-    setCommentSubmit(commentInput);
+    const comment = convertMentionInComment(commentInput);
+    createComment(1, postId, comment);
+    setCommentSubmit(comment);
     setCommentInput('');
+    console.log('clicked');
   };
 
   const allComments = populateComments();
@@ -228,13 +264,33 @@ function PostDetail(props) {
                 <button type="submit" onClick={handleCommentSubmit}>
                   <img src={sendIcon} alt="send comment" />
                 </button>
-                <input
+                {/* <input
                   type="text"
                   placeholder="Post a comment"
                   name="postComment"
                   value={commentInput}
                   onChange={handleCommentChange}
-                />
+                /> */}
+                <MentionsInput
+                  className="comments-textarea"
+                  value={commentInput}
+                  placeholder="Post a comment. Mention with '@'"
+                  onChange={handleCommentChange}
+                  singleLine
+                  style={{
+                    width: '75%',
+                    maxWidth: '20em'
+                  }}
+                >
+                  <Mention
+                    trigger="@"
+                    data={mentionCandidates}
+                    markup="@@@^__id__@@@|__display__$@@@"
+                    style={{ backgroundColor: '#FFDD2B' }}
+                    displayTransform={(id, display) => `@${display}`}
+                    // renderSuggestion={this.renderUserSuggestion}
+                  />
+                </MentionsInput>
               </div>
             </div>
           </div>
