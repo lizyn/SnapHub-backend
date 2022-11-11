@@ -7,8 +7,9 @@ import Fab from '@mui/material/Fab';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FeedList from './FeedList';
 import CreatePostModal from './CreatePostModal';
+import Router from './FakeRouter';
 
-import userMe from '../images/userMe.jpg';
+// import userMe from '../images/userMe.jpg';
 import searchIcon from '../icons/Search.svg';
 import NewIcon from '../icons/New.svg';
 import UserList from './UserList';
@@ -21,7 +22,13 @@ function HomePage(props) {
     setAlert: PropTypes.func.isRequired
   };
 
-  const { closePostModal, postModalIsOpen, setPostModalOpen, setAlert } = props;
+  const {
+    closePostModal,
+    postModalIsOpen,
+    setPostModalOpen,
+    setAlert,
+    setEditMode
+  } = props;
   const orange = createTheme({
     status: {
       danger: '#e53e3e'
@@ -48,14 +55,16 @@ function HomePage(props) {
       <div className="main">
         <div className="users-section">
           <div className="user">
-            <Link to="/profile">
-              <Avatar
-                alt="me"
-                className="Avatar"
-                src={userMe}
-                sx={{ width: 100, height: 100 }}
-              />
-            </Link>
+            <Router>
+              <Link to="/profile">
+                <Avatar
+                  alt="me"
+                  className="Avatar"
+                  src="../images/userMe.jpg"
+                  sx={{ width: 100, height: 100 }}
+                />
+              </Link>
+            </Router>
             <h3>Tatiana Dokidis</h3>
           </div>
           <div className="recommendations">
