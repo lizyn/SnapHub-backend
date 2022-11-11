@@ -33,6 +33,7 @@ function UserList() {
       // return response;
     } catch (err) {
       // return err;
+      setUsers(genDummyUsers(num));
     }
   };
 

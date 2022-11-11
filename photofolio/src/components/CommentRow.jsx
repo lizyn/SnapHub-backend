@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
+import parse from 'html-react-parser';
 import { Avatar } from '@mui/material';
 import { fetchUsers } from '../api/axios';
 import './CommentRow.css';
@@ -30,7 +31,7 @@ function CommentRow(props) {
   return (
     <div className="comment-row-main">
       <Avatar src={commenter.avatar} />
-      <p>{commentText}</p>
+      <p style={{ fontFamily: 'sans-serif' }}>{parse(commentText)}</p>
     </div>
   );
 }
