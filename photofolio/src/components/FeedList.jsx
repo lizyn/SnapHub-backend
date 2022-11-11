@@ -9,7 +9,6 @@ function FeedList() {
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    setPosts([]);
     async function fetchData() {
       const postsData = await fetchPosts();
       setPosts(postsData);
@@ -54,7 +53,7 @@ function FeedList() {
     return feeds;
   };
   let feeds = <CircularProgress />;
-  if (userList !== [] && postsList !== [] && photoList !== []) {
+  if (userList && postsList && photoList) {
     feeds = populateFeeds();
   }
 
