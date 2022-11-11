@@ -116,8 +116,32 @@
     border-radius: 10px;
     border: 1px solid lightslategrey;
     padding: 0.5em;
-    width: 74%;
     overflow-x: scroll;
+}
+
+.comments-textarea__control{
+  margin-bottom: -10px;
+}
+
+.comments-textarea__highlighter{
+  padding: 10px;
+}
+
+.comments-textarea__suggestions {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  font-size: 14px;
+  max-height: 200px;
+  padding: 1em .5em;
+  overflow: auto;
+}
+.comments-textarea__suggestions__item {
+  padding: 5px 15px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.comments-textarea__suggestions__item--focused {
+  background-color: #FFDD2B;
+  border: 1px solid black;
 }
 
 .post-detail-post-comment button{

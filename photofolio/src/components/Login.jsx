@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, BrowserRouter as Router } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // import useAuth from '../hooks/useAuth';
 import axios from '../api/axios';
 import LoginImage from './LoginImage';
@@ -42,60 +42,58 @@ function Login() {
 
   return (
     <div className="login-main">
-      <Router>
-        <LoginImage />
-        {success ? (
-          <section>
-            <h1>Success!</h1>
-            <p>
-              <Link to="/home">Go to Homepage</Link>
-            </p>
-          </section>
-        ) : (
-          <section>
-            <p
-              ref={errRef}
-              className={errMsg ? 'errmsg' : 'offscreen'}
-              aria-live="assertive"
-            >
-              {errMsg}
-            </p>
-            <p className="welcome-text">Welcome to photofolio!</p>
-            <p className="signin-text">Sign In</p>
-            <form onSubmit={handleSubmit}>
-              <label htmlFor="username">
-                Username:
-                <input
-                  type="text"
-                  id="username"
-                  autoComplete="off"
-                  onChange={(e) => setUser(e.target.value)}
-                  value={user}
-                  required
-                />
-              </label>
-              <label htmlFor="password">
-                Password:
-                <input
-                  type="password"
-                  id="password"
-                  onChange={(e) => setPwd(e.target.value)}
-                  value={pwd}
-                  required
-                />
-              </label>
-              <button type="submit"> Sign In </button>
-            </form>
-            <p>
-              Need an Account?
-              <br />
-              <span className="line">
-                <Link to="/register">Sign Up</Link>
-              </span>
-            </p>
-          </section>
-        )}
-      </Router>
+      <LoginImage />
+      {success ? (
+        <section>
+          <h1>Success!</h1>
+          <p>
+            <Link to="/home">Go to Homepage</Link>
+          </p>
+        </section>
+      ) : (
+        <section>
+          <p
+            ref={errRef}
+            className={errMsg ? 'errmsg' : 'offscreen'}
+            aria-live="assertive"
+          >
+            {errMsg}
+          </p>
+          <p className="welcome-text">Welcome to photofolio!</p>
+          <p className="signin-text">Sign In</p>
+          <form onSubmit={handleSubmit}>
+            <label htmlFor="username">
+              Username:
+              <input
+                type="text"
+                id="username"
+                autoComplete="off"
+                onChange={(e) => setUser(e.target.value)}
+                value={user}
+                required
+              />
+            </label>
+            <label htmlFor="password">
+              Password:
+              <input
+                type="password"
+                id="password"
+                onChange={(e) => setPwd(e.target.value)}
+                value={pwd}
+                required
+              />
+            </label>
+            <button type="submit"> Sign In </button>
+          </form>
+          <p>
+            Need an Account?
+            <br />
+            <span className="line">
+              <Link to="/register">Sign Up</Link>
+            </span>
+          </p>
+        </section>
+      )}
     </div>
   );
 }
