@@ -9,20 +9,20 @@ export const fetchPosts = async () => {
   try {
     const response = await axios.get(`${baseURL}/posts`);
     return response.data;
-    // the data is stored in the mockData
-    // field of the response
   } catch (err) {
     console.error(err);
     return false;
   }
 };
 
-export const fetchPhotos = async () => {
+export const fetchPhotos = async (userId) => {
+  let urlTail = '/photos';
+  if (userId) {
+    urlTail = `/user/${userId}/photos`;
+  }
   try {
-    const response = await axios.get(`${baseURL}/photos`);
+    const response = await axios.get(`${baseURL}${urlTail}`);
     return response.data;
-    // the data is stored in the mockData
-    // field of the response
   } catch (err) {
     console.error(err);
     return err;
@@ -45,12 +45,24 @@ export const fetchUsers = async (userId) => {
   }
 };
 
+export const fetchUserPost = async (userId) => {
+  let URL = `${baseURL}/users/`;
+  if (userId) {
+    URL = `${baseURL}/users/${userId}/posts`;
+  }
+  try {
+    const response = await axios.get(URL);
+    return response.data;
+  } catch (err) {
+    console.error(err);
+    return err;
+  }
+};
+
 export const fetchComments = async (postId) => {
   try {
     const response = await axios.get(`${baseURL}/posts/${postId}/comments`);
     return response.data;
-    // the data is stored in the mockData
-    // field of the response
   } catch (err) {
     console.error(err);
     return err;
@@ -65,8 +77,6 @@ export const likePosts = async (postId, likeUpdate) => {
       likes: likeUpdate
     });
     return response.data;
-    // the data is stored in the mockData
-    // field of the response
   } catch (err) {
     console.error(err);
     return err;
@@ -99,6 +109,28 @@ export const addCommentToPost = async (userId, postId, text) => {
     return response.data;
   } catch (err) {
     console.error(err);
+    return err;
+  }
+};
+
+export const deleteComment = async (commentId) => {
+  try {
+    const response = await axios.delete(`${baseURL}/comments/${commentId}`);
+    return response.status;
+  } catch (err) {
+    return err;
+  }
+};
+
+export const editComment = async (commentId, commentEdit) => {
+  try {
+    const currentData = await axios.get(`${baseURL}/comments/${commentId}`);
+    const response = await axios.put(`${baseURL}/comments/${commentId}`, {
+      ...currentData.data,
+      text: commentEdit
+    });
+    return response.status;
+  } catch (err) {
     return err;
   }
 };
