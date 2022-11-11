@@ -242,7 +242,7 @@ function PostDetail(props) {
                     data={mentionCandidates}
                     markup="@@@^__id__@@@|__display__$@@@"
                     style={{ backgroundColor: '#FFDD2B' }}
-                    // displayTransform={(id, display) => display}
+                    displayTransform={(id, display) => `@${display}`}
                     // renderSuggestion={this.renderUserSuggestion}
                   />
                 </MentionsInput>
