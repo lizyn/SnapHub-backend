@@ -8,7 +8,12 @@ import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
-import { fetchComments, likePosts, createComment } from '../api/axios';
+import {
+  fetchComments,
+  likePosts,
+  createComment,
+  deleteComment
+} from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
 
@@ -45,23 +50,14 @@ function PostDetail(props) {
     avatar: '/'
   };
 
-  const {
-    open,
-    setOpen,
-    img,
-    author,
-    avatar,
-    likes,
-    title,
-    // commentNum,
-    postId
-  } = props;
+  const { open, setOpen, img, author, avatar, likes, title, postId } = props;
 
   const [comments, setComments] = useState([]);
-  // const commentsUpdated = useRef(false);
   const [postLiked, setPostLiked] = useState(false);
   const [commentInput, setCommentInput] = useState('');
   const [commentSubmit, setCommentSubmit] = useState('');
+  const [postDeleted, setPostDeleted] = useState(false);
+  const [commentEdited, setCommentEdited] = useState(false);
 
   useEffect(() => {
     async function fetchData() {
@@ -69,7 +65,7 @@ function PostDetail(props) {
       setComments(commentsData);
     }
     fetchData();
-  }, [commentSubmit]);
+  }, [commentSubmit, postDeleted, commentEdited]);
 
   const handleClose = (e, r) => {
     if (r === 'backdropClick') {
@@ -86,7 +82,10 @@ function PostDetail(props) {
     }
   };
 
-  // console.log(comments);
+  const handleCommentDelete = (commentId) => {
+    deleteComment(commentId);
+    setPostDeleted((currentDelete) => !currentDelete);
+  };
 
   const populateComments = () => {
     const allComments = [];
@@ -96,6 +95,9 @@ function PostDetail(props) {
           key={comment.id}
           userId={comment.userId}
           commentText={comment.text}
+          commentId={comment.id}
+          commentDel={handleCommentDelete}
+          commentEd={setCommentEdited}
         >
           {comment.text}
         </CommentRow>
@@ -111,14 +113,13 @@ function PostDetail(props) {
   const handleCommentSubmit = () => {
     createComment(1, postId, commentInput);
     setCommentSubmit(commentInput);
-    console.log('clicked');
+    setCommentInput('');
   };
 
   const allComments = populateComments();
 
   return (
     <div className="post-modal-main">
-      {/* <Button onClick={handleOpen}>Open modal</Button> */}
       <Modal
         open={open}
         onClose={handleClose}
@@ -192,6 +193,7 @@ function PostDetail(props) {
                   type="text"
                   placeholder="Post a comment"
                   name="postComment"
+                  value={commentInput}
                   onChange={handleCommentChange}
                 />
               </div>

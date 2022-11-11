@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import './HomePage.css';
 import { Avatar } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Fab from '@mui/material/Fab';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FeedList from './FeedList';
@@ -47,12 +48,14 @@ function HomePage(props) {
       <div className="main">
         <div className="users-section">
           <div className="user">
-            <Avatar
-              alt="me"
-              className="Avatar"
-              src={userMe}
-              sx={{ width: 100, height: 100 }}
-            />
+            <Link to="/profile">
+              <Avatar
+                alt="me"
+                className="Avatar"
+                src={userMe}
+                sx={{ width: 100, height: 100 }}
+              />
+            </Link>
             <h3>Tatiana Dokidis</h3>
           </div>
           <div className="recommendations">
