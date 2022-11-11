@@ -8,10 +8,10 @@ import IconButton from '@mui/material/IconButton';
 import LikeIconOutlined from '@mui/icons-material/ThumbUpOutlined';
 import LikeIconFilled from '@mui/icons-material/ThumbUp';
 import { MentionsInput, Mention } from 'react-mentions';
+// import { useHistory } from 'react-router-dom';
 import { rootUrl } from './Config';
 import commentIcon from '../icons/Comment.svg';
 import sendIcon from '../icons/Send.svg';
-import axios from '../api/axios';
 import {
   fetchComments,
   likePosts,
@@ -20,7 +20,6 @@ import {
 } from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
-import {useHistory} from 'react-router-dom';
 import EditPostModals from './EditPostModal';
 
 const style = {
@@ -78,13 +77,12 @@ function PostDetail(props) {
   };
   const [postDeleted, setPostDeleted] = useState(false);
   const [commentEdited, setCommentEdited] = useState(false);
-  const [postModalIsOpen, setPostModalOpen] = useState(false);
+  // const [postModalIsOpen, setPostModalOpen] = useState(false);
   const [testState, setTestState] = useState(false);
-  const closePostModal = () => setPostModalOpen(false);
+  // const closePostModal = () => setPostModalOpen(false);
   const closeEditPostModal = () => setTestState(false);
-  const [alert, setAlert] = useState(false);
-  const history = useHistory();
-
+  // const [alert, setAlert] = useState(false);
+  // const history = useHistory();
 
   useEffect(() => {
     async function fetchData() {
@@ -113,21 +111,20 @@ function PostDetail(props) {
     }
   };
 
-  const handleEdit = async (id) => {
+  const handleEdit = async () => {
     setOpen(false);
-    setTestState((x)=> !x);
-  }
+    setTestState((x) => !x);
+  };
 
   const handleDelete = async (id) => {
     try {
       await axios.delete(`/posts/${id}`);
-      const postsList = posts.filter(post => post.id !== id);
-      setPosts(postsList);
-      history.push('/home');
+      // const postsList = posts.filter(post => post.id !== id);
+      // setPosts(postsList);
     } catch (err) {
       console.log(`Error: ${err.message}`);
     }
-  }
+  };
 
   const handleCommentDelete = (commentId) => {
     deleteComment(commentId);
@@ -162,7 +159,7 @@ function PostDetail(props) {
     clickableComment = clickableComment
       .split('@@@^')
       .join('<a href="/profile/');
-    clickableComment = clickableComment.split('@@@|').join('">@');
+    clickableComment = clickableComment.split('@@@|').join('">');
     clickableComment = clickableComment.split('$@@@').join('</a>');
     clickableComment = `@${clickableComment}`;
     console.log(clickableComment);
@@ -174,7 +171,6 @@ function PostDetail(props) {
     createComment(1, postId, comment);
     setCommentSubmit(comment);
     setCommentInput('');
-    console.log('clicked');
   };
 
   const allComments = populateComments();
@@ -184,10 +180,10 @@ function PostDetail(props) {
       <EditPostModals
         closeModal={closeEditPostModal}
         open={testState}
-        setAlert={setAlert}
-        postId = {postId}
-        title = {title}
-        img = {img}
+        setAlert={() => {}}
+        postId={postId}
+        title={title}
+        img={img}
       />
       <Modal
         open={open}
@@ -229,10 +225,20 @@ function PostDetail(props) {
               <p className="postTime">20 minutes ago</p>
             </div>
             <div>
-              <button onClick= {() => handleEdit(postId)}> Edit Post </button>
+              <button type="submit" onClick={() => handleEdit(postId)}>
+                {' '}
+                Edit Post{' '}
+              </button>
             </div>
             <div>
-              <button className="deleteButton" onClick={() => handleDelete(postId)}> Delete Post </button>
+              <button
+                type="submit"
+                className="deleteButton"
+                onClick={() => handleDelete(postId)}
+              >
+                {' '}
+                Delete Post{' '}
+              </button>
             </div>
             <div className="post-detail-comments">{allComments}</div>
             <div className="post-detail-actions">

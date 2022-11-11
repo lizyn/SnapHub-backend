@@ -9,7 +9,15 @@ import renderer from 'react-test-renderer';
 import CommentRow from './CommentRow';
 
 test('Comment row matches snapshot', () => {
-  const component = renderer.create(<CommentRow />);
+  const component = renderer.create(
+    <CommentRow
+      userId={0}
+      commentText=""
+      commentId={0}
+      commentDel={() => {}}
+      commentEd={() => {}}
+    />
+  );
   const tree = component.toJSON();
   expect(tree).toMatchSnapshot();
 });
