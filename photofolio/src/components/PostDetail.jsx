@@ -152,6 +152,7 @@ function PostDetail(props) {
 
   const handleCommentChange = (e) => {
     setCommentInput(e.target.value);
+    console.log(commentInput);
   };
 
   const convertMentionInComment = (comment) => {
@@ -159,9 +160,9 @@ function PostDetail(props) {
     clickableComment = clickableComment
       .split('@@@^')
       .join('<a href="/profile/');
-    clickableComment = clickableComment.split('@@@|').join('">');
+    clickableComment = clickableComment.split('@@@|').join('">@');
     clickableComment = clickableComment.split('$@@@').join('</a>');
-    clickableComment = `@${clickableComment}`;
+    clickableComment = `${clickableComment}`;
     console.log(clickableComment);
     return clickableComment;
   };
@@ -270,13 +271,6 @@ function PostDetail(props) {
                 <button type="submit" onClick={handleCommentSubmit}>
                   <img src={sendIcon} alt="send comment" />
                 </button>
-                {/* <input
-                  type="text"
-                  placeholder="Post a comment"
-                  name="postComment"
-                  value={commentInput}
-                  onChange={handleCommentChange}
-                /> */}
                 <MentionsInput
                   className="comments-textarea"
                   value={commentInput}

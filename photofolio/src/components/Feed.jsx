@@ -27,7 +27,7 @@ function Feed(props) {
   Feed.defaultProps = {
     img: '/',
     avatar: '/',
-    commentIds: 'no comments'
+    commentIds: []
   };
 
   const { avatar, author, img, likes, commentIds, title, postId } = props;
@@ -102,13 +102,14 @@ function Feed(props) {
               </div>
             </div>
             <div className="postComment">
-              <button type="submit">
+              <button type="submit" onClick={handleClick}>
                 <img src={sendIcon} alt="send comment" />
               </button>
               <input
                 type="text"
                 placeholder="Post a comment"
                 name="postComment"
+                onClick={handleClick}
               />
             </div>
           </div>
