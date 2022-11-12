@@ -23,7 +23,13 @@ exports[`Comment row matches snapshot 1`] = `
           />
         </svg>
       </div>
-      <p />
+      <p
+        style={
+          Object {
+            "fontFamily": "sans-serif",
+          }
+        }
+      />
     </div>
     <div>
       <button

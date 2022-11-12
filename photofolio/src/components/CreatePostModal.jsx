@@ -12,11 +12,6 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from '../api/axios';
-// import CssBaseline from '@mui/material/CssBaseline';
-// import FormControlLabel from '@mui/material/FormControlLabel';
-// import Checkbox from '@mui/material/Checkbox';
-// import Link from '@mui/material/Link';
-// import Avatar from '@mui/material/Avatar';
 import UserRow from './UserRow';
 import { rootUrl } from './Config';
 import uploadArrow from '../images/uploadArrow.png';
@@ -68,22 +63,35 @@ export default function CreatePostModal(props) {
   };
 
   const uploadPost = async () => {
-    const params = {
-      title,
-      caption,
-      userId: user.id,
-      photos: ['https://example.org/image']
-    };
+    // https://example.org/image
     try {
-      const response = await axios.post(`${rootUrl}/posts`, params);
-      console.log(response);
+      const currentPosts = await axios.get(`${rootUrl}/posts`);
+      const currentPhotos = await axios.get(`${rootUrl}/photos`);
+      const id = currentPosts.data.length + 1;
+      const photoId = currentPhotos.data.length + 1;
+      const postParams = {
+        id,
+        title,
+        userId: user.userId,
+        photos: [photoId],
+        likes: 0,
+        comments: []
+      };
+      const photoParams = {
+        id: photoId,
+        alt: title,
+        postId: id,
+        src: 'https://source.unsplash.com/random/600x500/?nature'
+      };
+      const newPost = await axios.post(`${rootUrl}/posts/`, postParams);
+      await axios.post(`${rootUrl}/photos/`, photoParams);
+      return newPost.status;
     } catch (err) {
-      console.error(err);
+      return err.message;
     }
   };
 
   const handleSubmit = () => {
-    // console.log('submitted');
     closeModal();
     setTitle('');
     setCaption('');

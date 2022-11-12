@@ -7,10 +7,10 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
 import React from 'react';
+import MockAdapter from 'axios-mock-adapter';
 import Register from './components/Register';
 import Login from './components/Login';
-import MockAdapter from 'axios-mock-adapter';
-import axios from './api/axios'
+import axios from './api/axios';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -31,9 +31,10 @@ jest.mock('react-router-dom', () => ({
 
 const mockAxios = new MockAdapter(axios);
 
-describe('the api returned correct user information', ()=>{
-  mockAxios.onGet().reply(200, {
-    username: 'Emily', password: 'ASDFasdf1234!'
+test('the api returned correct user information', async ()=>{
+  await mockAxios.onGet().reply(200, {
+    username: 'Emily', 
+    password: 'ASDFasdf1234!'
   });
 })
 
@@ -41,7 +42,7 @@ test("login test", async() => {
   const { getByText } = render(
     <MemoryRouter>
       <Login />
-    </MemoryRouter>,
+    </MemoryRouter>
   );
   const checkTitle = getByText('Welcome to photofolio!');
   expect(checkTitle).toBeInTheDocument();

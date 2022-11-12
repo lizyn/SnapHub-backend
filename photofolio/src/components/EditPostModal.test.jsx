@@ -4,7 +4,6 @@
 
 import { React } from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-// import { renderIntoDocument, fireEvent } from 'react-testing-library';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import renderer from 'react-test-renderer';

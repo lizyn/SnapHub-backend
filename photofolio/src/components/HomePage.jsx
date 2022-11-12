@@ -7,9 +7,6 @@ import Fab from '@mui/material/Fab';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import FeedList from './FeedList';
 import CreatePostModal from './CreatePostModal';
-import Router from './FakeRouter';
-
-// import userMe from '../images/userMe.jpg';
 import searchIcon from '../icons/Search.svg';
 import NewIcon from '../icons/New.svg';
 import UserList from './UserList';
@@ -21,14 +18,7 @@ function HomePage(props) {
     setPostModalOpen: PropTypes.func.isRequired,
     setAlert: PropTypes.func.isRequired
   };
-
-  const {
-    closePostModal,
-    postModalIsOpen,
-    setPostModalOpen,
-    setAlert,
-    setEditMode
-  } = props;
+  const { closePostModal, postModalIsOpen, setPostModalOpen, setAlert } = props;
   const orange = createTheme({
     status: {
       danger: '#e53e3e'
@@ -55,16 +45,14 @@ function HomePage(props) {
       <div className="main">
         <div className="users-section">
           <div className="user">
-            <Router>
-              <Link to="/profile">
-                <Avatar
-                  alt="me"
-                  className="Avatar"
-                  src="../images/userMe.jpg"
-                  sx={{ width: 100, height: 100 }}
-                />
-              </Link>
-            </Router>
+            <Link to="/profile">
+              <Avatar
+                alt="me"
+                className="Avatar"
+                src="https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1185.jpg"
+                sx={{ width: 100, height: 100 }}
+              />
+            </Link>
             <h3>Tatiana Dokidis</h3>
           </div>
           <div className="recommendations">

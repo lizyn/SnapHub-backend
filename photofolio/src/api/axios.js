@@ -122,6 +122,15 @@ export const deleteComment = async (commentId) => {
   }
 };
 
+export const deletePost = async (postId) => {
+  try {
+    const response = await axios.delete(`${baseURL}/posts/${postId}`);
+    return response.status;
+  } catch (err) {
+    return err;
+  }
+};
+
 export const editComment = async (commentId, commentEdit) => {
   try {
     const currentData = await axios.get(`${baseURL}/comments/${commentId}`);
