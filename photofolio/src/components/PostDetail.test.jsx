@@ -29,6 +29,7 @@ render(
       postId={2}
     />
   );
+});
   // const buttons = screen.getAllByRole('button');
   // arrow button, upload a file button, close button, post button
   // expect(buttons.length).toBe(4);
