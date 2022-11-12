@@ -11,7 +11,7 @@ import CreatePostModal from './CreatePostModal';
 import likeIcon from '../icons/Like.svg';
 import followerIcon from '../icons/People.svg';
 import NewIcon from '../icons/New.svg';
-import userMe from '../images/userMe.jpg';
+// import userMe from '../images/userMe.jpg';
 import { fetchPhotos } from '../api/axios';
 
 function ProfilePage(props) {
@@ -123,7 +123,7 @@ function ProfilePage(props) {
           <Avatar
             alt="me"
             className="Avatar"
-            src={userMe}
+            src="https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1185.jpg"
             sx={{ width: 100, height: 100 }}
           />
           <div className="profileDes">

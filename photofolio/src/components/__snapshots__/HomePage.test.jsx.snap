@@ -13,7 +13,20 @@ exports[`HomePage component matches snapshot 1`] = `
       <div
         className="user"
       >
-        <div />
+        <a
+          href="/profile"
+          onClick={[Function]}
+        >
+          <div
+            className="MuiAvatar-root MuiAvatar-circular Avatar css-124yhl1-MuiAvatar-root"
+          >
+            <img
+              alt="me"
+              className="MuiAvatar-img css-1pqm26d-MuiAvatar-img"
+              src="https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1185.jpg"
+            />
+          </div>
+        </a>
         <h3>
           Tatiana Dokidis
         </h3>
@@ -91,7 +104,9 @@ exports[`HomePage component matches snapshot 1`] = `
       <div
         className="feed"
       >
-        <div />
+        <div
+          className="feedlist-main"
+        />
       </div>
     </div>
   </div>

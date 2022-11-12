@@ -6,17 +6,20 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userEvent from '@testing-library/user-event';
 import renderer from 'react-test-renderer';
+import { MemoryRouter } from 'react-router-dom';
 
 import HomePage from './HomePage';
 
 test('HomePage component matches snapshot', () => {
   const component = renderer.create(
-    <HomePage
-      postModalIsOpen={false}
-      setPostModalOpen={() => {}}
-      closePostModal={() => {}}
-      setAlert={() => {}}
-    />
+    <MemoryRouter>
+      <HomePage
+        postModalIsOpen={false}
+        setPostModalOpen={() => {}}
+        closePostModal={() => {}}
+        setAlert={() => {}}
+      />
+    </MemoryRouter>
   );
   const tree = component.toJSON();
   expect(tree).toMatchSnapshot();
@@ -24,12 +27,14 @@ test('HomePage component matches snapshot', () => {
 
 test('CreateModal opens when create post fab clicked', async () => {
   render(
-    <HomePage
-      postModalIsOpen={false}
-      setPostModalOpen={() => {}}
-      closePostModal={() => {}}
-      setAlert={() => {}}
-    />
+    <MemoryRouter>
+      <HomePage
+        postModalIsOpen={false}
+        setPostModalOpen={() => {}}
+        closePostModal={() => {}}
+        setAlert={() => {}}
+      />
+    </MemoryRouter>
   );
   const createBtn = screen.getByRole('button', { name: 'new New Post' });
   await userEvent.click(createBtn);

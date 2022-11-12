@@ -127,3 +127,8 @@
     width: 1.5em;
     filter: brightness(4);
 }
+
+.feedlist-main {
+    display: flex;
+    flex-direction: column-reverse;
+}

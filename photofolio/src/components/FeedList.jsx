@@ -7,7 +7,10 @@ function FeedList() {
   const [posts, setPosts] = useState([]);
   const [photos, setPhotos] = useState([]);
   const [users, setUsers] = useState([]);
-
+  const handlePostChange = (postId) => {
+    const updatedPosts = posts.filter((x) => x.id !== postId);
+    setPosts(updatedPosts);
+  };
   useEffect(() => {
     async function fetchData() {
       const postsData = await fetchPosts();
@@ -48,6 +51,7 @@ function FeedList() {
             commentIds={post.comments}
             title={post.title}
             postId={post.id}
+            handlePostChange={handlePostChange}
           />
         );
       }
@@ -59,7 +63,7 @@ function FeedList() {
     feeds = populateFeeds();
   }
 
-  return <div>{feeds}</div>;
+  return <div className="feedlist-main">{feeds}</div>;
 }
 
 export default FeedList;

@@ -28,6 +28,7 @@ test('Like btn respond/changes when a post is liked', async () => {
       title="post-test"
       commentNum={0}
       postId={0}
+      handlePostChange={() => {}}
     />
   );
   const likeBtn = screen.getByRole('button', { name: 'like' });
@@ -48,6 +49,7 @@ test('comment box updates when user types', async () => {
       commentIds={[]}
       title="post-test"
       postId={0}
+      handlePostChange={() => {}}
     />
   );
   const comment = screen.getByRole('textbox');
@@ -67,6 +69,7 @@ test('comment box clears after user post comment', async () => {
       commentIds={[]}
       title="post-test"
       postId={0}
+      handlePostChange={() => {}}
     />
   );
   const comment = screen.getByRole('textbox');

@@ -126,6 +126,7 @@ exports[`Feed component matches snapshot 1`] = `
           className="postComment"
         >
           <button
+            onClick={[Function]}
             type="submit"
           >
             <img
@@ -135,6 +136,7 @@ exports[`Feed component matches snapshot 1`] = `
           </button>
           <input
             name="postComment"
+            onClick={[Function]}
             placeholder="Post a comment"
             type="text"
           />

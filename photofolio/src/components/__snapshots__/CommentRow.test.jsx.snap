@@ -29,10 +29,7 @@ exports[`Comment row matches snapshot 1`] = `
             "fontFamily": "sans-serif",
           }
         }
-      >
-         
-         
-      </p>
+      />
     </div>
     <div>
       <button

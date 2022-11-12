@@ -16,7 +16,8 @@ import {
   fetchComments,
   likePosts,
   createComment,
-  deleteComment
+  deleteComment,
+  deletePost
 } from '../api/axios';
 import CommentRow from './CommentRow';
 import './PostDetail.css';
@@ -47,7 +48,8 @@ function PostDetail(props) {
     img: PropTypes.string,
     avatar: PropTypes.string,
     likes: PropTypes.number.isRequired,
-    postId: PropTypes.number.isRequired
+    postId: PropTypes.number.isRequired,
+    handlePostChange: PropTypes.func.isRequired
   };
 
   PostDetail.defaultProps = {
@@ -55,7 +57,17 @@ function PostDetail(props) {
     avatar: '/'
   };
 
-  const { open, setOpen, img, author, avatar, likes, title, postId } = props;
+  const {
+    open,
+    setOpen,
+    img,
+    author,
+    avatar,
+    likes,
+    title,
+    postId,
+    handlePostChange
+  } = props;
 
   const [comments, setComments] = useState([]);
   const [postLiked, setPostLiked] = useState(false);
@@ -111,18 +123,18 @@ function PostDetail(props) {
     }
   };
 
-  const handleEdit = async () => {
+  const handlePostEdit = async () => {
     setOpen(false);
     setTestState((x) => !x);
   };
 
-  const handleDelete = async (id) => {
+  const handlePostDelete = async (id) => {
     try {
-      await axios.delete(`/posts/${id}`);
-      // const postsList = posts.filter(post => post.id !== id);
-      // setPosts(postsList);
+      const response = await deletePost(id);
+      handlePostChange(id);
+      return response.status;
     } catch (err) {
-      console.log(`Error: ${err.message}`);
+      return err.message;
     }
   };
 
@@ -152,7 +164,6 @@ function PostDetail(props) {
 
   const handleCommentChange = (e) => {
     setCommentInput(e.target.value);
-    console.log(commentInput);
   };
 
   const convertMentionInComment = (comment) => {
@@ -163,7 +174,6 @@ function PostDetail(props) {
     clickableComment = clickableComment.split('@@@|').join('">@');
     clickableComment = clickableComment.split('$@@@').join('</a>');
     clickableComment = `${clickableComment}`;
-    console.log(clickableComment);
     return clickableComment;
   };
 
@@ -226,19 +236,17 @@ function PostDetail(props) {
               <p className="postTime">20 minutes ago</p>
             </div>
             <div>
-              <button type="submit" onClick={() => handleEdit(postId)}>
-                {' '}
-                Edit Post{' '}
+              <button type="submit" onClick={() => handlePostEdit(postId)}>
+                Edit Post
               </button>
             </div>
             <div>
               <button
                 type="submit"
                 className="deleteButton"
-                onClick={() => handleDelete(postId)}
+                onClick={() => handlePostDelete(postId)}
               >
-                {' '}
-                Delete Post{' '}
+                Delete Post
               </button>
             </div>
             <div className="post-detail-comments">{allComments}</div>

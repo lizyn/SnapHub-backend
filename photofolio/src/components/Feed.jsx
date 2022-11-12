@@ -21,7 +21,8 @@ function Feed(props) {
     likes: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     commentIds: PropTypes.arrayOf(PropTypes.number),
-    postId: PropTypes.number.isRequired
+    postId: PropTypes.number.isRequired,
+    handlePostChange: PropTypes.func.isRequired
   };
 
   Feed.defaultProps = {
@@ -30,7 +31,16 @@ function Feed(props) {
     commentIds: []
   };
 
-  const { avatar, author, img, likes, commentIds, title, postId } = props;
+  const {
+    avatar,
+    author,
+    img,
+    likes,
+    commentIds,
+    title,
+    postId,
+    handlePostChange
+  } = props;
   const [detailOpen, setDetailOpen] = useState(false);
   const [postLiked, setPostLiked] = useState(false);
 
@@ -61,6 +71,7 @@ function Feed(props) {
           title={title}
           commentNum={commentIds.length}
           postId={postId}
+          handlePostChange={handlePostChange}
         />
       </div>
       <div>
