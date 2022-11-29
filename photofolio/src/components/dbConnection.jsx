@@ -62,6 +62,57 @@ const addUser = async (newUser) => {
   });
 };
 
+const getPosts = async () => {
+  const db = await getDB(); // connect to database
+  try {
+    const results = await db.collection('posts').find({}).toArray();
+    console.log(`Posts: ${JSON.stringify(results)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+};
+
+const getFeed = async (id) => {
+  const db = await getDB(); // connect to database
+  let feed;
+  try {
+    // (1) get the user to find feed for
+    const curUser = await db.collection('users').find({ _id: ObjectId(id) });
+    console.log(`Current User: ${JSON.stringify(curUser)}`);
+    // (2) get all the users this user is following
+    const following = await db
+      .collection('users')
+      .aggregate([
+        { $match: { _id: { $in: curUser.following } } },
+        { $group: { following: { $push: '_id' } } }
+      ])
+      .toArray();
+    console.log(`Following: ${JSON.stringify(following)}`);
+    // (3) get the posts by every user in the following list
+    feed = await db
+      .collection('posts')
+      .aggregate([{ $match: { userId: { $in: following } } }])
+      .toArray();
+    console.log(`Feed list: ${JSON.stringify(feed)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+  return feed;
+};
+
+const getAPost = async (id) => {
+  const db = await getDB(); // connect to database
+  try {
+    const results = await db
+      .collection('posts')
+      .find({ _id: ObjectId(id) })
+      .toArray();
+    console.log(`Post: ${JSON.stringify(results)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+};
+
 const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
   db.collection('posts').insertOne(newPost, (err, result) => {
@@ -162,6 +213,9 @@ module.exports = {
   addUser,
   getUsers,
   getAUser,
+  getPosts,
+  getAPost,
+  getFeed,
   addPost,
   updatePost,
   deletePost,

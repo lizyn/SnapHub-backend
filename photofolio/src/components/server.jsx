@@ -26,6 +26,31 @@ const dbLib = require('./dbConnection');
 // (8) declare a db reference variable
 let db;
 
+// sample new user and new post (just for testing)
+// const newUser = {
+//   firstName: 'test', // req.body.firstName,
+//   lastName: 'testson', // req.body.lastName,
+//   avatar: '/', // req.body.avatar,
+//   email: 'test@upenn.edu', // req.body.email,
+//   password: 'mypassword', // req.body.password,
+//   following: []
+// };
+
+const newPost = {
+  photo: '/',
+  userId: 1,
+  text: 'newpost',
+  description: 'test description',
+  comments: [],
+  likes: 0
+};
+
+const newComment = {
+  userId: 2,
+  text: 'new comment test',
+  postId: 1
+};
+
 // start the server and connect to the DB
 webapp.listen(port, async () => {
   db = await dbLib.connect();
@@ -76,58 +101,6 @@ webapp.get('/user/:id', async (req, res) => {
   }
 });
 
-// implement the POST /student/ endpoint
-webapp.post('/student/', async (req, res) => {
-  console.log('CREATE a user');
-  // parse the body of the request
-  if (!req.body.name || !req.body.email || !req.body.major) {
-    res.status(404).json({ message: 'missing name, major, or email' });
-    return;
-  }
-  try {
-    // create the new student (ignore, just note from class)
-    // const newStudent = {
-    //   name: req.body.name,
-    //   email: req.body.email,
-    //   major: req.body.major
-    // };
-    const result = await dbLib.addUser(db, newUser);
-    // send the response with the appropriate status code
-    res.status(201).json({ data: { id: result, ...newUser } });
-  } catch (err) {
-    res.status(409).json({ message: 'there was error' });
-  }
-});
-
-// implement the DELETE /student/id endpoint
-webapp.delete('/student/:id', async (req, res) => {
-  console.log('DELETE a student');
-  try {
-    const result = await dbLib.deleteStudent(db, req.params.id);
-    // send the response with the appropriate status code
-    res.status(200).json({ message: result });
-  } catch (err) {
-    res.status(404).json({ message: 'there was error' });
-  }
-});
-
-// implement the PUT /student/id endpoint
-webapp.put('/student/:id', async (req, res) => {
-  console.log('UPDATE a student');
-  // parse the body of the request
-  if (!req.body.major) {
-    res.status(404).json({ message: 'missing major' });
-    return;
-  }
-  try {
-    const result = await dbLib.updateStudent(req.params.id, req.body.major);
-    // send the response with the appropriate status code
-    res.status(200).json({ message: result });
-  } catch (err) {
-    res.status(404).json({ message: 'there was error' });
-  }
-});
-
 webapp.put('/user/:id', async (req, res) => {
   console.log("UPDATE a user's password");
   // parse the body of the request
@@ -138,6 +111,112 @@ webapp.put('/user/:id', async (req, res) => {
   try {
     const result = await dbLib.updateUser(req.params.id, req.body.password);
     // send the response with the appropriate status code
+    res.status(200).json({ message: result });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
+/** ------------------------------ The Post End Points ------------------------------ */
+
+// GET ALL
+webapp.get('/users/:id/feed', async (req, res) => {
+  console.log('GET feed for the user');
+  try {
+    const results = await dbLib.getFeed(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'resource not found' });
+  }
+});
+
+// GET ONE
+webapp.get('/posts/:id', async (req, res) => {
+  console.log('GET a post');
+  try {
+    const results = await dbLib.getAStudent(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
+// POST
+webapp.post('/posts/', async (req, res) => {
+  console.log('CREATE a post');
+  if (!req.body.photo || !req.body.userId) {
+    res.status(404).json({ message: 'must have a photo to create post' });
+    return;
+  }
+  try {
+    const result = await dbLib.addPost(newPost);
+    res.status(201).json({ data: { id: result, ...newPost } });
+  } catch (err) {
+    res.status(409).json({ message: 'there was error' });
+  }
+});
+
+// DELETE
+webapp.delete('/posts/:id', async (req, res) => {
+  console.log('DELETE a post');
+  try {
+    const result = await dbLib.deletePost(req.params.id);
+    res.status(200).json({ message: result });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
+// PUT
+webapp.put('/posts/:id', async (req, res) => {
+  console.log('UPDATE a post');
+  if (!req.body.photo) {
+    res.status(404).json({ message: 'must contain a photo to update' });
+    return;
+  }
+  try {
+    const result = await dbLib.updatePost(req.params.id, req.body);
+    res.status(200).json({ message: result });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+/** ------------------------------ The Comment End Points ------------------------------*/
+// POST
+webapp.post('/comments/', async (req, res) => {
+  console.log('CREATE a comment');
+  if (!req.body.text || !req.body.userId) {
+    res.status(404).json({ message: 'your comment must have text' });
+    return;
+  }
+  try {
+    const result = await dbLib.addComment(newComment);
+    res.status(201).json({ data: { id: result, ...newComment } });
+  } catch (err) {
+    res.status(409).json({ message: 'there was error' });
+  }
+});
+
+// DELETE
+webapp.delete('/comments/:id', async (req, res) => {
+  console.log('DELETE a comment');
+  try {
+    const result = await dbLib.deleteComments(req.params.id);
+    res.status(200).json({ message: result });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
+// PUT
+webapp.put('/comments/:id', async (req, res) => {
+  console.log('UPDATE a comment');
+  if (!req.body.text) {
+    res.status(404).json({ message: 'must contain text content to update' });
+    return;
+  }
+  try {
+    const result = await dbLib.updatePost(req.params.id, req.body);
     res.status(200).json({ message: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
