@@ -36,20 +36,20 @@ let db;
 //   following: []
 // };
 
-const newPost = {
-  photo: '/',
-  userId: 1,
-  text: 'newpost',
-  description: 'test description',
-  comments: [],
-  likes: 0
-};
+// const newPost = {
+//   photo: '/',
+//   userId: 1,
+//   text: 'newpost',
+//   description: 'test description',
+//   comments: [],
+//   likes: 0
+// };
 
-const newComment = {
-  userId: 2,
-  text: 'new comment test',
-  postId: 1
-};
+// const newComment = {
+//   userId: 2,
+//   text: 'new comment test',
+//   postId: 1
+// };
 
 // start the server and connect to the DB
 webapp.listen(port, async () => {
@@ -119,11 +119,23 @@ webapp.put('/user/:id', async (req, res) => {
 
 /** ------------------------------ The Post End Points ------------------------------ */
 
-// GET ALL
+// GET FEEDS for User
 webapp.get('/users/:id/feed', async (req, res) => {
   console.log('GET feed for the user');
   try {
     const results = await dbLib.getFeed(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'resource not found' });
+  }
+});
+
+
+// GET Post by a User
+webapp.get('/users/:id/posts', async (req, res) => {
+  console.log('GET posts by a user');
+  try {
+    const results = await dbLib.getUserPosts(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
     res.status(404).json({ message: 'resource not found' });
@@ -149,8 +161,8 @@ webapp.post('/posts/', async (req, res) => {
     return;
   }
   try {
-    const result = await dbLib.addPost(newPost);
-    res.status(201).json({ data: { id: result, ...newPost } });
+    const result = await dbLib.addPost(req.body);
+    res.status(201).json({ data: { id: result, ...req.body } });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
   }
@@ -190,10 +202,21 @@ webapp.post('/comments/', async (req, res) => {
     return;
   }
   try {
-    const result = await dbLib.addComment(newComment);
-    res.status(201).json({ data: { id: result, ...newComment } });
+    const result = await dbLib.addComment(req.body);
+    res.status(201).json({ data: { result } });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
+  }
+});
+
+// GET ONE
+webapp.get('/comments/:id', async (req, res) => {
+  console.log('GET a comment');
+  try {
+    const results = await dbLib.getAComment(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
   }
 });
 
@@ -201,7 +224,7 @@ webapp.post('/comments/', async (req, res) => {
 webapp.delete('/comments/:id', async (req, res) => {
   console.log('DELETE a comment');
   try {
-    const result = await dbLib.deleteComments(req.params.id);
+    const result = await dbLib.deleteComment(req.params.id);
     res.status(200).json({ message: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
@@ -216,7 +239,7 @@ webapp.put('/comments/:id', async (req, res) => {
     return;
   }
   try {
-    const result = await dbLib.updatePost(req.params.id, req.body);
+    const result = await dbLib.updateComment(req.params.id, req.body);
     res.status(200).json({ message: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
