@@ -20,6 +20,8 @@ const port = 8080;
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
 
+// const port = 3200;
+
 // (7) import the db interactions module
 const dbLib = require('./dbConnection');
 
@@ -36,20 +38,20 @@ let db;
 //   following: []
 // };
 
-const newPost = {
-  photo: '/',
-  userId: 1,
-  text: 'newpost',
-  description: 'test description',
-  comments: [],
-  likes: 0
-};
+// const newPost = {
+//   photo: '/',
+//   userId: 1,
+//   text: 'newpost',
+//   description: 'test description',
+//   comments: [],
+//   likes: 0
+// };
 
-const newComment = {
-  userId: 2,
-  text: 'new comment test',
-  postId: 1
-};
+// const newComment = {
+//   userId: 2,
+//   text: 'new comment test',
+//   postId: 1
+// };
 
 // start the server and connect to the DB
 webapp.listen(port, async () => {
@@ -119,7 +121,7 @@ webapp.put('/user/:id', async (req, res) => {
 
 /** ------------------------------ The Post End Points ------------------------------ */
 
-// GET ALL
+// GET FEEDS for User
 webapp.get('/users/:id/feed', async (req, res) => {
   console.log('GET feed for the user');
   try {
@@ -149,8 +151,8 @@ webapp.post('/posts/', async (req, res) => {
     return;
   }
   try {
-    const result = await dbLib.addPost(newPost);
-    res.status(201).json({ data: { id: result, ...newPost } });
+    const result = await dbLib.addPost(req.body);
+    res.status(201).json({ data: { id: result, ...req.body } });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
   }
@@ -190,8 +192,8 @@ webapp.post('/comments/', async (req, res) => {
     return;
   }
   try {
-    const result = await dbLib.addComment(newComment);
-    res.status(201).json({ data: { id: result, ...newComment } });
+    const result = await dbLib.addComment(req.body);
+    res.status(201).json({ data: { result } });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
   }

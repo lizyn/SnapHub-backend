@@ -12,7 +12,9 @@ const connect = async () => {
       useUnifiedTopology: true
     });
     // Connected to db
-    console.log(`Connected to database: ${MongoConnection.db().databaseName}`);
+    console.log(
+      `Connected to database: ${MongoConnection.db('photofolio').databaseName}`
+    );
     return MongoConnection;
   } catch (err) {
     console.error(err.message);
@@ -24,8 +26,8 @@ const getDB = async () => {
   if (!MongoConnection) {
     await connect();
   }
-  console.log(`connected to db${MongoConnection}`);
-  return MongoConnection.db();
+  // console.log(`connected to db${MongoConnection}`);
+  return MongoConnection.db('photofolio');
 };
 
 const getUsers = async () => {
@@ -126,8 +128,9 @@ const addPost = async (newPost) => {
 
 const updatePost = async (id, newPost) => {
   const db = await getDB();
+  let results;
   try {
-    const results = await db
+    results = await db
       .collection('posts')
       .updateOne(
         { _id: ObjectId(id) },
@@ -137,6 +140,7 @@ const updatePost = async (id, newPost) => {
   } catch (err) {
     console.log(`error: ${err.message}`);
   }
+  return results;
 };
 
 const deletePost = async (id) => {
@@ -154,27 +158,32 @@ const deletePost = async (id) => {
 const addComment = async (newComment) => {
   const db = await getDB();
   let commentId;
+  let result;
   // insert the new comment to the comments collection
-  db.collection('comments').insertOne(newComment, (err, result) => {
-    if (err) {
-      console.log(`error: ${err.message}`);
-      return;
-    }
-    commentId = result.insertedId;
-    console.log(`Created comment with id: ${result.insertedId}`);
-  });
+  // db.collection('comments').insertOne(newComment, (err, result) => {
+  //   if (err) {
+  //     console.log(`error: ${err.message}`);
+  //     return;
+  //   }
+  //   commentId = result.insertedId;
+  //   // console.log(`Created comment with id: ${commentId}`);
+  // });
   // add the new comment id to the comment list of the target post
   try {
-    const results = await db
+    result = db.collection('comments').insertOne(newComment);
+    console.log(`comment id is ${result.insertedId}`);
+    commentId = result.insertedId;
+    const updatedPost = await db
       .collection('posts')
       .updateOne(
         { _id: ObjectId(newComment.postId) },
         { $push: { comments: commentId } }
       );
-    console.log(`Post updated: ${JSON.stringify(results)}`);
+    console.log(`Post updated: ${JSON.stringify(updatedPost)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
   }
+  return result;
 };
 
 const updateComment = async (id, newComment) => {
@@ -210,6 +219,7 @@ const deleteComment = async (id) => {
 };
 
 module.exports = {
+  connect,
   addUser,
   getUsers,
   getAUser,
