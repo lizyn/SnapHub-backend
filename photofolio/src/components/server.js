@@ -20,8 +20,6 @@ const port = 8080;
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
 
-// const port = 3200;
-
 // (7) import the db interactions module
 const dbLib = require('./dbConnection');
 
@@ -131,6 +129,7 @@ webapp.get('/users/:id/feed', async (req, res) => {
     res.status(404).json({ message: 'resource not found' });
   }
 });
+
 
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
