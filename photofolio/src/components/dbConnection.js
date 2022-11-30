@@ -22,11 +22,14 @@ const connect = async () => {
   }
 };
 
+const closeMongoDBConnection = async () => {
+  await MongoConnection.close();
+};
+
 const getDB = async () => {
   if (!MongoConnection) {
     await connect();
   }
-  // console.log(`connected to db${MongoConnection}`);
   return MongoConnection.db('photofolio');
 };
 
@@ -231,6 +234,8 @@ const deleteComment = async (id) => {
 
 module.exports = {
   connect,
+  closeMongoDBConnection,
+  getDB,
   addUser,
   getUsers,
   getAUser,
