@@ -221,5 +221,7 @@ module.exports = {
   deletePost,
   addComment,
   deleteComment,
-  updateComment
+  updateComment,
+  connect
 };
+
