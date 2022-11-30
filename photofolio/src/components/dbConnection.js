@@ -79,27 +79,34 @@ const getFeed = async (id) => {
   let feed;
   try {
     // (1) get the user to find feed for
-    const curUser = await db.collection('users').find({ _id: ObjectId(id) });
+    const curUser = await db.collection('users').findOne({ _id: ObjectId(id) });
     console.log(`Current User: ${JSON.stringify(curUser)}`);
-    // (2) get all the users this user is following
-    const following = await db
-      .collection('users')
-      .aggregate([
-        { $match: { _id: { $in: curUser.following } } },
-        { $group: { following: { $push: '_id' } } }
-      ])
-      .toArray();
-    console.log(`Following: ${JSON.stringify(following)}`);
-    // (3) get the posts by every user in the following list
+    // (2) get the users this user is following
+    const followed = curUser.following;
+    console.log(`Following: ${JSON.stringify(followed)}`);
+    // (3) save the posts by every user in the following list to an array "feed"
     feed = await db
       .collection('posts')
-      .aggregate([{ $match: { userId: { $in: following } } }])
+      .aggregate([{ $match: { userId: { $in: followed } } }])
       .toArray();
     console.log(`Feed list: ${JSON.stringify(feed)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
   }
   return feed;
+};
+
+const getUserPosts = async (id) => {
+  const db = await getDB();
+  let posts;
+  try {
+    // save posts that has userId = the param id
+    posts = await db.collection('posts').find({ userId: id }).toArray();
+    console.log(`Posts by this user: ${JSON.stringify(posts)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+  return posts;
 };
 
 const getAPost = async (id) => {
@@ -159,18 +166,8 @@ const addComment = async (newComment) => {
   const db = await getDB();
   let commentId;
   let result;
-  // insert the new comment to the comments collection
-  // db.collection('comments').insertOne(newComment, (err, result) => {
-  //   if (err) {
-  //     console.log(`error: ${err.message}`);
-  //     return;
-  //   }
-  //   commentId = result.insertedId;
-  //   // console.log(`Created comment with id: ${commentId}`);
-  // });
-  // add the new comment id to the comment list of the target post
   try {
-    result = db.collection('comments').insertOne(newComment);
+    result = await db.collection('comments').insertOne(newComment);
     console.log(`comment id is ${result.insertedId}`);
     commentId = result.insertedId;
     const updatedPost = await db
@@ -186,13 +183,26 @@ const addComment = async (newComment) => {
   return result;
 };
 
+const getAComment = async (id) => {
+  const db = await getDB();
+  try {
+    const results = await db
+      .collection('comments')
+      .find({ _id: ObjectId(id) })
+      .toArray();
+    console.log(`Comment: ${JSON.stringify(results)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+};
+
 const updateComment = async (id, newComment) => {
   const db = await getDB();
   try {
     const results = await db
-      .collection('posts')
+      .collection('comments')
       .updateOne({ _id: ObjectId(id) }, { $set: { text: newComment.text } });
-    console.log(`Post updated: ${JSON.stringify(results)}`);
+    console.log(`comment updated: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
   }
@@ -200,22 +210,23 @@ const updateComment = async (id, newComment) => {
 
 const deleteComment = async (id) => {
   const db = await getDB();
+  let deleted;
+  let results;
   try {
-    const results = await db
-      .collection('comments')
-      .deleteOne({ _id: ObjectId(id) });
+    deleted = await db.collection('comments').findOne({ _id: ObjectId(id) });
+    results = await db.collection('comments').deleteOne({ _id: ObjectId(id) });
     console.log(`Comment removed: ${JSON.stringify(results)}`);
-  } catch (err) {
-    console.log(`error: ${err.message}`);
-  }
-  try {
-    const results = await db
+    const updatedpost = await db
       .collection('posts')
-      .updateOne({ _id: ObjectId(id) }, { $pull: { comments: ObjectId(id) } });
-    console.log(`Post updated: ${JSON.stringify(results)}`);
+      .updateOne(
+        { _id: ObjectId(deleted.postId) },
+        { $pull: { comments: ObjectId(id) } }
+      );
+    console.log(`Post updated: ${JSON.stringify(updatedpost)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
   }
+  return results;
 };
 
 module.exports = {
@@ -225,11 +236,13 @@ module.exports = {
   getAUser,
   getPosts,
   getAPost,
+  getUserPosts,
   getFeed,
   addPost,
   updatePost,
   deletePost,
   addComment,
+  getAComment,
   deleteComment,
   updateComment
 };

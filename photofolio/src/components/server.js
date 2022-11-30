@@ -132,6 +132,17 @@ webapp.get('/users/:id/feed', async (req, res) => {
   }
 });
 
+// GET Post by a User
+webapp.get('/users/:id/posts', async (req, res) => {
+  console.log('GET posts by a user');
+  try {
+    const results = await dbLib.getUserPosts(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'resource not found' });
+  }
+});
+
 // GET ONE
 webapp.get('/posts/:id', async (req, res) => {
   console.log('GET a post');
@@ -199,11 +210,22 @@ webapp.post('/comments/', async (req, res) => {
   }
 });
 
+// GET ONE
+webapp.get('/comments/:id', async (req, res) => {
+  console.log('GET a comment');
+  try {
+    const results = await dbLib.getAComment(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
 // DELETE
 webapp.delete('/comments/:id', async (req, res) => {
   console.log('DELETE a comment');
   try {
-    const result = await dbLib.deleteComments(req.params.id);
+    const result = await dbLib.deleteComment(req.params.id);
     res.status(200).json({ message: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
@@ -218,7 +240,7 @@ webapp.put('/comments/:id', async (req, res) => {
     return;
   }
   try {
-    const result = await dbLib.updatePost(req.params.id, req.body);
+    const result = await dbLib.updateComment(req.params.id, req.body);
     res.status(200).json({ message: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
