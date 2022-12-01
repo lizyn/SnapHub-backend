@@ -214,7 +214,7 @@ const updateComment = async (id, newComment) => {
       .updateOne({ _id: ObjectId(id) }, { $set: { text: newComment.text } });
     console.log(`comment updated: ${JSON.stringify(results)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    throw new Error('comment update failed');
   }
 };
 

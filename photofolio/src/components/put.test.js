@@ -98,7 +98,7 @@ describe('GET post(s) endpoint integration test', () => {
     }
   });
 
-  test("Update user's posts endpoint status code and data", async () => {
+  test('Update a post endpoint status code and data', async () => {
     const resp = await request(webapp)
       .put(`/posts/${testPostID}`)
       .send('description=test description edited');
@@ -110,6 +110,22 @@ describe('GET post(s) endpoint integration test', () => {
     const resp = await request(webapp)
       .put(`/posts/2`)
       .send('description=test description edited');
+    expect(resp.status).toEqual(404);
+    expect(resp.type).toBe('application/json');
+  });
+
+  test('Update comment endpoint status code and data', async () => {
+    const resp = await request(webapp)
+      .put(`/posts/${testCmtID}`)
+      .send('text=text edited');
+    expect(resp.status).toEqual(200);
+    expect(resp.type).toBe('application/json');
+  });
+
+  test('Status code is 404 if comment not found', async () => {
+    const resp = await request(webapp)
+      .put(`/comments/1`)
+      .send('text=text edited');
     expect(resp.status).toEqual(404);
     expect(resp.type).toBe('application/json');
   });
