@@ -15,7 +15,7 @@ const webapp = express();
 webapp.use(cors());
 
 // (5) define the port
-const port = 8080;
+// const port = 8080;
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
@@ -54,10 +54,10 @@ let db;
 // };
 
 // start the server and connect to the DB
-webapp.listen(port, async () => {
-  db = await dbLib.connect();
-  console.log(`Server running on port: ${port}`);
-});
+// webapp.listen(port, async () => {
+//   db = await dbLib.connect();
+//   console.log(`Server running on port: ${port}`);
+// });
 
 // root endpoint / route
 webapp.get('/', (req, resp) => {
@@ -77,7 +77,7 @@ webapp.get('/users', async (req, res) => {
   }
 });
 
-// implement the GET /student/:id endpoint
+// implement the GET /user/:id endpoint
 webapp.get('/user/:id', async (req, res) => {
   console.log('GET a user');
   try {
@@ -163,7 +163,7 @@ webapp.post('/posts/', async (req, res) => {
   }
   try {
     const result = await dbLib.addPost(req.body);
-    res.status(201).json({ data: { id: result, ...req.body } });
+    res.status(201).json({ data: { result } });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
   }
@@ -183,10 +183,10 @@ webapp.delete('/posts/:id', async (req, res) => {
 // PUT
 webapp.put('/posts/:id', async (req, res) => {
   console.log('UPDATE a post');
-  if (!req.body.photo) {
-    res.status(404).json({ message: 'must contain a photo to update' });
-    return;
-  }
+  // if (!req.body.photo) {
+  //   res.status(404).json({ message: 'must contain a photo to update' });
+  //   return;
+  // }
   try {
     const result = await dbLib.updatePost(req.params.id, req.body);
     res.status(200).json({ message: result });
@@ -204,7 +204,7 @@ webapp.post('/comments/', async (req, res) => {
   }
   try {
     const result = await dbLib.addComment(req.body);
-    res.status(201).json({ data: { result } });
+    res.status(201).json({ data: result });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
   }
@@ -226,7 +226,7 @@ webapp.delete('/comments/:id', async (req, res) => {
   console.log('DELETE a comment');
   try {
     const result = await dbLib.deleteComment(req.params.id);
-    res.status(200).json({ message: result });
+    res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
   }
@@ -241,7 +241,7 @@ webapp.put('/comments/:id', async (req, res) => {
   }
   try {
     const result = await dbLib.updateComment(req.params.id, req.body);
-    res.status(200).json({ message: result });
+    res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
   }
