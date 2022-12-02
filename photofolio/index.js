@@ -1,4 +1,4 @@
-const webapp = require('./server');
+const webapp = require('./src/components/server');
 
 const port = 8080;
 
