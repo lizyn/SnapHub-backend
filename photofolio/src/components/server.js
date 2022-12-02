@@ -64,9 +64,10 @@ webapp.get('/', (req, resp) => {
 });
 
 //login
-webapp.get(`/account/username=${user}&password=${pwd}`, async(req,res) =>{
+webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
   try{
-    const results = await dbLib.closeMongoDBConnection(db, req.params.username, req.params.password);
+    console.log(req.params.user, req.params.pwd);
+    const results = await dbLib.closeMongoDBConnection(db, req.params.user, req.params.pwd);
     if(results === null){
       res.status(401).json({message: "wrong password"});
       return;

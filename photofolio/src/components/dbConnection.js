@@ -39,6 +39,7 @@ const register = async (db,newUser) => {
     const result = await users.insertOne(newUser);
     return result.insertedId.toString();
   }catch(err){
+    console.log(`error: ${err.message}`);
     throw new Error('Error in register the user');
   }
 };
@@ -50,6 +51,7 @@ const login = async (db, username, password) => {
     const cursor = await users.findOne(query);
     return cursor;
   }catch(error){
+    console.log(`error: ${err.message}`);
     throw new Error('Error while login');
   }
 };
