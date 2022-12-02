@@ -33,6 +33,27 @@ const getDB = async () => {
   return MongoConnection.db('photofolio');
 };
 
+const register = async (db,newUser) => {
+  try{
+    const users = db.collection('users');
+    const result = await users.insertOne(newUser);
+    return result.insertedId.toString();
+  }catch(err){
+    throw new Error('Error in register the user');
+  }
+};
+
+const login = async (db, username, password) => {
+  try{
+    const users = db.collection('users');
+    const query = {username, password};
+    const cursor = await users.findOne(query);
+    return cursor;
+  }catch(error){
+    throw new Error('Error while login');
+  }
+};
+
 const getUsers = async () => {
   const db = await getDB(); // connect to database
   try {
@@ -243,6 +264,8 @@ module.exports = {
   connect,
   closeMongoDBConnection,
   getDB,
+  register,
+  login,
   addUser,
   getUsers,
   getAUser,
