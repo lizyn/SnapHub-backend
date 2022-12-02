@@ -20,8 +20,6 @@ webapp.use(cors());
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
 
-// const port = 3200;
-
 // (7) import the db interactions module
 const dbLib = require('./dbConnection');
 
@@ -59,10 +57,50 @@ let db;
 //   console.log(`Server running on port: ${port}`);
 // });
 
+
 // root endpoint / route
 webapp.get('/', (req, resp) => {
   resp.json({ message: 'welcome to our backend!!!' });
 });
+
+//login
+webapp.get(`/account/username=${user}&password=${pwd}`, async(req,res) =>{
+  try{
+    const results = await dbLib.closeMongoDBConnection(db, req.params.username, req.params.password);
+    if(results === null){
+      res.status(401).json({message: "wrong password"});
+      return;
+    }
+    res.status(201).json({data: { id: results._id.toString(), ... results} });
+  }catch(err){
+    res.status(404).json({message: "There is an login error"});
+  }
+});
+
+
+//register
+webapp.post('/users', async(req, res)=>{
+  if(!req.body || !req.body.username
+    || !req.body.password){
+      res.status(404).json({message: 'missing information in registration'});
+      return;
+    }
+    const newUser = {
+      username: req.body.username,
+      user_avatar: '/',
+      following: [],
+      followed: [],
+      password: req.body.password,      
+    };
+    try{
+      const result = await dbLib.register(db,newUser);
+      res.status(201).json({
+        user: {id: result, ...newUser},
+      });
+    }catch(err){
+      res.status(404).json({message: error});
+    }
+})
 
 // implement the GET /students endpoint
 webapp.get('/users', async (req, res) => {
@@ -131,6 +169,7 @@ webapp.get('/users/:id/feed', async (req, res) => {
     res.status(404).json({ message: 'resource not found' });
   }
 });
+
 
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
