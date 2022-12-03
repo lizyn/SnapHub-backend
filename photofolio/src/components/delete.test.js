@@ -5,11 +5,11 @@ const webapp = require('./server');
 
 let mongo;
 
-describe('PUT post(s) endpoint integration test', () => {
+describe('DELETE post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
-  // const testUserID = '638682d7b47712e0d260ce8b';
+  //   const testUserID = '638682d7b47712e0d260ce8b';
   //   test resource to create / expected response
   //   const testFollowee = {
   //     firstName: 'test',
@@ -31,13 +31,13 @@ describe('PUT post(s) endpoint integration test', () => {
   //     following: []
   //   };
 
-  // const testPost = {
-  //   photo: 'someurl.jpg',
-  //   userId: '638682d7b47712e0d260ce8b',
-  //   text: 'test',
-  //   description: 'test description edited'
-  // comments: ['']
-  // };
+  //   const testPost = {
+  //     photo: 'someurl.jpg',
+  //     userId: '638682d7b47712e0d260ce8b',
+  //     text: 'test',
+  //     description: 'test description'
+  //     // comments: ['']
+  //   };
 
   beforeAll(async () => {
     mongo = await connect();
@@ -70,7 +70,11 @@ describe('PUT post(s) endpoint integration test', () => {
       if (postdeleted >= 1) {
         console.log('info', 'Successfully deleted test post');
       } else {
-        console.log('warning', 'test post was not deleted');
+        result = await db
+          .collection('posts')
+          .findOne({ _id: ObjectId(testPostID) });
+        if (!result) console.log('test post is already deleted');
+        else console.log('warning', 'test post was not deleted');
       }
       result = await db
         .collection('comments')
@@ -80,7 +84,11 @@ describe('PUT post(s) endpoint integration test', () => {
       if (commentdeleted >= 1) {
         console.log('info', 'Successfully deleted test comment');
       } else {
-        console.log('warning', 'test comment was not deleted');
+        result = await db
+          .collection('comments')
+          .findOne({ _id: ObjectId(testCmtID) });
+        if (!result) console.log('test comment is already deleted');
+        else console.log('warning', 'test comment was not deleted');
       }
     } catch (err) {
       return err.message;
@@ -99,41 +107,29 @@ describe('PUT post(s) endpoint integration test', () => {
     return 1;
   });
 
-  test('Update a post endpoint status code and data', async () => {
-    const resp = await request(webapp)
-      .put(`/posts/${testPostID}`)
-      .send('description=test description edited');
+  test('Delete a post with id', async () => {
+    const resp = await request(webapp).delete(`/posts/${testPostID}/`);
     expect(resp.status).toEqual(200);
     expect(resp.type).toBe('application/json');
   });
 
-  test("Status code is 404 if the post doesn't exist", async () => {
-    const resp = await request(webapp)
-      .put(`/posts/2`)
-      .send('description=test description edited');
+  test("Status code is 404 if comment doesn't exist", async () => {
+    const resp = await request(webapp).delete(`/posts/2`);
     expect(resp.status).toEqual(404);
     expect(resp.type).toBe('application/json');
   });
 
-  test('Update comment endpoint status code and data', async () => {
-    const resp = await request(webapp)
-      .put(`/comments/${testCmtID}`)
-      .send('text=text edited');
+  test('Delete a comment with id', async () => {
+    const resp = await request(webapp).delete(`/comments/${testCmtID}/`);
     expect(resp.status).toEqual(200);
     expect(resp.type).toBe('application/json');
+    const nocmt = await request(webapp).get(`/comments/${testCmtID}/`);
+    expect(nocmt.status).toEqual(404);
   });
 
-  test('Status code is 404 if comment not found', async () => {
-    const resp = await request(webapp)
-      .put(`/comments/1`)
-      .send('text=text edited');
+  test("Status code is 404 if comment doesn't exist", async () => {
+    const resp = await request(webapp).get(`/comments/2`);
     expect(resp.status).toEqual(404);
-    expect(resp.type).toBe('application/json');
-  });
-
-  test('Status code is 404 if any field missing for comment update', async () => {
-    const resp = await request(webapp).put(`/comments/${testCmtID}`).send('');
-    expect(resp.status).toEqual(400);
     expect(resp.type).toBe('application/json');
   });
 });

@@ -33,23 +33,23 @@ const getDB = async () => {
   return MongoConnection.db('photofolio');
 };
 
-const register = async (db,newUser) => {
-  try{
+const register = async (db, newUser) => {
+  try {
     const users = db.collection('users');
     const result = await users.insertOne(newUser);
     return result.insertedId.toString();
-  }catch(err){
+  } catch (err) {
     throw new Error('Error in register the user');
   }
 };
 
 const login = async (db, username, password) => {
-  try{
+  try {
     const users = db.collection('users');
-    const query = {username, password};
+    const query = { username, password };
     const cursor = await users.findOne(query);
     return cursor;
-  }catch(error){
+  } catch (error) {
     throw new Error('Error while login');
   }
 };
@@ -138,15 +138,19 @@ const getUserPosts = async (id) => {
 
 const getAPost = async (id) => {
   const db = await getDB(); // connect to database
+  let results;
   try {
-    const results = await db
+    results = await db
       .collection('posts')
       .find({ _id: ObjectId(id) })
       .toArray();
+    if (results.length === 0) throw Error('post not found');
     console.log(`Post: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw err;
   }
+  return results;
 };
 
 const addPost = async (newPost) => {
@@ -157,7 +161,7 @@ const addPost = async (newPost) => {
   } catch (error) {
     return error.message;
   }
-  console.log(`Created post with id: ${inserted}`);
+  console.log(`Created post with id: ${inserted.insertedId}`);
   return inserted;
 };
 
@@ -185,9 +189,11 @@ const deletePost = async (id) => {
     const results = await db
       .collection('posts')
       .deleteOne({ _id: ObjectId(id) });
+    if (results.deletedCount === 0) throw Error();
     console.log(`Post updated: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
   }
 };
 
@@ -220,9 +226,11 @@ const getAComment = async (id) => {
       .collection('comments')
       .find({ _id: ObjectId(id) })
       .toArray();
+    if (results.length === 0) throw Error('no comment found');
     console.log(`Comment: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
   }
   return results;
 };
@@ -245,6 +253,7 @@ const deleteComment = async (id) => {
   let results;
   try {
     deleted = await db.collection('comments').findOne({ _id: ObjectId(id) });
+    if (!deleted) throw Error("comment doesn't exist");
     results = await db.collection('comments').deleteOne({ _id: ObjectId(id) });
     console.log(`Comment removed: ${JSON.stringify(results)}`);
     const updatedpost = await db
@@ -256,6 +265,7 @@ const deleteComment = async (id) => {
     console.log(`Post updated: ${JSON.stringify(updatedpost)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
   }
   return results;
 };

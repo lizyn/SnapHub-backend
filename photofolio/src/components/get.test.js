@@ -96,6 +96,7 @@ describe('GET post(s) endpoint integration test', () => {
     } catch (err) {
       return err;
     }
+    return 1;
   });
 
   test("Get user's posts endpoint status code and data", async () => {
@@ -106,6 +107,22 @@ describe('GET post(s) endpoint integration test', () => {
     expect(postArr).toEqual(
       expect.arrayContaining([
         { _id: testPostID, comments: ['', testCmtID], ...testPost }
+      ])
+    );
+  });
+
+  test('Get a post endpoint status code and data', async () => {
+    const resp = await request(webapp).get(`/posts/${testPostID}`);
+    expect(resp.status).toEqual(200);
+    expect(resp.type).toBe('application/json');
+    const newpost = JSON.parse(resp.text).data;
+    expect(newpost).toEqual(
+      expect.arrayContaining([
+        {
+          _id: testPostID,
+          comments: ['', testCmtID],
+          ...testPost
+        }
       ])
     );
   });
