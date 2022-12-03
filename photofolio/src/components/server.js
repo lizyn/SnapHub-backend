@@ -315,6 +315,47 @@ webapp.put('/comments/:id', async (req, res) => {
   }
 });
 
+/** ------------------------------ Misc End Points ------------------------------*/
+webapp.get('/follower-suggestions/:id', async (req, res) => {
+  try {
+    // userId of whom the id is following
+    const followingIds = await dbLib.getFollowingIds(req.params.id);
+    // userIds of users who have similar taste to the id (following the same person)
+    const sameTasteIds = [];
+    // userIds of users to recommend (following at least 3+ same users)
+    const suggestUserIdSet = new Set();
+    // key = userId, value = number of same following they share with id
+    const sameTasteCounts = {};
+    await Promise.all(
+      followingIds.map(async (followingId) => {
+        sameTasteIds.push(...(await dbLib.getFollowerIds(followingId)));
+      })
+    );
+    sameTasteIds.forEach((id) => {
+      if (id === req.params.id || id.toString() === req.params.id) return; // skip the user themselves
+      const count = (sameTasteCounts[id] || 0) + 1;
+      sameTasteCounts[id] = count;
+      if (count === 3) suggestUserIdSet.add(id);
+    });
+    const total = req.query.limit || 6;
+    const suggestUserIds = Array.from(suggestUserIdSet);
+    const suggestedUsers = [];
+    suggestedUsers.push(...(await dbLib.getAFewUsers(suggestUserIds)));
+    // fill the suggestion list with other random users
+    if (suggestUserIds.length < total) {
+      suggestedUsers.push(
+        ...(await dbLib.getRandomUsers(total - suggestUserIds.length, [
+          ...suggestUserIds,
+          req.params.id
+        ]))
+      );
+    }
+    res.status(200).json(suggestedUsers);
+  } catch (err) {
+    res.status(404).json({ message: `${err.message}` });
+  }
+});
+
 // catch all endpoint
 webapp.use((req, resp) => {
   resp.status(404).json({ error: 'invalid endpoint' });
