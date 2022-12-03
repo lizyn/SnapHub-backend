@@ -196,7 +196,7 @@ webapp.get('/posts/:id', async (req, res) => {
 });
 
 // POST
-webapp.post('/posts/', (req, res) => {
+webapp.post('/posts/', async (req, res) => {
   // console.log('CREATE a post');
   const form = new formidable.IncomingForm();
   form.multiples = true;
@@ -205,9 +205,8 @@ webapp.post('/posts/', (req, res) => {
   // const uploadFolder = path.join(__dirname, 'files');
   // form.uploadDir = uploadFolder;
 
-  form.parse(req, (err, fields, files) => {
+  form.parse(req, async (err, fields, files) => {
     if (err) {
-      // console.log(err);
       res.status(404).json({ error: err.message });
       return;
     }
@@ -215,25 +214,26 @@ webapp.post('/posts/', (req, res) => {
     // upload file to AWS s3
     // the following code assume there are multiple files
     // but in our implementation, there is only one file.
-    // const photoUrls = [];
-    Object.keys(files).forEach(async (key) => {
-      const value = files[key];
-      try {
-        console.log(s3manips.uploadFile(value));
-        // await photoUrls.push(tmp);
-      } catch (error) {
-        console.log(error.message);
-      }
-    });
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          console.log(error.message);
+        }
+      })
+    );
 
-    // const newPost = {
-    //   ...fields,
-    //   userId: parseInt(fields.userId, 10),
-    //   photo: photoUrls[0]
-    // };
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0]
+    };
     // console.log(newPost);
-    // axios.post()
-    res.status(201).json({ message: 'post uploaded' });
+    dbLib.addPost(newPost);
+    res.status(201).json({ message: 'post created' });
   });
 });
 

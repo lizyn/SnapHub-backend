@@ -14,9 +14,9 @@ const s3 = new AWS.S3({
 });
 
 // upload a file
-const uploadFile = (file) => {
+const uploadFile = async (file) => {
   const fileContent = fs.readFileSync(file.filepath);
-
+  // const fileContent = fs.readFileSync(file);
   // Setting up S3 upload parameters
   const params = {
     Bucket: BUCKET_NAME,
@@ -25,16 +25,28 @@ const uploadFile = (file) => {
   };
 
   // Uploading files to the bucket
-  s3.upload(params, (err, data) => {
-    if (err) {
-      throw err;
-    }
-    console.log(`File uploaded successfully. ${data.Location}`);
-    return '1123';
+  // const location = await s3.upload(params, (err, data) => {
+  //   if (err) {
+  //     return err;
+  //   }
+  //   console.log(`File uploaded successfully. ${data.Location}`);
+  //   return data.Location;
+  // });
+  // console.log(location);
+  // return location;
+
+  return new Promise((resolve, reject) => {
+    s3.upload(params, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        console.log(`File uploaded successfully. ${data.Location}`);
+        resolve(data);
+      }
+    });
   });
 };
-
-// uploadFile('cat.jpg');
+// console.log(await uploadFile('cat.jpg'));
 
 // read a file
 const readFile = async (fileName) => {
