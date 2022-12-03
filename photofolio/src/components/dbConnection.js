@@ -33,23 +33,23 @@ const getDB = async () => {
   return MongoConnection.db('photofolio');
 };
 
-const register = async (db,newUser) => {
-  try{
+const register = async (db, newUser) => {
+  try {
     const users = db.collection('users');
     const result = await users.insertOne(newUser);
     return result.insertedId.toString();
-  }catch(err){
+  } catch (err) {
     throw new Error('Error in register the user');
   }
 };
 
 const login = async (db, username, password) => {
-  try{
+  try {
     const users = db.collection('users');
-    const query = {username, password};
+    const query = { username, password };
     const cursor = await users.findOne(query);
     return cursor;
-  }catch(error){
+  } catch (error) {
     throw new Error('Error while login');
   }
 };
@@ -151,14 +151,13 @@ const getAPost = async (id) => {
 
 const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
-  let inserted;
-  try {
-    inserted = await db.collection('posts').insertOne(newPost);
-  } catch (error) {
-    return error.message;
-  }
-  console.log(`Created post with id: ${inserted}`);
-  return inserted;
+  db.collection('posts').insertOne(newPost, (err, result) => {
+    if (err) {
+      console.log(`error: ${err.message}`);
+      return;
+    }
+    console.log(`Created post with id: ${result.insertedId}`);
+  });
 };
 
 const updatePost = async (id, newPost) => {

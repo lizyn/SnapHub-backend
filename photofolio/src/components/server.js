@@ -19,8 +19,12 @@ webapp.use(cors());
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
+// webapp.use(express.json());
 
-// (7) import the db interactions module
+// (7) import the aws and db interactions module
+const path = require('path');
+const formidable = require('formidable');
+const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
 
 // (8) declare a db reference variable
@@ -63,44 +67,43 @@ webapp.get('/', (req, resp) => {
   resp.json({ message: 'welcome to our backend!!!' });
 });
 
-//login
-webapp.get(`/account/username=${user}&password=${pwd}`, async(req,res) =>{
-  try{
-    const results = await dbLib.closeMongoDBConnection(db, req.params.username, req.params.password);
-    if(results === null){
-      res.status(401).json({message: "wrong password"});
-      return;
-    }
-    res.status(201).json({data: { id: results._id.toString(), ... results} });
-  }catch(err){
-    res.status(404).json({message: "There is an login error"});
-  }
-});
+// //login
+// webapp.get(`/account/username=${user}&password=${pwd}`, async(req,res) =>{
+//   try{
+//     const results = await dbLib.closeMongoDBConnection(db, req.params.username, req.params.password);
+//     if(results === null){
+//       res.status(401).json({message: "wrong password"});
+//       return;
+//     }
+//     res.status(201).json({data: { id: results._id.toString(), ... results} });
+//   }catch(err){
+//     res.status(404).json({message: "There is an login error"});
+//   }
+// });
 
-
-//register
-webapp.post('/users', async(req, res)=>{
-  if(!req.body || !req.body.username
-    || !req.body.password){
-      res.status(404).json({message: 'missing information in registration'});
-      return;
-    }
-    const newUser = {
-      username: req.body.username,
-      user_avatar: '/',
-      following: [],
-      followed: [],
-      password: req.body.password,      
-    };
-    try{
-      const result = await dbLib.register(db,newUser);
-      res.status(201).json({
-        user: {id: result, ...newUser},
-      });
-    }catch(err){
-      res.status(404).json({message: error});
-    }
-})
+// //register
+// webapp.post('/users', async(req, res)=>{
+//   if(!req.body || !req.body.username
+//     || !req.body.password){
+//       res.status(404).json({message: 'missing information in registration'});
+//       return;
+//     }
+//     const newUser = {
+//       username: req.body.username,
+//       user_avatar: '/',
+//       following: [],
+//       followed: [],
+//       password: req.body.password,
+//     };
+//     try{
+//       const result = await dbLib.register(db,newUser);
+//       res.status(201).json({
+//         user: {id: result, ...newUser},
+//       });
+//     }catch(err){
+//       res.status(404).json({message: error});
+//     }
+// })
 
 // implement the GET /students endpoint
 webapp.get('/users', async (req, res) => {
@@ -170,7 +173,6 @@ webapp.get('/users/:id/feed', async (req, res) => {
   }
 });
 
-
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
   console.log('GET posts by a user');
@@ -195,17 +197,50 @@ webapp.get('/posts/:id', async (req, res) => {
 
 // POST
 webapp.post('/posts/', async (req, res) => {
-  console.log('CREATE a post');
-  if (!req.body.photo || !req.body.userId) {
-    res.status(404).json({ message: 'must have a photo to create post' });
-    return;
-  }
-  try {
-    const result = await dbLib.addPost(req.body);
-    res.status(201).json({ data: { result } });
-  } catch (err) {
-    res.status(409).json({ message: 'there was error' });
-  }
+  // console.log('CREATE a post');
+  const form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.maxFileSize = 20 * 1024 * 1024; // 2MB
+  form.keepExtensions = true;
+  // const uploadFolder = path.join(__dirname, 'files');
+  // form.uploadDir = uploadFolder;
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+    if (!fields.photo || !fields.userId) {
+      res
+        .status(409)
+        .json({ error: 'must have a photo and userId to create post' });
+      return;
+    }
+
+    // upload file to AWS s3
+    // the following code assume there are multiple files
+    // but in our implementation, there is only one file.
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          console.log(error.message);
+        }
+      })
+    );
+
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0]
+    };
+    // console.log(newPost);
+    dbLib.addPost(newPost);
+    res.status(201).json({ message: 'post created' });
+  });
 });
 
 // DELETE
