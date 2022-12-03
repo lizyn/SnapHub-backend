@@ -207,7 +207,13 @@ webapp.post('/posts/', async (req, res) => {
 
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      res.status(404).json({ error: err.message });
+      res.status(409).json({ error: err.message });
+      return;
+    }
+    if (!fields.photo || !fields.userId) {
+      res
+        .status(409)
+        .json({ error: 'must have a photo and userId to create post' });
       return;
     }
 
