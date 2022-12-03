@@ -126,6 +126,9 @@ const getUserPosts = async (id) => {
   try {
     // save posts that has userId = the param id
     posts = await db.collection('posts').find({ userId: id }).toArray();
+    if (!posts) {
+      return new Error("user doesn't exist");
+    }
     console.log(`Posts by this user: ${JSON.stringify(posts)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
@@ -169,8 +172,9 @@ const updatePost = async (id, newPost) => {
       );
     console.log(`Post updated: ${JSON.stringify(results)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    throw new Error('invalid update');
   }
+  console.log(results);
   return results;
 };
 
@@ -188,17 +192,17 @@ const deletePost = async (id) => {
 
 const addComment = async (newComment) => {
   const db = await getDB();
-  let commentId;
+  // let commentId;
   let result;
   try {
     result = await db.collection('comments').insertOne(newComment);
     console.log(`comment id is ${result.insertedId}`);
-    commentId = result.insertedId;
+    // commentId = result.insertedId;
     const updatedPost = await db
       .collection('posts')
       .updateOne(
         { _id: ObjectId(newComment.postId) },
-        { $push: { comments: commentId } }
+        { $push: { comments: result.insertedId } }
       );
     console.log(`Post updated: ${JSON.stringify(updatedPost)}`);
   } catch (err) {
@@ -209,8 +213,9 @@ const addComment = async (newComment) => {
 
 const getAComment = async (id) => {
   const db = await getDB();
+  let results;
   try {
-    const results = await db
+    results = await db
       .collection('comments')
       .find({ _id: ObjectId(id) })
       .toArray();
@@ -218,6 +223,7 @@ const getAComment = async (id) => {
   } catch (err) {
     console.log(`error: ${err.message}`);
   }
+  return results;
 };
 
 const updateComment = async (id, newComment) => {
@@ -228,7 +234,7 @@ const updateComment = async (id, newComment) => {
       .updateOne({ _id: ObjectId(id) }, { $set: { text: newComment.text } });
     console.log(`comment updated: ${JSON.stringify(results)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    throw new Error('comment update failed');
   }
 };
 
