@@ -61,7 +61,6 @@ let db;
 //   console.log(`Server running on port: ${port}`);
 // });
 
-
 // root endpoint / route
 webapp.get('/', (req, resp) => {
   resp.json({ message: 'welcome to our backend!!!' });
@@ -210,7 +209,7 @@ webapp.post('/posts/', async (req, res) => {
       res.status(409).json({ error: err.message });
       return;
     }
-    if (!fields.photo || !fields.userId) {
+    if (Object.keys(files).length === 0 || !fields.userId) {
       res
         .status(409)
         .json({ error: 'must have a photo and userId to create post' });
