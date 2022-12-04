@@ -22,7 +22,7 @@ webapp.use(express.urlencoded({ extended: true }));
 // webapp.use(express.json());
 
 // (7) import the aws and db interactions module
-const path = require('path');
+// const path = require('path');
 const formidable = require('formidable');
 const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
