@@ -62,9 +62,9 @@ let db;
 // });
 
 // root endpoint / route
-webapp.get('/', (req, resp) => {
-  resp.json({ message: 'welcome to our backend!!!' });
-});
+// webapp.get('/', (req, resp) => {
+//   resp.json({ message: 'welcome to our backend!!!' });
+// });
 
 // //login
 // webapp.get(`/account/username=${user}&password=${pwd}`, async(req,res) =>{
@@ -228,6 +228,7 @@ webapp.post('/posts/', async (req, res) => {
           photoUrls.push(data.Location);
         } catch (error) {
           console.log(error.message);
+          res.status(404).json({ error: err.message });
         }
       })
     );
@@ -237,8 +238,8 @@ webapp.post('/posts/', async (req, res) => {
       photo: photoUrls[0]
     };
     // console.log(newPost);
-    dbLib.addPost(newPost);
-    res.status(201).json({ message: 'post created' });
+    const result = await dbLib.addPost(newPost);
+    res.status(201).json({ data: result });
   });
 });
 

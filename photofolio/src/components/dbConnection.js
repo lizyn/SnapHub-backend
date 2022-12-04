@@ -197,13 +197,14 @@ const getAPost = async (id) => {
 
 const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
-  db.collection('posts').insertOne(newPost, (err, result) => {
-    if (err) {
-      console.log(`error: ${err.message}`);
-      return;
-    }
-    console.log(`Created post with id: ${result.insertedId}`);
-  });
+  let inserted;
+  try {
+    inserted = await db.collection('posts').insertOne(newPost);
+  } catch (error) {
+    return error.message;
+  }
+  console.log(`Created post with id: ${inserted.insertedId}`);
+  return inserted;
 };
 
 const updatePost = async (id, newPost) => {
