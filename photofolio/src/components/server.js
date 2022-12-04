@@ -15,13 +15,17 @@ const webapp = express();
 webapp.use(cors());
 
 // (5) define the port
-const port = 8080;
+// const port = 8080;
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
 webapp.use(express.json());
 
-// (7) import the db interactions module
+
+// (7) import the aws and db interactions module
+// const path = require('path');
+const formidable = require('formidable');
+const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
 
 // (8) declare a db reference variable
@@ -61,9 +65,6 @@ webapp.listen(port, async () => {
 });
 
 // root endpoint / route
-webapp.get('/', (req, resp) => {
-  resp.json({ message: 'welcome to our backend!!!' });
-});
 
 //login
 webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
@@ -75,12 +76,11 @@ webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
       res.status(401).json({message: "wrong password"});
       return;
     }
-    res.status(201).json({data: { id: results._id.toString(), ... results} });
-  }catch(err){
-    res.status(404).json({message: "There is an login error"});
+    res.status(201).json({ data: { id: results._id, ...results } });
+  } catch (err) {
+    res.status(404).json({ message: 'There is an login error' });
   }
 });
-
 
 //register
 webapp.post('/users', async (req, res) => {
@@ -120,12 +120,12 @@ webapp.get('/users', async (req, res) => {
   }
 });
 
-// implement the GET /student/:id endpoint
+// implement the GET /user/:id endpoint
 webapp.get('/user/:id', async (req, res) => {
   console.log('GET a user');
   try {
     // get the data from the db
-    const results = await dbLib.getAStudent(db, req.params.id);
+    const results = await dbLib.getAUser(db, req.params.id);
     // send the response with the appropriate status code
     res.status(200).json({ data: results });
   } catch (err) {
@@ -175,7 +175,6 @@ webapp.get('/users/:id/feed', async (req, res) => {
   }
 });
 
-
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
   console.log('GET posts by a user');
@@ -191,7 +190,7 @@ webapp.get('/users/:id/posts', async (req, res) => {
 webapp.get('/posts/:id', async (req, res) => {
   console.log('GET a post');
   try {
-    const results = await dbLib.getAStudent(req.params.id);
+    const results = await dbLib.getAPost(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
@@ -200,17 +199,51 @@ webapp.get('/posts/:id', async (req, res) => {
 
 // POST
 webapp.post('/posts/', async (req, res) => {
-  console.log('CREATE a post');
-  if (!req.body.photo || !req.body.userId) {
-    res.status(404).json({ message: 'must have a photo to create post' });
-    return;
-  }
-  try {
-    const result = await dbLib.addPost(req.body);
-    res.status(201).json({ data: { id: result, ...req.body } });
-  } catch (err) {
-    res.status(409).json({ message: 'there was error' });
-  }
+  // console.log('CREATE a post');
+  const form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.maxFileSize = 20 * 1024 * 1024; // 2MB
+  form.keepExtensions = true;
+  // const uploadFolder = path.join(__dirname, 'files');
+  // form.uploadDir = uploadFolder;
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+    if (Object.keys(files).length === 0 || !fields.userId) {
+      res
+        .status(409)
+        .json({ error: 'must have a photo and userId to create post' });
+      return;
+    }
+
+    // upload file to AWS s3
+    // the following code assume there are multiple files
+    // but in our implementation, there is only one file.
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          console.log(error.message);
+          res.status(404).json({ error: err.message });
+        }
+      })
+    );
+
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0]
+    };
+    // console.log(newPost);
+    const result = await dbLib.addPost(newPost);
+    res.status(201).json({ data: result });
+  });
 });
 
 // DELETE
@@ -227,10 +260,10 @@ webapp.delete('/posts/:id', async (req, res) => {
 // PUT
 webapp.put('/posts/:id', async (req, res) => {
   console.log('UPDATE a post');
-  if (!req.body.photo) {
-    res.status(404).json({ message: 'must contain a photo to update' });
-    return;
-  }
+  // if (!req.body.photo) {
+  //   res.status(404).json({ message: 'must contain a photo to update' });
+  //   return;
+  // }
   try {
     const result = await dbLib.updatePost(req.params.id, req.body);
     res.status(200).json({ message: result });
@@ -248,7 +281,7 @@ webapp.post('/comments/', async (req, res) => {
   }
   try {
     const result = await dbLib.addComment(req.body);
-    res.status(201).json({ data: { result } });
+    res.status(201).json({ data: result });
   } catch (err) {
     res.status(409).json({ message: 'there was error' });
   }
@@ -261,6 +294,7 @@ webapp.get('/comments/:id', async (req, res) => {
     const results = await dbLib.getAComment(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
+    console.log('server.js: error catched');
     res.status(404).json({ message: 'there was error' });
   }
 });
@@ -270,7 +304,7 @@ webapp.delete('/comments/:id', async (req, res) => {
   console.log('DELETE a comment');
   try {
     const result = await dbLib.deleteComment(req.params.id);
-    res.status(200).json({ message: result });
+    res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
   }
@@ -280,14 +314,55 @@ webapp.delete('/comments/:id', async (req, res) => {
 webapp.put('/comments/:id', async (req, res) => {
   console.log('UPDATE a comment');
   if (!req.body.text) {
-    res.status(404).json({ message: 'must contain text content to update' });
+    res.status(400).json({ message: 'must contain text content to update' });
     return;
   }
   try {
     const result = await dbLib.updateComment(req.params.id, req.body);
-    res.status(200).json({ message: result });
+    res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
+  }
+});
+
+/** ------------------------------ Misc End Points ------------------------------*/
+webapp.get('/follower-suggestions/:id', async (req, res) => {
+  try {
+    // userId of whom the id is following
+    const followingIds = await dbLib.getFollowingIds(req.params.id);
+    // userIds of users who have similar taste to the id (following the same person)
+    const sameTasteIds = [];
+    // userIds of users to recommend (following at least 3+ same users)
+    const suggestUserIdSet = new Set();
+    // key = userId, value = number of same following they share with id
+    const sameTasteCounts = {};
+    await Promise.all(
+      followingIds.map(async (followingId) => {
+        sameTasteIds.push(...(await dbLib.getFollowerIds(followingId)));
+      })
+    );
+    sameTasteIds.forEach((id) => {
+      if (id === req.params.id || id.toString() === req.params.id) return; // skip the user themselves
+      const count = (sameTasteCounts[id] || 0) + 1;
+      sameTasteCounts[id] = count;
+      if (count === 3) suggestUserIdSet.add(id);
+    });
+    const total = req.query.limit || 6;
+    const suggestUserIds = Array.from(suggestUserIdSet);
+    const suggestedUsers = [];
+    suggestedUsers.push(...(await dbLib.getAFewUsers(suggestUserIds)));
+    // fill the suggestion list with other random users
+    if (suggestUserIds.length < total) {
+      suggestedUsers.push(
+        ...(await dbLib.getRandomUsers(total - suggestUserIds.length, [
+          ...suggestUserIds,
+          req.params.id
+        ]))
+      );
+    }
+    res.status(200).json(suggestedUsers);
+  } catch (err) {
+    res.status(404).json({ message: `${err.message}` });
   }
 });
 
