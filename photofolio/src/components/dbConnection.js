@@ -16,7 +16,7 @@ const connect = async () => {
     console.log(
       `Connected to database: ${MongoConnection.db('photofolio').databaseName}`
     );
-    return MongoConnection.db();
+    return MongoConnection;
   } catch (err) {
     console.error(err.message);
     throw err;
