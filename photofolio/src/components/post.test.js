@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { ObjectId } = require('mongodb');
+const path = require('path');
 const { closeMongoDBConnection, connect } = require('./dbConnection');
 const webapp = require('./server');
 
@@ -9,6 +10,8 @@ describe('GET post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
+  const testFileName = 'testFile.jpg';
+  const testFilePath = path.join(__dirname, testFileName);
   //   test resource to create / expected response
   //   const testFollowee = {
   //     firstName: 'test',
@@ -85,22 +88,21 @@ describe('GET post(s) endpoint integration test', () => {
 
   test('create a post returns 201 if request is valid', async () => {
     const resp = await request(webapp)
-      .post(`/posts/`)
-      .send(
-        'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]=&likes=0'
-      );
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127')
+      .attach('testimage', testFilePath);
     expect(resp.status).toEqual(201);
     expect(resp.type).toBe('application/json');
-    testPostID = JSON.parse(resp.text).data.result.insertedId;
+    testPostID = JSON.parse(resp.text).data.insertedId;
   });
 
-  test('Status code is 404 if any required field is missing', async () => {
+  test('Status code is 409 if any required field (file) is missing', async () => {
     const resp = await request(webapp)
-      .post(`/posts/`)
-      .send(
-        'userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]=&likes=0'
-      );
-    expect(resp.status).toEqual(404);
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127');
+    expect(resp.status).toEqual(409);
     expect(resp.type).toBe('application/json');
   });
 

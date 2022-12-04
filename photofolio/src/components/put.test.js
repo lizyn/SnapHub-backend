@@ -1,5 +1,6 @@
 const request = require('supertest');
 const { ObjectId } = require('mongodb');
+const path = require('path');
 const { closeMongoDBConnection, connect } = require('./dbConnection');
 const webapp = require('./server');
 
@@ -9,7 +10,8 @@ describe('PUT post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
-  // const testUserID = '638682d7b47712e0d260ce8b';
+  const testFileName = 'testFile.jpg';
+  const testFilePath = path.join(__dirname, testFileName);
   //   test resource to create / expected response
   //   const testFollowee = {
   //     firstName: 'test',
@@ -31,29 +33,21 @@ describe('PUT post(s) endpoint integration test', () => {
   //     following: []
   //   };
 
-  // const testPost = {
-  //   photo: 'someurl.jpg',
-  //   userId: '638682d7b47712e0d260ce8b',
-  //   text: 'test',
-  //   description: 'test description edited'
-  // comments: ['']
-  // };
-
   beforeAll(async () => {
     mongo = await connect();
     db = mongo.db('photofolio');
     const res = await request(webapp)
-      .post('/posts/')
-      .send(
-        'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]='
-      );
-    testPostID = JSON.parse(res.text).data.result.insertedId;
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127')
+      .attach('testimage', testFilePath);
+    console.log(JSON.parse(res.text).data);
+    testPostID = JSON.parse(res.text).data.insertedId;
     const rescmt = await request(webapp)
       .post('/comments/')
       .send(
         `text=test comment&userId=638682d7b47712e0d260ce8b&postId=${testPostID}`
       );
-    // eslint-disable-next-line no-underscore-dangle
     testCmtID = JSON.parse(rescmt.text).data.insertedId;
   });
 
