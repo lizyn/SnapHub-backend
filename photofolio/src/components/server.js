@@ -19,8 +19,12 @@ webapp.use(cors());
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
+// webapp.use(express.json());
 
-// (7) import the db interactions module
+// (7) import the aws and db interactions module
+const path = require('path');
+const formidable = require('formidable');
+const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
 
 // (8) declare a db reference variable
@@ -56,6 +60,11 @@ let db;
 //   db = await dbLib.connect();
 //   console.log(`Server running on port: ${port}`);
 // });
+
+// root endpoint / route
+//webapp.get('/', (req, resp) => {
+// resp.json({ message: 'welcome to our backend!!!' });
+//});
 
 // login
 /*
@@ -209,17 +218,50 @@ webapp.get('/posts/:id', async (req, res) => {
 
 // POST
 webapp.post('/posts/', async (req, res) => {
-  console.log('CREATE a post');
-  if (!req.body.photo || !req.body.userId) {
-    res.status(404).json({ message: 'must have a photo to create post' });
-    return;
-  }
-  try {
-    const result = await dbLib.addPost(req.body);
-    res.status(201).json({ data: { result } });
-  } catch (err) {
-    res.status(409).json({ message: 'there was error' });
-  }
+  // console.log('CREATE a post');
+  const form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.maxFileSize = 20 * 1024 * 1024; // 2MB
+  form.keepExtensions = true;
+  // const uploadFolder = path.join(__dirname, 'files');
+  // form.uploadDir = uploadFolder;
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+    if (Object.keys(files).length === 0 || !fields.userId) {
+      res
+        .status(409)
+        .json({ error: 'must have a photo and userId to create post' });
+      return;
+    }
+
+    // upload file to AWS s3
+    // the following code assume there are multiple files
+    // but in our implementation, there is only one file.
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          console.log(error.message);
+        }
+      })
+    );
+
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0]
+    };
+    // console.log(newPost);
+    dbLib.addPost(newPost);
+    res.status(201).json({ message: 'post created' });
+  });
 });
 
 // DELETE
@@ -298,6 +340,47 @@ webapp.put('/comments/:id', async (req, res) => {
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
+  }
+});
+
+/** ------------------------------ Misc End Points ------------------------------*/
+webapp.get('/follower-suggestions/:id', async (req, res) => {
+  try {
+    // userId of whom the id is following
+    const followingIds = await dbLib.getFollowingIds(req.params.id);
+    // userIds of users who have similar taste to the id (following the same person)
+    const sameTasteIds = [];
+    // userIds of users to recommend (following at least 3+ same users)
+    const suggestUserIdSet = new Set();
+    // key = userId, value = number of same following they share with id
+    const sameTasteCounts = {};
+    await Promise.all(
+      followingIds.map(async (followingId) => {
+        sameTasteIds.push(...(await dbLib.getFollowerIds(followingId)));
+      })
+    );
+    sameTasteIds.forEach((id) => {
+      if (id === req.params.id || id.toString() === req.params.id) return; // skip the user themselves
+      const count = (sameTasteCounts[id] || 0) + 1;
+      sameTasteCounts[id] = count;
+      if (count === 3) suggestUserIdSet.add(id);
+    });
+    const total = req.query.limit || 6;
+    const suggestUserIds = Array.from(suggestUserIdSet);
+    const suggestedUsers = [];
+    suggestedUsers.push(...(await dbLib.getAFewUsers(suggestUserIds)));
+    // fill the suggestion list with other random users
+    if (suggestUserIds.length < total) {
+      suggestedUsers.push(
+        ...(await dbLib.getRandomUsers(total - suggestUserIds.length, [
+          ...suggestUserIds,
+          req.params.id
+        ]))
+      );
+    }
+    res.status(200).json(suggestedUsers);
+  } catch (err) {
+    res.status(404).json({ message: `${err.message}` });
   }
 });
 

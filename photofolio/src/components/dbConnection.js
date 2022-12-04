@@ -64,6 +64,23 @@ const getUsers = async () => {
   }
 };
 
+const getAFewUsers = async (ids) => {
+  const objectIds = ids.map((id) =>
+    id instanceof ObjectId ? id : ObjectId(id)
+  );
+  const db = await getDB(); // connect to database
+  try {
+    const users = await db
+      .collection('users')
+      .find({ _id: { $in: objectIds } })
+      .toArray();
+    // console.log(users);
+    return users;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
 const getAUser = async (id) => {
   const db = await getDB(); // connect to database
   try {
@@ -76,6 +93,35 @@ const getAUser = async (id) => {
     console.log(`error: ${err.message}`);
   }
 };
+
+const getRandomUsers = async (num, excludeIds = []) => {
+  if (num <= 0) return [];
+  const excludeObjectIds = excludeIds.map((id) =>
+    id instanceof ObjectId ? id : ObjectId(id)
+  );
+  const db = await getDB(); // connect to database
+  try {
+    const randomUsers = await db
+      .collection('users')
+      .aggregate([
+        { $match: { _id: { $nin: excludeObjectIds } } },
+        { $sample: { size: num } }
+      ])
+      .toArray();
+    // console.log(randomUsers);
+    // const uniqueObjectIds = randomObjectIds.reduce((accum, current) => {
+    //   if (current !== excludeObjectId) accum.add(current);
+    //   return accum;
+    // }, new Set());
+    // const users = await getAFewUsers(uniqueObjectIds);
+    // console.log(users);
+    return randomUsers;
+  } catch (err) {
+    return new Error(`error: ${err.message}`);
+  }
+};
+
+// getRandomUsers(9, ['638682d7b47712e0d260ce8b', '63869afab587601c9ce1cbb7']);
 
 const addUser = async (newUser) => {
   const db = await getDB(); // connect to database
@@ -271,6 +317,61 @@ const deleteComment = async (id) => {
   return results;
 };
 
+const getFollowerIds = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  const db = await getDB();
+  try {
+    const followData = await db
+      .collection('follows')
+      .find({ following: objectId }, { _id: 0, following: 0 })
+      .toArray();
+    const followerIds = followData.map((obj) => obj.follower);
+    return followerIds;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowingIds = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  const db = await getDB();
+  try {
+    const followData = await db
+      .collection('follows')
+      .find({ follower: objectId }, { _id: 0, follower: 0 })
+      .toArray();
+    const followingIds = followData.map((obj) => obj.following);
+    // console.log(followingIds);
+    return followingIds;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowers = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  try {
+    const followerIds = await getFollowerIds(objectId);
+    const followers = await getAFewUsers(followerIds);
+    // console.log(followers);
+    return followers;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowings = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  try {
+    const followingIds = await getFollowingIds(objectId);
+    const followings = await getAFewUsers(followingIds);
+    // console.log(followings);
+    return followings;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
 module.exports = {
   connect,
   closeMongoDBConnection,
@@ -279,7 +380,9 @@ module.exports = {
   login,
   addUser,
   getUsers,
+  getAFewUsers,
   getAUser,
+  getRandomUsers,
   getPosts,
   getAPost,
   getUserPosts,
@@ -290,5 +393,9 @@ module.exports = {
   addComment,
   getAComment,
   deleteComment,
-  updateComment
+  updateComment,
+  getFollowerIds,
+  getFollowingIds,
+  getFollowers,
+  getFollowings
 };
