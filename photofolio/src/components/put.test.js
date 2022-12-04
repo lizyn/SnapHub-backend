@@ -10,7 +10,6 @@ describe('PUT post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
-  const testUserID = '638682d7b47712e0d260ce8b';
   const testFileName = 'testFile.jpg';
   const testFilePath = path.join(__dirname, testFileName);
   //   test resource to create / expected response
