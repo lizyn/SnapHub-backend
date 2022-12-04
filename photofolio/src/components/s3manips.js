@@ -3,14 +3,14 @@ const fs = require('fs');
 // The access ID and secret key of the S3 bucket
 const keys = require('./keys');
 
-const { ID, SECRET } = keys;
+const { S3_ID, S3_SECRET } = keys;
 
 // The name of the bucket that you have created
 const BUCKET_NAME = 'cis557fall22';
 
 const s3 = new AWS.S3({
-  accessKeyId: ID,
-  secretAccessKey: SECRET
+  accessKeyId: S3_ID,
+  secretAccessKey: S3_SECRET
 });
 
 // upload a file
