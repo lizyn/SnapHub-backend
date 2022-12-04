@@ -19,7 +19,7 @@ webapp.use(cors());
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
-// webapp.use(express.json());
+webapp.use(express.json());
 
 // (7) import the aws and db interactions module
 const path = require('path');
@@ -233,7 +233,7 @@ webapp.post('/posts/', async (req, res) => {
     }
     if (Object.keys(files).length === 0 || !fields.userId) {
       res
-        .status(409)
+        .status(404)
         .json({ error: 'must have a photo and userId to create post' });
       return;
     }
@@ -249,7 +249,7 @@ webapp.post('/posts/', async (req, res) => {
           const data = await s3manips.uploadFile(value);
           photoUrls.push(data.Location);
         } catch (error) {
-          console.log(error.message);
+          throw Error(error.message);
         }
       })
     );
@@ -258,9 +258,11 @@ webapp.post('/posts/', async (req, res) => {
       ...fields,
       photo: photoUrls[0]
     };
+    if (!newPost.userId || !newPost.photo)
+      res.status(409).json({ message: 'error creating post' });
     // console.log(newPost);
-    dbLib.addPost(newPost);
-    res.status(201).json({ message: 'post created' });
+    const data = await dbLib.addPost(newPost);
+    res.status(201).json({ message: 'post created', data });
   });
 });
 
@@ -269,7 +271,7 @@ webapp.delete('/posts/:id', async (req, res) => {
   console.log('DELETE a post');
   try {
     const result = await dbLib.deletePost(req.params.id);
-    res.status(200).json({ message: result });
+    res.status(200).json({ data: result, message: 'post deleted' });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
   }
