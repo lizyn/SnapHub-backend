@@ -62,49 +62,72 @@ let db;
 // });
 
 // root endpoint / route
+
 // webapp.get('/', (req, resp) => {
 //   resp.json({ message: 'welcome to our backend!!!' });
 // });
 
-// //login
-// webapp.get(`/account/username=${user}&password=${pwd}`, async(req,res) =>{
-//   try{
-//     const results = await dbLib.closeMongoDBConnection(db, req.params.username, req.params.password);
-//     if(results === null){
-//       res.status(401).json({message: "wrong password"});
+// login
+/*
+webapp.get(`/account/username=${user}&password=${pwd}`, async (req, res) => {
+  try {
+    const results = await dbLib.closeMongoDBConnection(
+      db,
+      req.params.username,
+      req.params.password
+    );
+    if (results === null) {
+      res.status(401).json({ message: 'wrong password' });
+      return;
+    }
+    res.status(201).json({ data: { id: results._id, ...results } });
+  } catch (err) {
+    res.status(404).json({ message: 'There is an login error' });
+  }
+});
+*/
+// login v2
+// webapp.get(`/users/`, async (req, res) => {
+//   try {
+//     const results = await dbLib.closeMongoDBConnection(
+//       db,
+//       req.params.username,
+//       req.params.password
+//     );
+//     if (results === null) {
+//       res.status(401).json({ message: 'wrong password' });
 //       return;
 //     }
-//     res.status(201).json({data: { id: results._id.toString(), ... results} });
-//   }catch(err){
-//     res.status(404).json({message: "There is an login error"});
+//     res.status(201).json({ data: { id: results._id, ...results } });
+//   } catch (err) {
+//     res.status(404).json({ message: 'There is an login error' });
 //   }
 // });
 
 // //register
-// webapp.post('/users', async(req, res)=>{
-//   if(!req.body || !req.body.username
-//     || !req.body.password){
-//       res.status(404).json({message: 'missing information in registration'});
-//       return;
-//     }
-//     const newUser = {
-//       username: req.body.username,
-//       user_avatar: '/',
-//       following: [],
-//       followed: [],
-//       password: req.body.password,
-//     };
-//     try{
-//       const result = await dbLib.register(db,newUser);
-//       res.status(201).json({
-//         user: {id: result, ...newUser},
-//       });
-//     }catch(err){
-//       res.status(404).json({message: error});
-//     }
-// })
+// webapp.post('/users', async (req, res) => {
+//   if (!req.body || !req.body.username || !req.body.password) {
+//     res.status(404).json({ message: 'missing information in registration' });
+//     return;
+//   }
+//   const newUser = {
+//     username: req.body.username,
+//     user_avatar: '/',
+//     following: [],
+//     followed: [],
+//     password: req.body.password
+//   };
+//   try {
+//     const result = await dbLib.register(db, newUser);
+//     res.status(201).json({
+//       user: { id: result, ...newUser }
+//     });
+//   } catch (err) {
+//     res.status(404).json({ message: err });
+//   }
+// });
 
-// implement the GET /students endpoint
+// implement the GET /users endpoint
 webapp.get('/users', async (req, res) => {
   console.log('GET all users');
   try {
@@ -122,7 +145,7 @@ webapp.get('/user/:id', async (req, res) => {
   console.log('GET a user');
   try {
     // get the data from the db
-    const results = await dbLib.getAStudent(db, req.params.id);
+    const results = await dbLib.getAUser(db, req.params.id);
     // send the response with the appropriate status code
     res.status(200).json({ data: results });
   } catch (err) {
@@ -187,7 +210,7 @@ webapp.get('/users/:id/posts', async (req, res) => {
 webapp.get('/posts/:id', async (req, res) => {
   console.log('GET a post');
   try {
-    const results = await dbLib.getAStudent(req.params.id);
+    const results = await dbLib.getAPost(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
@@ -291,6 +314,7 @@ webapp.get('/comments/:id', async (req, res) => {
     const results = await dbLib.getAComment(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
+    console.log('server.js: error catched');
     res.status(404).json({ message: 'there was error' });
   }
 });
@@ -310,7 +334,7 @@ webapp.delete('/comments/:id', async (req, res) => {
 webapp.put('/comments/:id', async (req, res) => {
   console.log('UPDATE a comment');
   if (!req.body.text) {
-    res.status(404).json({ message: 'must contain text content to update' });
+    res.status(400).json({ message: 'must contain text content to update' });
     return;
   }
   try {

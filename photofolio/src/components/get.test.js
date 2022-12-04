@@ -53,23 +53,22 @@ describe('GET post(s) endpoint integration test', () => {
       result = await db
         .collection('posts')
         .deleteOne({ _id: ObjectId(testPostID) });
-      const postdeleted = result.deletedCount;
-      console.log(result);
-      if (postdeleted >= 1) {
-        console.log('info', 'Successfully deleted test post');
-      } else {
-        console.log('warning', 'test post was not deleted');
-      }
+      // const postdeleted = result.deletedCount;
+      // if (postdeleted >= 1) {
+      //   console.log('info', 'Successfully deleted test post');
+      // } else {
+      //   console.log('warning', 'test post was not deleted');
+      // }
       result = await db
         .collection('comments')
         .deleteOne({ _id: ObjectId(testCmtID) });
-      const commentdeleted = result.deletedCount;
-      console.log(result);
-      if (commentdeleted >= 1) {
-        console.log('info', 'Successfully deleted test comment');
-      } else {
-        console.log('warning', 'test comment was not deleted');
-      }
+      // const commentdeleted = result.deletedCount;
+      // console.log(result);
+      // if (commentdeleted >= 1) {
+      //   console.log('info', 'Successfully deleted test comment');
+      // } else {
+      //   console.log('warning', 'test comment was not deleted');
+      // }
     } catch (err) {
       return err.message;
     }
@@ -84,18 +83,40 @@ describe('GET post(s) endpoint integration test', () => {
     } catch (err) {
       return err;
     }
+    return 1;
   });
 
   test("Get user's posts endpoint status code and data", async () => {
     const resp = await request(webapp).get(`/users/${testUserID}/posts/`);
     expect(resp.status).toEqual(200);
     expect(resp.type).toBe('application/json');
-    // const postArr = JSON.parse(resp.text).data;
-    // expect(postArr).toEqual(
-    //   expect.arrayContaining([
-    //     expect.objectContaining({ _id: testPostID, comments: [] })
-    //   ])
-    // );
+    //   const postArr = JSON.parse(resp.text).data;
+    //   expect(postArr).toEqual(
+    //     expect.arrayContaining([
+    //       { _id: testPostID, comments: ['', testCmtID], ...testPost }
+    //     ])
+    //   );
+  });
+
+  test('Status code is 404 if user not found / has no post', async () => {
+    const resp = await request(webapp).get(`/users/2022/posts/`);
+    expect(resp.status).toEqual(404);
+  });
+
+  test('Get a post endpoint status code and data', async () => {
+    const resp = await request(webapp).get(`/posts/${testPostID}`);
+    expect(resp.status).toEqual(200);
+    expect(resp.type).toBe('application/json');
+    const newpost = JSON.parse(resp.text).data;
+    expect(newpost).toEqual(
+      expect.arrayContaining([
+        {
+          _id: testPostID,
+          comments: ['', testCmtID],
+          ...testPost
+        }
+      ])
+    );
   });
 
   test("Status code is 404 if post doesn't exist", async () => {
@@ -105,7 +126,6 @@ describe('GET post(s) endpoint integration test', () => {
   });
 
   test('Get a comment endpoint status code and data', async () => {
-    console.log(testCmtID);
     const resp = await request(webapp).get(`/comments/${testCmtID}`);
     expect(resp.status).toEqual(200);
     expect(resp.type).toBe('application/json');

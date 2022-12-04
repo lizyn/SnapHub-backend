@@ -6,7 +6,7 @@ const webapp = require('./server');
 
 let mongo;
 
-describe('GET post(s) endpoint integration test', () => {
+describe('PUT post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
@@ -42,11 +42,6 @@ describe('GET post(s) endpoint integration test', () => {
       .set('Content-Type', 'multipart/form-data')
       .field('userId', '5d921d306e96d70a28989127')
       .attach('testimage', testFilePath);
-    // const res = await request(webapp)
-    //   .post('/posts/')
-    //   .send(
-    //     'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]='
-    //   );
     console.log(JSON.parse(res.text).data);
     testPostID = JSON.parse(res.text).data.insertedId;
     const rescmt = await request(webapp)
@@ -54,7 +49,6 @@ describe('GET post(s) endpoint integration test', () => {
       .send(
         `text=test comment&userId=638682d7b47712e0d260ce8b&postId=${testPostID}`
       );
-    console.log(JSON.parse(rescmt.text).data);
     testCmtID = JSON.parse(rescmt.text).data.insertedId;
   });
 
@@ -64,23 +58,23 @@ describe('GET post(s) endpoint integration test', () => {
       result = await db
         .collection('posts')
         .deleteOne({ _id: ObjectId(testPostID) });
-      const postdeleted = result.deletedCount;
-      console.log(result);
-      if (postdeleted >= 1) {
-        console.log('info', 'Successfully deleted test post');
-      } else {
-        console.log('warning', 'test post was not deleted');
-      }
+      // const postdeleted = result.deletedCount;
+      // console.log(result);
+      // if (postdeleted >= 1) {
+      //   console.log('info', 'Successfully deleted test post');
+      // } else {
+      //   console.log('warning', 'test post was not deleted');
+      // }
       result = await db
         .collection('comments')
         .deleteOne({ _id: ObjectId(testCmtID) });
-      const commentdeleted = result.deletedCount;
-      console.log(result);
-      if (commentdeleted >= 1) {
-        console.log('info', 'Successfully deleted test comment');
-      } else {
-        console.log('warning', 'test comment was not deleted');
-      }
+      // const commentdeleted = result.deletedCount;
+      // console.log(result);
+      // if (commentdeleted >= 1) {
+      //   console.log('info', 'Successfully deleted test comment');
+      // } else {
+      //   console.log('warning', 'test comment was not deleted');
+      // }
     } catch (err) {
       return err.message;
     }
@@ -95,6 +89,7 @@ describe('GET post(s) endpoint integration test', () => {
     } catch (err) {
       return err;
     }
+    return 1;
   });
 
   test('Update a post endpoint status code and data', async () => {
@@ -115,7 +110,7 @@ describe('GET post(s) endpoint integration test', () => {
 
   test('Update comment endpoint status code and data', async () => {
     const resp = await request(webapp)
-      .put(`/posts/${testCmtID}`)
+      .put(`/comments/${testCmtID}`)
       .send('text=text edited');
     expect(resp.status).toEqual(200);
     expect(resp.type).toBe('application/json');
@@ -126,6 +121,12 @@ describe('GET post(s) endpoint integration test', () => {
       .put(`/comments/1`)
       .send('text=text edited');
     expect(resp.status).toEqual(404);
+    expect(resp.type).toBe('application/json');
+  });
+
+  test('Status code is 404 if any field missing for comment update', async () => {
+    const resp = await request(webapp).put(`/comments/${testCmtID}`).send('');
+    expect(resp.status).toEqual(400);
     expect(resp.type).toBe('application/json');
   });
 });
