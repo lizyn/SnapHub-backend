@@ -345,7 +345,8 @@ webapp.put('/comments/:id', async (req, res) => {
   }
 });
 
-/** ------------------------------ Misc End Points ------------------------------*/
+/** ------------------------------ Follow End Points ------------------------------*/
+// GET follower suggestioins
 webapp.get('/follower-suggestions/:id', async (req, res) => {
   try {
     // userId of whom the id is following
@@ -383,6 +384,36 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     res.status(200).json(suggestedUsers);
   } catch (err) {
     res.status(404).json({ message: `${err.message}` });
+  }
+});
+
+// POST follow someone
+webapp.post('/follows/', async (req, res) => {
+  console.log('CREATE a follow relationship');
+  if (!req.body.follower || !req.body.following) {
+    res.status(404).json({ message: 'missing follower or following' });
+    return;
+  }
+  try {
+    const result = await dbLib.follow(req.body.follower, req.body.following);
+    res.status(201).json({ data: result, message: 'followed successfully' });
+  } catch (err) {
+    res.status(409).json({ message: err.message });
+  }
+});
+
+// DELETE unfollow someone
+webapp.delete('/follows/', async (req, res) => {
+  console.log('DELETE a follow relationship');
+  if (!req.body.follower || !req.body.following) {
+    res.status(404).json({ message: 'missing follower or following' });
+    return;
+  }
+  try {
+    const result = await dbLib.unfollow(req.body.follower, req.body.following);
+    res.status(201).json({ data: result, message: 'unfollowed successfully' });
+  } catch (err) {
+    res.status(409).json({ message: err.message });
   }
 });
 
