@@ -15,7 +15,7 @@ const webapp = express();
 webapp.use(cors());
 
 // (5) define the port
-// const port = 8080;
+const port = 8080;
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
@@ -70,7 +70,7 @@ webapp.listen(port, async () => {
 webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
   try{
     console.log(req.params.user, req.params.pwd);
-    const results = await dbLib.login(db, req.params.user, req.params.pwd);
+    const results = await dbLib.login(req.params.user, req.params.pwd);
     console.log(results);
     if(results === null){
       res.status(401).json({message: "wrong password"});
@@ -98,7 +98,7 @@ webapp.post('/users', async (req, res) => {
       password: req.body.password,      
     };
     try{
-      const result = await dbLib.register(db,newUser);
+      const result = await dbLib.register(newUser);
       res.status(201).json({
         user: {id: result, ...newUser},
       });

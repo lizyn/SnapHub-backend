@@ -1,8 +1,8 @@
 const dbLib = require('./dbConnection'); 
-const { request } = require('./server');
 const webapp = require('./server');
-const url =
-  'mongodb+srv://admin:55736photofolio@cluster557-project36.a1psu00.mongodb.net/?retryWrites=true&w=majority';
+const keys = require('./keys');
+const { DB_USER, DB_PWD } = keys;
+const url = `mongodb+srv://${DB_USER}:${DB_PWD}@cluster557-project36.a1psu00.mongodb.net/?retryWrites=true&w=majority`;
 const falseurl = 
 'mongodb+srv://admin:55736photofolio@cluster557-project36.a1psu00.mongodb.net/falsedb?retryWrites=true&w=majority';
 let db;
@@ -12,6 +12,7 @@ let db;
     try {
       const result = await db.collection('users').deleteOne({ username: 'testuser' });
       const { deletedCount } = result;
+      console.log(deletedCount);
       if (deletedCount === 1) {
         console.log('info', 'Successfully deleted testuser');
       } else {
@@ -45,7 +46,7 @@ afterEach(async () => {
     };
     test('Register test', async () => {
         db = await dbLib.connect(url);
-        await dbLib.register(db, testuser);
+        await dbLib.register(testuser);
         // find new user in the DB
         const insertedUser = await db.collection('users').findOne({ username: 'testuser' });
         expect(insertedUser.username).toEqual('testuser');
@@ -54,18 +55,9 @@ afterEach(async () => {
     test('register exception', async () => {
       db = await dbLib.connect(falseurl);
       try{
-        await dbLib.register(db, testuser)
+        await dbLib.register(testuser)
       } catch(err){
         expect(err.message).toBe('Error in register the user');
       }
   });
-    test('login test', async() => {
-      db = await dbLib.connect(url);
-      await dbLib.register(db, testuser);
-      const resp = await request(webapp).get(`/login/username=${testuser.username}&password=${testuser.password}`);
-      expect(resp.status).toEqual(201);
-      const userinfo = JSON.parse(result.data).data;
-      expect(userinfo.username).toBe("testuser");
-      expect(userinfo.password).toBe("QEWRasdf1234!");
-    })
 });

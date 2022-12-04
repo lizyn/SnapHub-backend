@@ -34,8 +34,9 @@ const getDB = async () => {
   return MongoConnection.db('photofolio');
 }
 
-const register = async (db, newUser) => {
+const register = async (newUser) => {
   try {
+    const db = getDB();
     const users = db.collection('users');
     const result = await users.insertOne(newUser);
     return result.insertedId.toString();
@@ -46,6 +47,7 @@ const register = async (db, newUser) => {
 
 const login = async (db, username, password) => {
   try {
+    const db = getDB();
     const users = db.collection('users');
     const query = { username, password };
     const cursor = await users.findOne(query);
@@ -55,15 +57,15 @@ const login = async (db, username, password) => {
   }
 };
 
-// const getUsers = async () => {
-//   const db = await getDB(); // connect to database
-//   try {
-//     const results = await db.collection('users').find({}).toArray();
-//     console.log(`Users: ${JSON.stringify(results)}`);
-//   } catch (err) {
-//     console.log(`error: ${err.message}`);
-//   }
-// };
+const getUsers = async () => {
+  const db = await getDB(); // connect to database
+  try {
+    const results = await db.collection('users').find({}).toArray();
+    console.log(`Users: ${JSON.stringify(results)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+};
 
 
 const getAFewUsers = async (ids) => {
@@ -136,37 +138,37 @@ const addUser = async (newUser) => {
   });
 };
 
-// const getPosts = async () => {
-//   const db = await getDB(); // connect to database
-//   try {
-//     const results = await db.collection('posts').find({}).toArray();
-//     console.log(`Posts: ${JSON.stringify(results)}`);
-//   } catch (err) {
-//     console.log(`error: ${err.message}`);
-//   }
-// };
+const getPosts = async () => {
+  const db = await getDB(); // connect to database
+  try {
+    const results = await db.collection('posts').find({}).toArray();
+    console.log(`Posts: ${JSON.stringify(results)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+};
 
-// const getFeed = async (id) => {
-//   const db = await getDB(); // connect to database
-//   let feed;
-//   try {
-//     // (1) get the user to find feed for
-//     const curUser = await db.collection('users').findOne({ _id: ObjectId(id) });
-//     console.log(`Current User: ${JSON.stringify(curUser)}`);
-//     // (2) get the users this user is following
-//     const followed = curUser.following;
-//     console.log(`Following: ${JSON.stringify(followed)}`);
-//     // (3) save the posts by every user in the following list to an array "feed"
-//     feed = await db
-//       .collection('posts')
-//       .aggregate([{ $match: { userId: { $in: followed } } }])
-//       .toArray();
-//     console.log(`Feed list: ${JSON.stringify(feed)}`);
-//   } catch (err) {
-//     console.log(`error: ${err.message}`);
-//   }
-//   return feed;
-// };
+const getFeed = async (id) => {
+  const db = await getDB(); // connect to database
+  let feed;
+  try {
+    // (1) get the user to find feed for
+    const curUser = await db.collection('users').findOne({ _id: ObjectId(id) });
+    console.log(`Current User: ${JSON.stringify(curUser)}`);
+    // (2) get the users this user is following
+    const followed = curUser.following;
+    console.log(`Following: ${JSON.stringify(followed)}`);
+    // (3) save the posts by every user in the following list to an array "feed"
+    feed = await db
+      .collection('posts')
+      .aggregate([{ $match: { userId: { $in: followed } } }])
+      .toArray();
+    console.log(`Feed list: ${JSON.stringify(feed)}`);
+  } catch (err) {
+    console.log(`error: ${err.message}`);
+  }
+  return feed;
+};
 
 const getUserPosts = async (id) => {
   const db = await getDB();
