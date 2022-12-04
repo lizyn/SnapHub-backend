@@ -402,8 +402,8 @@ const follow = async (follower, following) => {
         { $set: { follower: followerId, following: followingId } },
         { upsert: true }
       );
-    if (inserted.matchedCount !== 0)
-      throw Error('Follow relationship already exists');
+    // if (inserted.matchedCount !== 0)
+    //   throw Error('Follow relationship already exists');
     return inserted; // e.g. {"acknowledged":true,"modifiedCount":0,"upsertedId":"638c388bcbe1fcaa3f29067a","upsertedCount":1,"matchedCount":0}
   } catch (error) {
     throw Error(error.message);

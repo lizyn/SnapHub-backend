@@ -390,14 +390,22 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
 // POST follow someone
 webapp.post('/follows/', async (req, res) => {
   console.log('CREATE a follow relationship');
+  // console.log(req.body);
   if (!req.body.follower || !req.body.following) {
     res.status(404).json({ message: 'missing follower or following' });
     return;
   }
   try {
     const result = await dbLib.follow(req.body.follower, req.body.following);
-    res.status(201).json({ data: result, message: 'followed successfully' });
+    res.status(201).json({
+      data: result,
+      message:
+        result.matchedCount === 0
+          ? 'Followed successfully'
+          : 'Follow relationship already exists'
+    });
   } catch (err) {
+    // console.log(err.message);
     res.status(409).json({ message: err.message });
   }
 });
@@ -411,7 +419,13 @@ webapp.delete('/follows/', async (req, res) => {
   }
   try {
     const result = await dbLib.unfollow(req.body.follower, req.body.following);
-    res.status(201).json({ data: result, message: 'unfollowed successfully' });
+    res.status(201).json({
+      data: result,
+      message:
+        result.deletedCount !== 0
+          ? 'unfollowed successfully'
+          : "Follow relationship doesn't exist"
+    });
   } catch (err) {
     res.status(409).json({ message: err.message });
   }
