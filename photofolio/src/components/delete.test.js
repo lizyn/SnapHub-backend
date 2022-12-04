@@ -31,23 +31,24 @@ describe('DELETE post(s) endpoint integration test', () => {
   //     following: []
   //   };
 
-  //   const testPost = {
-  //     photo: 'someurl.jpg',
-  //     userId: '638682d7b47712e0d260ce8b',
-  //     text: 'test',
-  //     description: 'test description'
-  //     // comments: ['']
-  //   };
+  const testPost = {
+    photo: 'someurl.jpg',
+    userId: '638682d7b47712e0d260ce8b',
+    text: 'test',
+    description: 'test description'
+  };
 
   beforeAll(async () => {
     mongo = await connect();
     db = mongo.db('photofolio');
-    const res = await request(webapp)
-      .post('/posts/')
-      .send(
-        'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]='
-      );
-    testPostID = JSON.parse(res.text).data.result.insertedId;
+    // const res = await request(webapp)
+    //   .post('/posts/')
+    //   .send(
+    //     'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]='
+    //   );
+    // testPostID = JSON.parse(res.text).data.result.insertedId;
+    const res = await db.collection('posts').insertOne(testPost);
+    testPostID = res.insertedId;
     const rescmt = await request(webapp)
       .post('/comments/')
       .send(
