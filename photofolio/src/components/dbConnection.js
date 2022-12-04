@@ -173,38 +173,46 @@ const getUserPosts = async (id) => {
   try {
     // save posts that has userId = the param id
     posts = await db.collection('posts').find({ userId: id }).toArray();
-    if (!posts) {
-      return new Error("user doesn't exist");
+    if (posts.length === 0) {
+      throw Error("user doesn't exist / doesn't have posts");
     }
     console.log(`Posts by this user: ${JSON.stringify(posts)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw err;
   }
   return posts;
 };
 
 const getAPost = async (id) => {
   const db = await getDB(); // connect to database
+  let results;
   try {
-    const results = await db
+    results = await db
       .collection('posts')
       .find({ _id: ObjectId(id) })
       .toArray();
+    if (results.length === 0) throw Error('post not found');
     console.log(`Post: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw err;
   }
+  return results;
 };
 
 const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
-  db.collection('posts').insertOne(newPost, (err, result) => {
-    if (err) {
-      console.log(`error: ${err.message}`);
-      return;
-    }
-    console.log(`Created post with id: ${result.insertedId}`);
-  });
+  let inserted;
+  try {
+    inserted = await db
+      .collection('posts')
+      .insertOne({ ...newPost, comments: [] });
+  } catch (error) {
+    return error.message;
+  }
+  console.log(`Created post with id: ${inserted.insertedId}`);
+  return inserted;
 };
 
 const updatePost = async (id, newPost) => {
@@ -231,9 +239,11 @@ const deletePost = async (id) => {
     const results = await db
       .collection('posts')
       .deleteOne({ _id: ObjectId(id) });
+    if (results.deletedCount === 0) throw Error();
     console.log(`Post updated: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
   }
 };
 
@@ -266,9 +276,11 @@ const getAComment = async (id) => {
       .collection('comments')
       .find({ _id: ObjectId(id) })
       .toArray();
+    if (results.length === 0) throw Error('no comment found');
     console.log(`Comment: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
   }
   return results;
 };
@@ -291,6 +303,7 @@ const deleteComment = async (id) => {
   let results;
   try {
     deleted = await db.collection('comments').findOne({ _id: ObjectId(id) });
+    if (!deleted) throw Error("comment doesn't exist");
     results = await db.collection('comments').deleteOne({ _id: ObjectId(id) });
     console.log(`Comment removed: ${JSON.stringify(results)}`);
     const updatedpost = await db
@@ -302,6 +315,7 @@ const deleteComment = async (id) => {
     console.log(`Post updated: ${JSON.stringify(updatedpost)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
   }
   return results;
 };
