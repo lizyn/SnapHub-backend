@@ -351,7 +351,9 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
   try {
     // userId of whom the id is following
     const followingIds = await dbLib.getFollowingIds(req.params.id);
+    const followingIdSet = new Set(followingIds);
     // userIds of users who have similar taste to the id (following the same person)
+    // excluding users whom the current user is already following
     const sameTasteIds = [];
     // userIds of users to recommend (following at least 3+ same users)
     const suggestUserIdSet = new Set();
@@ -359,11 +361,14 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     const sameTasteCounts = {};
     await Promise.all(
       followingIds.map(async (followingId) => {
-        sameTasteIds.push(...(await dbLib.getFollowerIds(followingId)));
+        const candidates = await dbLib.getFollowerIds(followingId);
+        candidates.forEach((id) => {
+          if (!followingIdSet.has(id)) sameTasteIds.push(id);
+        });
       })
     );
     sameTasteIds.forEach((id) => {
-      if (id === req.params.id || id.toString() === req.params.id) return; // skip the user themselves
+      if (id === req.params.id || id.toString() === req.params.id) return; // exclude the user themselves
       const count = (sameTasteCounts[id] || 0) + 1;
       sameTasteCounts[id] = count;
       if (count === 3) suggestUserIdSet.add(id);
@@ -376,14 +381,15 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     if (suggestUserIds.length < total) {
       suggestedUsers.push(
         ...(await dbLib.getRandomUsers(total - suggestUserIds.length, [
-          ...suggestUserIds,
-          req.params.id
+          ...suggestUserIds, // users already suggested based on taste
+          ...followingIds, // users already following
+          req.params.id // user self
         ]))
       );
     }
     res.status(200).json(suggestedUsers);
   } catch (err) {
-    res.status(404).json({ message: `${err.message}` });
+    res.status(409).json({ message: `${err.message}` });
   }
 });
 
