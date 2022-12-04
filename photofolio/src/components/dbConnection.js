@@ -126,12 +126,13 @@ const getUserPosts = async (id) => {
   try {
     // save posts that has userId = the param id
     posts = await db.collection('posts').find({ userId: id }).toArray();
-    if (!posts) {
-      return new Error("user doesn't exist");
+    if (posts.length === 0) {
+      throw Error("user doesn't exist / doesn't have posts");
     }
     console.log(`Posts by this user: ${JSON.stringify(posts)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw err;
   }
   return posts;
 };

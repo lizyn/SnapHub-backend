@@ -47,7 +47,6 @@ describe('PUT post(s) endpoint integration test', () => {
       .send(
         'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]='
       );
-    console.log(JSON.parse(res.text).data.result);
     testPostID = JSON.parse(res.text).data.result.insertedId;
     const rescmt = await request(webapp)
       .post('/comments/')
@@ -55,7 +54,6 @@ describe('PUT post(s) endpoint integration test', () => {
         `text=test comment&userId=638682d7b47712e0d260ce8b&postId=${testPostID}`
       );
     // eslint-disable-next-line no-underscore-dangle
-    console.log(JSON.parse(rescmt.text).data);
     testCmtID = JSON.parse(rescmt.text).data.insertedId;
   });
 
@@ -65,23 +63,23 @@ describe('PUT post(s) endpoint integration test', () => {
       result = await db
         .collection('posts')
         .deleteOne({ _id: ObjectId(testPostID) });
-      const postdeleted = result.deletedCount;
-      console.log(result);
-      if (postdeleted >= 1) {
-        console.log('info', 'Successfully deleted test post');
-      } else {
-        console.log('warning', 'test post was not deleted');
-      }
+      // const postdeleted = result.deletedCount;
+      // console.log(result);
+      // if (postdeleted >= 1) {
+      //   console.log('info', 'Successfully deleted test post');
+      // } else {
+      //   console.log('warning', 'test post was not deleted');
+      // }
       result = await db
         .collection('comments')
         .deleteOne({ _id: ObjectId(testCmtID) });
-      const commentdeleted = result.deletedCount;
-      console.log(result);
-      if (commentdeleted >= 1) {
-        console.log('info', 'Successfully deleted test comment');
-      } else {
-        console.log('warning', 'test comment was not deleted');
-      }
+      // const commentdeleted = result.deletedCount;
+      // console.log(result);
+      // if (commentdeleted >= 1) {
+      //   console.log('info', 'Successfully deleted test comment');
+      // } else {
+      //   console.log('warning', 'test comment was not deleted');
+      // }
     } catch (err) {
       return err.message;
     }

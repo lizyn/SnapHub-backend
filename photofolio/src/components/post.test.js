@@ -49,23 +49,23 @@ describe('GET post(s) endpoint integration test', () => {
       result = await db
         .collection('posts')
         .deleteOne({ _id: ObjectId(testPostID) });
-      const postdeleted = result.deletedCount;
-      console.log(result);
-      if (postdeleted >= 1) {
-        console.log('info', 'Successfully deleted test post');
-      } else {
-        console.log('warning', 'test post was not deleted');
-      }
+      //   const postdeleted = result.deletedCount;
+      //   console.log(result);
+      //   if (postdeleted >= 1) {
+      //     console.log('info', 'Successfully deleted test post');
+      //   } else {
+      //     console.log('warning', 'test post was not deleted');
+      //   }
       result = await db
         .collection('comments')
         .deleteOne({ _id: ObjectId(testCmtID) });
-      const commentdeleted = result.deletedCount;
-      console.log(result);
-      if (commentdeleted >= 1) {
-        console.log('info', 'Successfully deleted test comment');
-      } else {
-        console.log('warning', 'test comment was not deleted');
-      }
+      //   const commentdeleted = result.deletedCount;
+      //   console.log(result);
+      //   if (commentdeleted >= 1) {
+      //     console.log('info', 'Successfully deleted test comment');
+      //   } else {
+      //     console.log('warning', 'test comment was not deleted');
+      //   }
     } catch (err) {
       return err.message;
     }
@@ -92,7 +92,6 @@ describe('GET post(s) endpoint integration test', () => {
     expect(resp.status).toEqual(201);
     expect(resp.type).toBe('application/json');
     testPostID = JSON.parse(resp.text).data.result.insertedId;
-    console.log(`testPostId is ${testPostID}`);
   });
 
   test('Status code is 404 if any required field is missing', async () => {
