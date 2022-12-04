@@ -419,7 +419,7 @@ webapp.delete('/follows/', async (req, res) => {
   }
   try {
     const result = await dbLib.unfollow(req.body.follower, req.body.following);
-    res.status(201).json({
+    res.status(200).json({
       data: result,
       message:
         result.deletedCount !== 0
