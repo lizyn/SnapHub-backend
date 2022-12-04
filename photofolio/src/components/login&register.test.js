@@ -1,4 +1,6 @@
-const dbLib = require('./dbOperationsMongoDB'); 
+const dbLib = require('./dbConnection'); 
+const { request } = require('./server');
+const webapp = require('./server');
 const url =
   'mongodb+srv://admin:55736photofolio@cluster557-project36.a1psu00.mongodb.net/?retryWrites=true&w=majority';
 const falseurl = 
@@ -43,27 +45,27 @@ afterEach(async () => {
     };
     test('Register test', async () => {
         db = await dbLib.connect(url);
-        await dbLib.register(db, testPlayer);
+        await dbLib.register(db, testuser);
         // find new user in the DB
-        const insertedUser = await db.collection('players').findOne({ player: 'testuser' });
-        expect(insertedUser.player).toEqual('testuser');
+        const insertedUser = await db.collection('users').findOne({ username: 'testuser' });
+        expect(insertedUser.username).toEqual('testuser');
     });
 
-    test('addPlayer exception', async () => {
-      db = await dbLib.connect(profiles.false);
+    test('register exception', async () => {
+      db = await dbLib.connect(falseurl);
       try{
-        await dbLib.addPlayer(db, testPlayer)
+        await dbLib.register(db, testuser)
       } catch(err){
         expect(err.message).toBe('Error in register the user');
       }
   });
     test('login test', async() => {
       db = await dbLib.connect(url);
-      const username = "Emily";
-      const password = 'ASDFadsf1234!';
-      const result = dbLib.login(db, username, password);
-      const user = json.pass(result.data).data;
-      expect(user.username).toBe("Emily");
-      expect(user.password).toBe("ASDFasdf1234!");
+      await dbLib.register(db, testuser);
+      const resp = await request(webapp).get(`/login/username=${testuser.username}&password=${testuser.password}`);
+      expect(resp.status).toEqual(201);
+      const userinfo = JSON.parse(result.data).data;
+      expect(userinfo.username).toBe("testuser");
+      expect(userinfo.password).toBe("QEWRasdf1234!");
     })
 });

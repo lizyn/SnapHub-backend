@@ -19,13 +19,14 @@ const port = 8080;
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
+webapp.use(express.json());
 
 // (7) import the db interactions module
 const dbLib = require('./dbConnection');
 
 // (8) declare a db reference variable
 let db;
-
+let con;
 // sample new user and new post (just for testing)
 // const newUser = {
 //   firstName: 'test', // req.body.firstName,
@@ -54,7 +55,8 @@ let db;
 // start the server and connect to the DB
 
 webapp.listen(port, async () => {
-  db = await dbLib.connect();
+  con = await dbLib.connect();
+  db = await dbLib.getDB();
   console.log(`Server running on port: ${port}`);
 });
 
@@ -67,7 +69,8 @@ webapp.get('/', (req, resp) => {
 webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
   try{
     console.log(req.params.user, req.params.pwd);
-    const results = await dbLib.closeMongoDBConnection(db, req.params.user, req.params.pwd);
+    const results = await dbLib.login(db, req.params.user, req.params.pwd);
+    console.log(results);
     if(results === null){
       res.status(401).json({message: "wrong password"});
       return;
@@ -80,7 +83,8 @@ webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
 
 
 //register
-webapp.post('/users', async(req, res)=>{
+webapp.post('/users', async (req, res) => {
+  console.log(req.body);
   if(!req.body || !req.body.username
     || !req.body.password){
       res.status(404).json({message: 'missing information in registration'});
