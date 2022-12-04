@@ -8,6 +8,9 @@
     "test": "jest --coverage --runInBand",
     "start": "node index.js"
   },
+  "jest": {
+    "testTimeout": 15000
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
