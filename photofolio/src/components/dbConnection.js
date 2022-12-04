@@ -204,7 +204,9 @@ const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
   let inserted;
   try {
-    inserted = await db.collection('posts').insertOne(newPost);
+    inserted = await db
+      .collection('posts')
+      .insertOne({ ...newPost, comments: [] });
   } catch (error) {
     return error.message;
   }
