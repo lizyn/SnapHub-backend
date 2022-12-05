@@ -60,14 +60,13 @@ const login = async (username, password) => {
 
 const getUsers = async () => {
   const db = await getDB(); // connect to database
+  let results;
   try {
-    const results = await db.collection('users').find({}).toArray();
-    return results;
-    // console.log(`Users: ${JSON.stringify(results)}`);
+    results = await db.collection('users').find({}).toArray();
   } catch (err) {
-    return Error(err.message);
-    // console.log(`error: ${err.message}`);
+    throw Error(err);
   }
+  return results;
 };
 
 const getAFewUsers = async (ids) => {
@@ -135,8 +134,7 @@ const addUser = async (newUser) => {
   const db = await getDB(); // connect to database
   db.collection('users').insertOne(newUser, (err, result) => {
     if (err) {
-      console.log(`error: ${err.message}`);
-      return;
+      return Error(err);
     }
     console.log(`Created user with id: ${result.insertedId}`);
   });
@@ -287,6 +285,18 @@ const getAComment = async (id) => {
     console.log(`Comment: ${JSON.stringify(results)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
+    throw Error();
+  }
+  return results;
+};
+
+const getPostComments = async (id) => {
+  const db = await getDB();
+  let results;
+  try {
+    results = await db.collection('comments').find({ postID: id }).toArray();
+    if (results.length === 0) throw Error('no comment found');
+  } catch (err) {
     throw Error();
   }
   return results;
@@ -470,6 +480,7 @@ module.exports = {
   deletePost,
   addComment,
   getAComment,
+  getPostComments,
   deleteComment,
   updateComment,
   getFollowerIds,
