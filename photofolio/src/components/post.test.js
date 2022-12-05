@@ -94,23 +94,21 @@ describe('GET post(s) endpoint integration test', () => {
     //   );
 
     const resp = await request(webapp)
-      .post('/posts/')
-      .field('api_key', 'abcd')
-      .attach('image', testFilePath);
-
-    // console.log(resp);
-    expect(resp.status).toEqual(404);
-    // expect(resp.type).toBe('application/json');
-    // testPostID = JSON.parse(resp.text).data.result.insertedId;
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127')
+      .attach('testimage', testFilePath);
+    expect(resp.status).toEqual(201);
+    expect(resp.type).toBe('application/json');
+    testPostID = JSON.parse(resp.text).data.insertedId;
   });
 
-  test('create a post returns 201 if request is valid', async () => {
+  test('Status code is 409 if any required field (file) is missing', async () => {
     const resp = await request(webapp)
-      .post('/posts/')
-      .field('userId', 'abcd')
-      .attach('file', testFilePath);
-
-    expect(resp.status).toEqual(201);
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127');
+    expect(resp.status).toEqual(409);
     expect(resp.type).toBe('application/json');
     testPostID = JSON.parse(resp.text).data.insertedId;
     // console.log(testPostID);

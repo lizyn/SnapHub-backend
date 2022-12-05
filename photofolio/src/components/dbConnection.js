@@ -1,7 +1,8 @@
 const { MongoClient, ObjectId } = require('mongodb');
+const keys = require('./keys');
 
-const url =
-  'mongodb+srv://admin:55736photofolio@cluster557-project36.a1psu00.mongodb.net/?retryWrites=true&w=majority';
+const { DB_USER, DB_PWD } = keys;
+const url = `mongodb+srv://${DB_USER}:${DB_PWD}@cluster557-project36.a1psu00.mongodb.net/?retryWrites=true&w=majority`;
 
 let MongoConnection;
 
@@ -204,7 +205,9 @@ const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
   let inserted;
   try {
-    inserted = await db.collection('posts').insertOne(newPost);
+    inserted = await db
+      .collection('posts')
+      .insertOne({ ...newPost, comments: [] });
   } catch (error) {
     return error.message;
   }
