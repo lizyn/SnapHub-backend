@@ -48,7 +48,7 @@ const register = async (newUser) => {
 
 const login = async (username, password) => {
   try {
-    const db = getDB();
+    const db = await getDB();
     const users = db.collection('users');
     const query = { username, password };
     const cursor = await users.findOne(query);
