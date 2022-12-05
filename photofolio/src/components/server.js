@@ -370,7 +370,7 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     }
     res.status(200).json(suggestedUsers);
   } catch (err) {
-    res.status(409).json({ message: `${err.message}` });
+    res.status(404).json({ message: `${err.message}` });
   }
 });
 
