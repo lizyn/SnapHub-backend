@@ -86,7 +86,13 @@ describe('GET post(s) endpoint integration test', () => {
     return 1;
   });
 
-  test('create a post returns 201 if request is valid', async () => {
+  test('Status code is 404 if any required field is missing', async () => {
+    // const resp = await request(webapp)
+    //   .post(`/posts/`)
+    //   .send(
+    //     'photo=someurl.jpg&userId=638682d7b47712e0d260ce8b&text=test&description=test description&comments[]=&likes=0'
+    //   );
+
     const resp = await request(webapp)
       .post('/posts')
       .set('Content-Type', 'multipart/form-data')
@@ -104,6 +110,8 @@ describe('GET post(s) endpoint integration test', () => {
       .field('userId', '5d921d306e96d70a28989127');
     expect(resp.status).toEqual(409);
     expect(resp.type).toBe('application/json');
+    testPostID = JSON.parse(resp.text).data.insertedId;
+    // console.log(testPostID);
   });
 
   test('create a comment returns 201 if request is valid', async () => {
