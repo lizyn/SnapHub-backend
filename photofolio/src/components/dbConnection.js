@@ -378,6 +378,74 @@ const getFollowings = async (id) => {
   }
 };
 
+const getFollowRelationshipBetween = async (follower, following) => {
+  const followerId =
+    follower instanceof ObjectId ? follower : ObjectId(follower);
+  const followingId =
+    following instanceof ObjectId ? following : ObjectId(following);
+  const db = await getDB();
+  try {
+    const result = await db
+      .collection('follows')
+      .findOne({ follower: followerId, following: followingId });
+    return result;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const follow = async (follower, following) => {
+  const followerId =
+    follower instanceof ObjectId ? follower : ObjectId(follower);
+  const followingId =
+    following instanceof ObjectId ? following : ObjectId(following);
+  const db = await getDB();
+  try {
+    const inserted = await db
+      .collection('follows')
+      .updateOne(
+        { follower: followerId, following: followingId },
+        { $set: { follower: followerId, following: followingId } },
+        { upsert: true }
+      );
+    // if (inserted.matchedCount !== 0)
+    //   throw Error('Follow relationship already exists');
+    return inserted; // e.g. {"acknowledged":true,"modifiedCount":0,"upsertedId":"638c388bcbe1fcaa3f29067a","upsertedCount":1,"matchedCount":0}
+  } catch (error) {
+    throw Error(error.message);
+  }
+};
+
+const unfollow = async (follower, following) => {
+  const db = await getDB();
+  const followerId =
+    follower instanceof ObjectId ? follower : ObjectId(follower);
+  const followingId =
+    following instanceof ObjectId ? following : ObjectId(following);
+  try {
+    const results = await db
+      .collection('follows')
+      .deleteOne({ follower: followerId, following: followingId });
+    if (results.deletedCount === 0)
+      throw Error("Follow relationship doesn't exist");
+    return results; // e.g. { acknowledged: true, deletedCount: 1 }
+  } catch (err) {
+    throw Error(err.message);
+  }
+};
+
+// unfollow('638682d7b47712e0d260ce8b', '63869b13b587601c9ce1cbb8')
+//   .then((data) => console.log(data))
+//   .catch((err) => console.log(err.message));
+
+// getFollowRelationshipBetween(
+//   '638682d7b47712e0d260ce8b',
+//   '63869b13b587601c9ce1cbb8'
+// ).then((data) => console.log(data));
+
+// follow('638682d7b47712e0d260ce8b', '63869b13b587601c9ce1cbb8')
+//   .then((data) => console.log(data))
+//   .catch((err) => console.log(err.message));
 module.exports = {
   connect,
   closeMongoDBConnection,
@@ -403,5 +471,8 @@ module.exports = {
   getFollowerIds,
   getFollowingIds,
   getFollowers,
-  getFollowings
+  getFollowings,
+  getFollowRelationshipBetween,
+  follow,
+  unfollow
 };
