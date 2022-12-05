@@ -15,12 +15,11 @@ const webapp = express();
 webapp.use(cors());
 
 // (5) define the port
-const port = 8080;
+// const port = 8080;
 
 // (6) configure express to parse bodies
 webapp.use(express.urlencoded({ extended: true }));
 webapp.use(express.json());
-
 
 // (7) import the aws and db interactions module
 // const path = require('path');
@@ -29,8 +28,8 @@ const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
 
 // (8) declare a db reference variable
-let db;
-let con;
+// let db;
+// let con;
 // sample new user and new post (just for testing)
 // const newUser = {
 //   firstName: 'test', // req.body.firstName,
@@ -58,61 +57,61 @@ let con;
 
 // start the server and connect to the DB
 
-webapp.listen(port, async () => {
-  con = await dbLib.connect();
-  db = await dbLib.getDB();
-  console.log(`Server running on port: ${port}`);
-});
+// webapp.listen(port, async () => {
+//   con = await dbLib.connect();
+//   db = await dbLib.getDB();
+//   console.log(`Server running on port: ${port}`);
+// });
 
 // root endpoint / route
 
-//login
-webapp.get('/account/username=:user&password=:pwd', async(req,res) =>{
-  try{
+// login
+webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
+  try {
     console.log(req.params.user, req.params.pwd);
     const results = await dbLib.login(req.params.user, req.params.pwd);
     console.log(results);
-    if(results === null){
-      res.status(401).json({message: "wrong password"});
+    if (results === null) {
+      res.status(401).json({ message: 'wrong password' });
       return;
     }
+    // eslint-disable-next-line no-underscore-dangle
     res.status(201).json({ data: { id: results._id, ...results } });
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
 });
 
-//register
+// register
 webapp.post('/users', async (req, res) => {
   console.log(req.body);
-  if(!req.body || !req.body.username
-    || !req.body.password){
-      res.status(404).json({message: 'missing information in registration'});
-      return;
-    }
-    const newUser = {
-      username: req.body.username,
-      user_avatar: '/',
-      following: [],
-      followed: [],
-      password: req.body.password,      
-    };
-    try{
-      const result = await dbLib.register(newUser);
-      res.status(201).json({
-        user: {id: result, ...newUser},
-      });
-    }catch(err){
-      res.status(404).json({message: error});
-    }
-})
+  if (!req.body || !req.body.username || !req.body.password) {
+    res.status(404).json({ message: 'missing information in registration' });
+    return;
+  }
+  const newUser = {
+    username: req.body.username,
+    user_avatar: '/',
+    following: [],
+    followed: [],
+    password: req.body.password
+  };
+  try {
+    const result = await dbLib.register(newUser);
+    res.status(201).json({
+      user: { id: result, ...newUser }
+    });
+  } catch (err) {
+    res.status(404).json({ message: err });
+  }
+});
 
 // implement the GET /students endpoint
 webapp.get('/users', async (req, res) => {
   console.log('GET all users');
   try {
     // get the data from the db
-    const results = await dbLib.getUsers(db);
+    const results = await dbLib.getUsers();
     // send the response with the appropriate status code
     res.status(200).json({ data: results });
   } catch (err) {
@@ -125,7 +124,7 @@ webapp.get('/user/:id', async (req, res) => {
   console.log('GET a user');
   try {
     // get the data from the db
-    const results = await dbLib.getAUser(db, req.params.id);
+    const results = await dbLib.getAUser(req.params.id);
     // send the response with the appropriate status code
     res.status(200).json({ data: results });
   } catch (err) {
@@ -230,8 +229,8 @@ webapp.post('/posts/', async (req, res) => {
           const data = await s3manips.uploadFile(value);
           photoUrls.push(data.Location);
         } catch (error) {
-          console.log(error.message);
-          res.status(404).json({ error: err.message });
+          // console.log(error.message);
+          res.status(404).json({ error: error.message });
         }
       })
     );

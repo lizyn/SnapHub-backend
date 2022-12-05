@@ -32,20 +32,21 @@ const getDB = async () => {
     await connect();
   }
   return MongoConnection.db('photofolio');
-}
+};
 
 const register = async (newUser) => {
   try {
-    const db = getDB();
+    const db = await getDB();
     const users = db.collection('users');
     const result = await users.insertOne(newUser);
+    console.log(result);
     return result.insertedId.toString();
   } catch (err) {
     throw new Error('Error in register the user');
   }
 };
 
-const login = async (db, username, password) => {
+const login = async (username, password) => {
   try {
     const db = getDB();
     const users = db.collection('users');
@@ -66,7 +67,6 @@ const getUsers = async () => {
     console.log(`error: ${err.message}`);
   }
 };
-
 
 const getAFewUsers = async (ids) => {
   const objectIds = ids.map((id) =>
