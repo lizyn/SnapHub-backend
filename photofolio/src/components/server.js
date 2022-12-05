@@ -62,9 +62,10 @@ let db;
 // });
 
 // root endpoint / route
-//webapp.get('/', (req, resp) => {
-// resp.json({ message: 'welcome to our backend!!!' });
-//});
+
+// webapp.get('/', (req, resp) => {
+//   resp.json({ message: 'welcome to our backend!!!' });
+// });
 
 // login
 /*
@@ -249,7 +250,8 @@ webapp.post('/posts/', async (req, res) => {
           const data = await s3manips.uploadFile(value);
           photoUrls.push(data.Location);
         } catch (error) {
-          throw Error(error.message);
+          // console.log(error.message);
+          res.status(409).json({ error: err.message });
         }
       })
     );
@@ -345,7 +347,8 @@ webapp.put('/comments/:id', async (req, res) => {
   }
 });
 
-/** ------------------------------ Misc End Points ------------------------------*/
+/** ------------------------------ Follow End Points ------------------------------*/
+// GET follower suggestioins
 webapp.get('/follower-suggestions/:id', async (req, res) => {
   try {
     // userId of whom the id is following
@@ -383,6 +386,50 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     res.status(200).json(suggestedUsers);
   } catch (err) {
     res.status(404).json({ message: `${err.message}` });
+  }
+});
+
+// POST follow someone
+webapp.post('/follows/', async (req, res) => {
+  console.log('CREATE a follow relationship');
+  // console.log(req.body);
+  if (!req.body.follower || !req.body.following) {
+    res.status(404).json({ message: 'missing follower or following' });
+    return;
+  }
+  try {
+    const result = await dbLib.follow(req.body.follower, req.body.following);
+    res.status(201).json({
+      data: result,
+      message:
+        result.matchedCount === 0
+          ? 'Followed successfully'
+          : 'Follow relationship already exists'
+    });
+  } catch (err) {
+    // console.log(err.message);
+    res.status(409).json({ message: err.message });
+  }
+});
+
+// DELETE unfollow someone
+webapp.delete('/follows/', async (req, res) => {
+  console.log('DELETE a follow relationship');
+  if (!req.body.follower || !req.body.following) {
+    res.status(404).json({ message: 'missing follower or following' });
+    return;
+  }
+  try {
+    const result = await dbLib.unfollow(req.body.follower, req.body.following);
+    res.status(200).json({
+      data: result,
+      message:
+        result.deletedCount !== 0
+          ? 'unfollowed successfully'
+          : "Follow relationship doesn't exist"
+    });
+  } catch (err) {
+    res.status(409).json({ message: err.message });
   }
 });
 
