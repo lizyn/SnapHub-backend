@@ -6,7 +6,7 @@ const webapp = require('./server');
 
 let mongo;
 
-describe('GET post(s) endpoint integration test', () => {
+describe('POST post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
@@ -124,12 +124,12 @@ describe('GET post(s) endpoint integration test', () => {
     testPostID = JSON.parse(resp.text).data.insertedId;
   });
 
-  test('Status code is 409 if any required field (file) is missing', async () => {
+  test('Status code is 404 if any required field (file) is missing', async () => {
     const resp = await request(webapp)
       .post('/posts')
       .set('Content-Type', 'multipart/form-data')
       .field('userId', '5d921d306e96d70a28989127');
-    expect(resp.status).toEqual(409);
+    expect(resp.status).toEqual(404);
     expect(resp.type).toBe('application/json');
   });
 
