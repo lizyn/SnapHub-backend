@@ -34,13 +34,12 @@ describe('DELETE post(s) endpoint integration test', () => {
   //     following: []
   //   };
 
-  //   const testPost = {
-  //     photo: 'someurl.jpg',
-  //     userId: '638682d7b47712e0d260ce8b',
-  //     text: 'test',
-  //     description: 'test description'
-  //     // comments: ['']
-  //   };
+  const testPost = {
+    photo: 'someurl.jpg',
+    userId: '638682d7b47712e0d260ce8b',
+    text: 'test',
+    description: 'test description'
+  };
 
   beforeAll(async () => {
     mongo = await connect();
