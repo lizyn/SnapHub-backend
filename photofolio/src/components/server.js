@@ -119,12 +119,13 @@ webapp.get('/users', async (req, res) => {
   }
 });
 
-// implement the GET /user/:id endpoint
-webapp.get('/user/:id', async (req, res) => {
+// implement the GET /users/:id endpoint
+webapp.get('/users/:id', async (req, res) => {
   console.log('GET a user');
   try {
     // get the data from the db
     const results = await dbLib.getAUser(req.params.id);
+    // console.log(results);
     // send the response with the appropriate status code
     res.status(200).json({ data: results });
   } catch (err) {
@@ -133,7 +134,7 @@ webapp.get('/user/:id', async (req, res) => {
 });
 
 // get a user's password based on id
-webapp.get('/user/:id', async (req, res) => {
+webapp.get('/users/:id', async (req, res) => {
   console.log("GET user's password");
   try {
     // get the data from the db
@@ -145,7 +146,7 @@ webapp.get('/user/:id', async (req, res) => {
   }
 });
 
-webapp.put('/user/:id', async (req, res) => {
+webapp.put('/users/:id', async (req, res) => {
   console.log("UPDATE a user's password");
   // parse the body of the request
   if (!req.body.password) {
@@ -155,7 +156,7 @@ webapp.put('/user/:id', async (req, res) => {
   try {
     const result = await dbLib.updateUser(req.params.id, req.body.password);
     // send the response with the appropriate status code
-    res.status(200).json({ message: result });
+    res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
   }

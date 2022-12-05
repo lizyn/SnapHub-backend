@@ -62,9 +62,11 @@ const getUsers = async () => {
   const db = await getDB(); // connect to database
   try {
     const results = await db.collection('users').find({}).toArray();
-    console.log(`Users: ${JSON.stringify(results)}`);
+    return results;
+    // console.log(`Users: ${JSON.stringify(results)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    return Error(err.message);
+    // console.log(`error: ${err.message}`);
   }
 };
 
@@ -92,9 +94,11 @@ const getAUser = async (id) => {
       .collection('users')
       .find({ _id: ObjectId(id) })
       .toArray();
-    console.log(`Users: ${JSON.stringify(results)}`);
+    // console.log(`Users: ${JSON.stringify(results)}`);
+    return results;
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    return Error(err.message);
+    // console.log(`error: ${err.message}`);
   }
 };
 
