@@ -103,9 +103,7 @@ const getAUser = async (id) => {
 
 const getRandomUsers = async (num, excludeIds = []) => {
   if (num <= 0) return [];
-  const excludeObjectIds = excludeIds.map((id) =>
-    id instanceof ObjectId ? id : ObjectId(id)
-  );
+  const excludeObjectIds = excludeIds.map((id) => ObjectId(id));
   const db = await getDB(); // connect to database
   try {
     const randomUsers = await db
@@ -127,8 +125,6 @@ const getRandomUsers = async (num, excludeIds = []) => {
     return new Error(`error: ${err.message}`);
   }
 };
-
-// getRandomUsers(9, ['638682d7b47712e0d260ce8b', '63869afab587601c9ce1cbb7']);
 
 const addUser = async (newUser) => {
   const db = await getDB(); // connect to database
