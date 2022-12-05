@@ -22,7 +22,7 @@ webapp.use(express.urlencoded({ extended: true }));
 webapp.use(express.json());
 
 // (7) import the aws and db interactions module
-const path = require('path');
+// const path = require('path');
 const formidable = require('formidable');
 const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
@@ -62,9 +62,10 @@ let db;
 // });
 
 // root endpoint / route
-//webapp.get('/', (req, resp) => {
-// resp.json({ message: 'welcome to our backend!!!' });
-//});
+
+// webapp.get('/', (req, resp) => {
+//   resp.json({ message: 'welcome to our backend!!!' });
+// });
 
 // login
 /*
@@ -249,7 +250,8 @@ webapp.post('/posts/', async (req, res) => {
           const data = await s3manips.uploadFile(value);
           photoUrls.push(data.Location);
         } catch (error) {
-          throw Error(error.message);
+          // console.log(error.message);
+          res.status(409).json({ error: err.message });
         }
       })
     );

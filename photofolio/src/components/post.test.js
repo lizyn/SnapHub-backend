@@ -113,24 +113,24 @@ describe('GET post(s) endpoint integration test', () => {
       await db.collection('follows').deleteOne({ _id: ObjectId(testFollowId) });
   });
 
-  test('Status code is 404 if any required field is missing', async () => {
+  test('Status code is 201 if any required field is missing', async () => {
     const resp = await request(webapp)
-      .post('/posts/')
-      .field('api_key', 'abcd')
-      .attach('image', testFilePath);
-
-    expect(resp.status).toEqual(404);
-  });
-
-  test('create a post returns 201 if request is valid', async () => {
-    const resp = await request(webapp)
-      .post('/posts/')
-      .field('userId', testUserID)
-      .attach('file', testFilePath);
-
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127')
+      .attach('testimage', testFilePath);
     expect(resp.status).toEqual(201);
     expect(resp.type).toBe('application/json');
     testPostID = JSON.parse(resp.text).data.insertedId;
+  });
+
+  test('Status code is 409 if any required field (file) is missing', async () => {
+    const resp = await request(webapp)
+      .post('/posts')
+      .set('Content-Type', 'multipart/form-data')
+      .field('userId', '5d921d306e96d70a28989127');
+    expect(resp.status).toEqual(409);
+    expect(resp.type).toBe('application/json');
   });
 
   test('create a comment returns 201 if request is valid', async () => {
