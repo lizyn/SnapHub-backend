@@ -10,6 +10,10 @@ describe('GET post(s) endpoint integration test', () => {
   let db;
   let testPostID;
   let testCmtID;
+  let testFollowId;
+  const testUserID = '638682d7b47712e0d260ce8b';
+  const testFollower = testUserID;
+  const testFollowing = '63899e8d4bd2e0bd159d0e16';
   const testFileName = 'testFile.jpg';
   const testFilePath = path.join(__dirname, testFileName);
   //   test resource to create / expected response
@@ -86,7 +90,30 @@ describe('GET post(s) endpoint integration test', () => {
     return 1;
   });
 
-  test('create a post returns 201 if request is valid', async () => {
+  test('Follow fails with 404 if any required field is missing', async () => {
+    const resp = await request(webapp)
+      .post('/follows/')
+      .send(`follower=${testFollower}`);
+
+    expect(resp.status).toEqual(404);
+  });
+
+  test('Follow a user returns 201 if request is valid', async () => {
+    const resp = await request(webapp)
+      .post('/follows/')
+      .send(`follower=${testFollower}&following=${testFollowing}`);
+
+    expect(resp.status).toEqual(201);
+    expect(resp.type).toBe('application/json');
+
+    const { data } = JSON.parse(resp.text);
+    // console.log(data);
+    testFollowId = data.upsertedId;
+    if (data.matchedCount === 0)
+      await db.collection('follows').deleteOne({ _id: ObjectId(testFollowId) });
+  });
+
+  test('Status code is 201 if any required field is missing', async () => {
     const resp = await request(webapp)
       .post('/posts')
       .set('Content-Type', 'multipart/form-data')
