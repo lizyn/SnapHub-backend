@@ -237,8 +237,11 @@ webapp.post('/posts/', async (req, res) => {
 
     const newPost = {
       ...fields,
-      photo: photoUrls[0]
+      photo: photoUrls[0],
+      comments: [],
+      date: new Date()
     };
+    console.log(newPost);
     if (!newPost.userId || !newPost.photo)
       res.status(409).json({ message: 'error creating post' });
     // console.log(newPost);
@@ -260,18 +263,47 @@ webapp.delete('/posts/:id', async (req, res) => {
 
 // PUT
 webapp.put('/posts/:id', async (req, res) => {
-  console.log('UPDATE a post');
-  // if (!req.body.photo) {
-  //   res.status(404).json({ message: 'must contain a photo to update' });
-  //   return;
-  // }
-  try {
-    const result = await dbLib.updatePost(req.params.id, req.body);
-    res.status(200).json({ message: result });
-  } catch (err) {
-    res.status(404).json({ message: 'there was error' });
-  }
+  // console.log('UPDATE a post');
+  const form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.maxFileSize = 20 * 1024 * 1024; // 2MB
+  form.keepExtensions = true;
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+
+    // upload new file to AWS s3
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          res.status(404).json({ error: error.message });
+        }
+      })
+    );
+
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0] || fields.photo
+    };
+    console.log(newPost);
+
+    try {
+      const result = await dbLib.updatePost(req.params.id, newPost);
+      res.status(200).json({ message: result });
+    } catch (error) {
+      res.status(404).json({ message: 'there was error' });
+    }
+  });
 });
+
 /** ------------------------------ The Comment End Points ------------------------------*/
 // POST
 webapp.post('/comments/', async (req, res) => {

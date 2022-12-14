@@ -53,9 +53,6 @@ describe('Database operations tests', () => {
   // test data
   const testuser = {
     username: 'testuser',
-    user_avatar: '/',
-    following: [],
-    followed: [],
     password: 'QEWRasdf1234!'
   };
   test('Register test', async () => {

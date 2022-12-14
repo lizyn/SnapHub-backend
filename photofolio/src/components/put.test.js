@@ -33,7 +33,6 @@ describe('PUT post(s) endpoint integration test', () => {
   //     following: []
   //   };
 
-
   beforeAll(async () => {
     mongo = await connect();
     db = mongo.db('hw5');
@@ -41,7 +40,8 @@ describe('PUT post(s) endpoint integration test', () => {
       .post('/posts')
       .set('Content-Type', 'multipart/form-data')
       .field('userId', '5d921d306e96d70a28989127')
-      .attach('testimage', testFilePath);
+      .field('title', 'Test post for put test')
+      .attach('photo', testFilePath);
     console.log(JSON.parse(res.text).data);
     testPostID = JSON.parse(res.text).data.insertedId;
     const rescmt = await request(webapp)
@@ -95,7 +95,12 @@ describe('PUT post(s) endpoint integration test', () => {
   test('Update a post endpoint status code and data', async () => {
     const resp = await request(webapp)
       .put(`/posts/${testPostID}`)
-      .send('description=test description edited');
+      .set('Content-Type', 'multipart/form-data')
+      .field('description', 'test description edited')
+      .field('userId', '5d921d306e96d70a28989127')
+      .field('title', 'Test post for put test')
+      .attach('photo', testFilePath);
+    // .send('description=test description edited');
     expect(resp.status).toEqual(200);
     expect(resp.type).toBe('application/json');
   });
@@ -103,7 +108,8 @@ describe('PUT post(s) endpoint integration test', () => {
   test("Status code is 404 if the post doesn't exist", async () => {
     const resp = await request(webapp)
       .put(`/posts/2`)
-      .send('description=test description edited');
+      .set('Content-Type', 'multipart/form-data')
+      .field('description', 'test description edited');
     expect(resp.status).toEqual(404);
     expect(resp.type).toBe('application/json');
   });
