@@ -31,7 +31,7 @@ describe('Database operations tests', () => {
   beforeAll(async () => {
     try {
       mongo = await dbLib.connect();
-      db = mongo.db('photofolio');
+      db = mongo.db('hw5');
     } catch (err) {
       throw Error();
     }

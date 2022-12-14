@@ -17,7 +17,7 @@ describe('test db operations not tested elsewhere', () => {
 
   beforeAll(async () => {
     mongo = await connect();
-    db = mongo.db('photofolio');
+    db = mongo.db('hw5');
   });
 
   afterAll(async () => {

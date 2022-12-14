@@ -14,7 +14,7 @@ const connect = async () => {
     });
     // Connected to db
     console.log(
-      `Connected to database: ${MongoConnection.db('photofolio').databaseName}`
+      `Connected to database: ${MongoConnection.db('hw5').databaseName}`
     );
     return MongoConnection;
   } catch (err) {
@@ -31,7 +31,7 @@ const getDB = async () => {
   if (!MongoConnection) {
     await connect();
   }
-  return MongoConnection.db('photofolio');
+  return MongoConnection.db('hw5');
 };
 
 const register = async (newUser) => {
