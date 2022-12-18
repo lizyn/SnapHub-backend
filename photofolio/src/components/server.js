@@ -285,12 +285,11 @@ webapp.get('/comments/:id', async (req, res) => {
 });
 
 // get comments of a post
-webapp.get('/post/:id/comments', async (req, res) => {
+webapp.get('/posts/:id/comments', async (req, res) => {
   try {
     const results = await dbLib.getPostComments(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
-    console.log('server.js: error catched');
     res.status(404).json({ message: 'comment not found for the post' });
   }
 });

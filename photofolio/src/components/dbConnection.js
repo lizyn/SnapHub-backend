@@ -294,7 +294,7 @@ const getPostComments = async (id) => {
   const db = await getDB();
   let results;
   try {
-    results = await db.collection('comments').find({ postID: id }).toArray();
+    results = await db.collection('comments').find({ postId: id }).toArray();
     if (results.length === 0) throw Error('no comment found');
   } catch (err) {
     throw Error();
