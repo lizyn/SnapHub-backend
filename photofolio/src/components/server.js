@@ -68,9 +68,7 @@ const dbLib = require('./dbConnection');
 // login
 webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
   try {
-    console.log(req.params.user, req.params.pwd);
     const results = await dbLib.login(req.params.user, req.params.pwd);
-    console.log(results);
     if (results === null) {
       res.status(401).json({ message: 'wrong password' });
       return;
@@ -84,7 +82,6 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
 
 // register
 webapp.post('/users', async (req, res) => {
-  console.log(req.body);
   if (!req.body || !req.body.username || !req.body.password) {
     res.status(404).json({ message: 'missing information in registration' });
     return;
@@ -108,7 +105,6 @@ webapp.post('/users', async (req, res) => {
 
 // implement the GET /students endpoint
 webapp.get('/users', async (req, res) => {
-  console.log('GET all users');
   try {
     // get the data from the db
     const results = await dbLib.getUsers();
@@ -121,7 +117,6 @@ webapp.get('/users', async (req, res) => {
 
 // implement the GET /users/:id endpoint
 webapp.get('/users/:id', async (req, res) => {
-  console.log('GET a user');
   try {
     // get the data from the db
     const results = await dbLib.getAUser(req.params.id);
@@ -135,7 +130,6 @@ webapp.get('/users/:id', async (req, res) => {
 
 // get a user's password based on id
 webapp.get('/users/:id', async (req, res) => {
-  console.log("GET user's password");
   try {
     // get the data from the db
     const results = await dbLib.getUser(req.params.id);
@@ -147,7 +141,6 @@ webapp.get('/users/:id', async (req, res) => {
 });
 
 webapp.put('/users/:id', async (req, res) => {
-  console.log("UPDATE a user's password");
   // parse the body of the request
   if (!req.body.password) {
     res.status(404).json({ message: 'missing password' });
@@ -166,7 +159,6 @@ webapp.put('/users/:id', async (req, res) => {
 
 // GET FEEDS for User
 webapp.get('/users/:id/feed', async (req, res) => {
-  console.log('GET feed for the user');
   try {
     const results = await dbLib.getFeed(req.params.id);
     res.status(200).json({ data: results });
@@ -177,7 +169,6 @@ webapp.get('/users/:id/feed', async (req, res) => {
 
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
-  console.log('GET posts by a user');
   try {
     const results = await dbLib.getUserPosts(req.params.id);
     res.status(200).json({ data: results });
@@ -188,7 +179,6 @@ webapp.get('/users/:id/posts', async (req, res) => {
 
 // GET ONE
 webapp.get('/posts/:id', async (req, res) => {
-  console.log('GET a post');
   try {
     const results = await dbLib.getAPost(req.params.id);
     res.status(200).json({ data: results });
@@ -249,7 +239,6 @@ webapp.post('/posts/', async (req, res) => {
 
 // DELETE
 webapp.delete('/posts/:id', async (req, res) => {
-  console.log('DELETE a post');
   try {
     const result = await dbLib.deletePost(req.params.id);
     res.status(200).json({ data: result, message: 'post deleted' });
@@ -260,11 +249,6 @@ webapp.delete('/posts/:id', async (req, res) => {
 
 // PUT
 webapp.put('/posts/:id', async (req, res) => {
-  console.log('UPDATE a post');
-  // if (!req.body.photo) {
-  //   res.status(404).json({ message: 'must contain a photo to update' });
-  //   return;
-  // }
   try {
     const result = await dbLib.updatePost(req.params.id, req.body);
     res.status(200).json({ message: result });
@@ -300,9 +284,19 @@ webapp.get('/comments/:id', async (req, res) => {
   }
 });
 
+// get comments of a post
+webapp.get('/post/:id/comments', async (req, res) => {
+  try {
+    const results = await dbLib.getPostComments(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    console.log('server.js: error catched');
+    res.status(404).json({ message: 'comment not found for the post' });
+  }
+});
+
 // DELETE
 webapp.delete('/comments/:id', async (req, res) => {
-  console.log('DELETE a comment');
   try {
     const result = await dbLib.deleteComment(req.params.id);
     res.status(200).json({ data: result });
@@ -313,7 +307,6 @@ webapp.delete('/comments/:id', async (req, res) => {
 
 // PUT
 webapp.put('/comments/:id', async (req, res) => {
-  console.log('UPDATE a comment');
   if (!req.body.text) {
     res.status(400).json({ message: 'must contain text content to update' });
     return;
