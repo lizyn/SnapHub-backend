@@ -8,6 +8,10 @@ const express = require('express');
 // (cross-origin resource sharing)
 const cors = require('cors');
 
+const jwt = require('jsonwebtoken');
+
+const secret = 'is_i$mysecret';
+
 // (3) create an instanece of our express app
 const webapp = express();
 
@@ -34,6 +38,7 @@ webapp.use(express.json());
 const formidable = require('formidable');
 const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
+const { ObjectID } = require('bson');
 
 // (8) declare a db reference variable
 // let db;
@@ -85,15 +90,15 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
     }
     const results = await dbLib.login(req.params.user, req.params.pwd);
 
-    console.log(results);
     if (results === null) {
       faileduser.push(req.params.user);
       res.status(401).json({ message: 'wrong password' });
       return;
     }
+
     const jwtoken = jwt.sign({username: results._id.toString()}, secret, {expiresIn: "24h"});
-    // eslint-disable-next-line no-underscore-dangle
     res.status(201).json({ data: { id: results._id.toString(), ...results }, token: jwtoken });
+
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
@@ -127,7 +132,6 @@ webapp.post('/users', async (req, res) => {
 
 // implement the GET /students endpoint
 webapp.get('/users', async (req, res) => {
-  console.log('GET all users');
   try {
     // get the data from the db
     const results = await dbLib.getUsers();
@@ -140,7 +144,6 @@ webapp.get('/users', async (req, res) => {
 
 // implement the GET /users/:id endpoint
 webapp.get('/users/:id', async (req, res) => {
-  console.log('GET a user');
   try {
     // get the data from the db
     const results = await dbLib.getAUser(req.params.id);
@@ -154,7 +157,6 @@ webapp.get('/users/:id', async (req, res) => {
 
 // get a user's password based on id
 webapp.get('/users/:id', async (req, res) => {
-  console.log("GET user's password");
   try {
     // get the data from the db
     const results = await dbLib.getUser(req.params.id);
@@ -166,7 +168,6 @@ webapp.get('/users/:id', async (req, res) => {
 });
 
 webapp.put('/users/:id', async (req, res) => {
-  console.log("UPDATE a user's password");
   // parse the body of the request
   if (!req.body.password) {
     res.status(404).json({ message: 'missing password' });
@@ -185,7 +186,6 @@ webapp.put('/users/:id', async (req, res) => {
 
 // GET FEEDS for User
 webapp.get('/users/:id/feed', async (req, res) => {
-  console.log('GET feed for the user');
   try {
     const results = await dbLib.getFeed(req.params.id);
     res.status(200).json({ data: results });
@@ -196,7 +196,6 @@ webapp.get('/users/:id/feed', async (req, res) => {
 
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
-  console.log('GET posts by a user');
   try {
     const results = await dbLib.getUserPosts(req.params.id);
     res.status(200).json({ data: results });
@@ -207,7 +206,6 @@ webapp.get('/users/:id/posts', async (req, res) => {
 
 // GET ONE
 webapp.get('/posts/:id', async (req, res) => {
-  console.log('GET a post');
   try {
     const results = await dbLib.getAPost(req.params.id);
     res.status(200).json({ data: results });
@@ -256,8 +254,11 @@ webapp.post('/posts/', async (req, res) => {
 
     const newPost = {
       ...fields,
-      photo: photoUrls[0]
+      photo: photoUrls[0],
+      comments: [],
+      date: new Date()
     };
+    console.log(newPost);
     if (!newPost.userId || !newPost.photo)
       res.status(409).json({ message: 'error creating post' });
     // console.log(newPost);
@@ -268,7 +269,6 @@ webapp.post('/posts/', async (req, res) => {
 
 // DELETE
 webapp.delete('/posts/:id', async (req, res) => {
-  console.log('DELETE a post');
   try {
     const result = await dbLib.deletePost(req.params.id);
     res.status(200).json({ data: result, message: 'post deleted' });
@@ -279,18 +279,58 @@ webapp.delete('/posts/:id', async (req, res) => {
 
 // PUT
 webapp.put('/posts/:id', async (req, res) => {
-  console.log('UPDATE a post');
-  // if (!req.body.photo) {
-  //   res.status(404).json({ message: 'must contain a photo to update' });
-  //   return;
-  // }
+  // console.log('UPDATE a post');
+  const form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.maxFileSize = 20 * 1024 * 1024; // 2MB
+  form.keepExtensions = true;
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+
+    // upload new file to AWS s3
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          res.status(404).json({ error: error.message });
+        }
+      })
+    );
+
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0] || fields.photo
+    };
+    console.log(newPost);
+
+    try {
+      const result = await dbLib.updatePost(req.params.id, newPost);
+      res.status(200).json({ message: result });
+    } catch (error) {
+      res.status(404).json({ message: 'there was error' });
+    }
+  });
+});
+
+// Hide a Post
+webapp.post('/users/hidden/:id', async (req, res) => {
+  console.log('try to hide post', req.params.id, req.body.userId);
   try {
-    const result = await dbLib.updatePost(req.params.id, req.body);
+    const result = await dbLib.hideAPost(req.body.userId, req.params.id);
     res.status(200).json({ message: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
   }
 });
+
 /** ------------------------------ The Comment End Points ------------------------------*/
 // POST
 webapp.post('/comments/', async (req, res) => {
@@ -319,9 +359,18 @@ webapp.get('/comments/:id', async (req, res) => {
   }
 });
 
+// get comments of a post
+webapp.get('/posts/:id/comments', async (req, res) => {
+  try {
+    const results = await dbLib.getPostComments(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'comment not found for the post' });
+  }
+});
+
 // DELETE
 webapp.delete('/comments/:id', async (req, res) => {
-  console.log('DELETE a comment');
   try {
     const result = await dbLib.deleteComment(req.params.id);
     res.status(200).json({ data: result });
@@ -332,7 +381,6 @@ webapp.delete('/comments/:id', async (req, res) => {
 
 // PUT
 webapp.put('/comments/:id', async (req, res) => {
-  console.log('UPDATE a comment');
   if (!req.body.text) {
     res.status(400).json({ message: 'must contain text content to update' });
     return;
@@ -345,12 +393,53 @@ webapp.put('/comments/:id', async (req, res) => {
   }
 });
 
+/** ------------------------------ Like End Points ------------------------------*/
+// like or unlike a post
+webapp.post('/posts/:id/like', async (req, res) => {
+  // get the userId from jwt authorization header (will implement when auth ready):
+  // const token = req.headers.authoriztion.split('')[1];
+  // const decoded = jwt.verify(token, secret);
+  // const authId = decoded.userId;
+  let result;
+  console.log(req.params.id, req.body.userId);
+  try {
+    // find out if user have liked the post or not:
+    const liked = await dbLib.likeStatus(req.params.id, req.body.userId);
+    if (!liked) {
+      result = await dbLib.likePost(req.params.id, req.body.userId);
+    } else {
+      result = await dbLib.unlikePost(req.params.id, req.body.userId);
+    }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
+  }
+});
+
+// check if a user has liked a post
+webapp.post('/posts/:id/liked', async (req, res) => {
+  // get the userId from jwt authorization header (will implement when auth ready):
+  // const token = req.headers.authoriztion.split('')[1];
+  // const decoded = jwt.verify(token, secret);
+  // const authId = decoded.userId;
+  let result;
+  try {
+    // find out if user have liked the post or not:
+    result = await dbLib.likeStatus(req.params.id, req.body.userId);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
+  }
+});
+
 /** ------------------------------ Follow End Points ------------------------------*/
 // GET follower suggestioins
 webapp.get('/follower-suggestions/:id', async (req, res) => {
   try {
     // userId of whom the id is following
-    const followingIds = await dbLib.getFollowingIds(req.params.id);
+    const followingIds = await dbLib
+      .getFollowingIds(req.params.id)
+      .then((data) => data.map((id) => id.toString()));
     const followingIdSet = new Set(followingIds);
     // userIds of users who have similar taste to the id (following the same person)
     // excluding users whom the current user is already following
@@ -361,14 +450,20 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     const sameTasteCounts = {};
     await Promise.all(
       followingIds.map(async (followingId) => {
-        const candidates = await dbLib.getFollowerIds(followingId);
+        const candidates = await dbLib
+          .getFollowerIds(followingId)
+          .then((data) => data.map((id) => id.toString()));
         candidates.forEach((id) => {
           if (!followingIdSet.has(id)) sameTasteIds.push(id);
         });
       })
     );
     sameTasteIds.forEach((id) => {
-      if (id === req.params.id || id.toString() === req.params.id) return; // exclude the user themselves
+      if (
+        id.toString() === req.params.id || // exclude the user self
+        followingIdSet.has(id.toString()) // exclude users already following
+      )
+        return;
       const count = (sameTasteCounts[id] || 0) + 1;
       sameTasteCounts[id] = count;
       if (count === 3) suggestUserIdSet.add(id);
@@ -399,6 +494,10 @@ webapp.post('/follows/', async (req, res) => {
   // console.log(req.body);
   if (!req.body.follower || !req.body.following) {
     res.status(404).json({ message: 'missing follower or following' });
+    return;
+  }
+  if (req.body.follower === req.body.following) {
+    res.status(409).json({ message: 'cannot follow yourself' });
     return;
   }
   try {

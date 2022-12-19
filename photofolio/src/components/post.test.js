@@ -47,7 +47,7 @@ describe('POST post(s) endpoint integration test', () => {
 
   beforeAll(async () => {
     mongo = await connect();
-    db = mongo.db('photofolio');
+    db = mongo.db('hw5');
   });
 
   const clearDatabase = async () => {
@@ -96,6 +96,14 @@ describe('POST post(s) endpoint integration test', () => {
       .send(`follower=${testFollower}`);
 
     expect(resp.status).toEqual(404);
+  });
+
+  test('Follow fails with 409 if any required field is invalid', async () => {
+    const resp = await request(webapp)
+      .post('/follows/')
+      .send(`follower=${testFollower}&following=${testFollower}`);
+
+    expect(resp.status).toEqual(409);
   });
 
   test('Follow a user returns 201 if request is valid', async () => {

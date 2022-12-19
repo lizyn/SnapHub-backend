@@ -31,7 +31,7 @@ describe('Database operations tests', () => {
   beforeAll(async () => {
     try {
       mongo = await dbLib.connect();
-      db = mongo.db('photofolio');
+      db = mongo.db('hw5');
     } catch (err) {
       throw Error();
     }
@@ -53,9 +53,6 @@ describe('Database operations tests', () => {
   // test data
   const testuser = {
     username: 'testuser',
-    user_avatar: '/',
-    following: [],
-    followed: [],
     password: 'QEWRasdf1234!'
   };
   test('Register test', async () => {
