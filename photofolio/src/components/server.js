@@ -266,6 +266,18 @@ webapp.put('/posts/:id', async (req, res) => {
     res.status(404).json({ message: 'there was error' });
   }
 });
+
+// Hide a Post
+webapp.post('/users/hidden/:id', async (req, res) => {
+  console.log('try to hide post', req.params.id, req.body.userId);
+  try {
+    const result = await dbLib.hideAPost(req.body.userId, req.params.id);
+    res.status(200).json({ message: result });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
 /** ------------------------------ The Comment End Points ------------------------------*/
 // POST
 webapp.post('/comments/', async (req, res) => {

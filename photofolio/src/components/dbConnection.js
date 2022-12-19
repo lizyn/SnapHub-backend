@@ -140,6 +140,24 @@ const addUser = async (newUser) => {
   });
 };
 
+const hideAPost = async (userId, postId) => {
+  console.log('try to hide', postId, 'for', userId);
+  const db = await getDB();
+  let result;
+  try {
+    result = await db
+      .collection('users')
+      .updateOne(
+        { _id: ObjectId(userId) },
+        { $push: { hiddenPosts: ObjectId(postId) } }
+      );
+    console.log(result);
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+};
+
 const getPosts = async () => {
   const db = await getDB(); // connect to database
   try {
@@ -167,7 +185,14 @@ const getFeed = async (id) => {
     // (3) save the posts by every user in the following list to an array "feed"
     feed = await db
       .collection('posts')
-      .aggregate([{ $match: { userId: { $in: followed } } }])
+      .aggregate([
+        {
+          $match: {
+            userId: { $in: followed },
+            _id: { $nin: curUser.hiddenPosts }
+          }
+        }
+      ])
       .toArray();
     console.log(`Feed list: ${JSON.stringify(feed)}`);
   } catch (err) {
@@ -543,6 +568,7 @@ module.exports = {
   addPost,
   updatePost,
   deletePost,
+  hideAPost,
   addComment,
   getAComment,
   getPostComments,
