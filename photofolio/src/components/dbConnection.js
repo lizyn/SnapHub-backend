@@ -158,7 +158,11 @@ const getFeed = async (id) => {
     const curUser = await db.collection('users').findOne({ _id: ObjectId(id) });
     console.log(`Current User: ${JSON.stringify(curUser)}`);
     // (2) get the users this user is following
-    const followed = curUser.following;
+    let followed = await db
+      .collection('follows')
+      .find({ follower: ObjectId(id) }, { projection: { following: 1 } })
+      .toArray();
+    followed = followed.map((follow) => follow.following);
     console.log(`Following: ${JSON.stringify(followed)}`);
     // (3) save the posts by every user in the following list to an array "feed"
     feed = await db
