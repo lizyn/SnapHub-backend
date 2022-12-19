@@ -18,7 +18,7 @@ describe('GET post(s) endpoint integration test', () => {
   beforeAll(async () => {
     try {
       mongo = await connect();
-      db = mongo.db('photofolio');
+      db = mongo.db('hw5');
       const res = await request(webapp)
         .post('/posts')
         .set('Content-Type', 'multipart/form-data')
