@@ -8,6 +8,10 @@ const express = require('express');
 // (cross-origin resource sharing)
 const cors = require('cors');
 
+const jwt = require('jsonwebtoken');
+
+const secret = 'is_i$mysecret';
+
 // (3) create an instanece of our express app
 const webapp = express();
 
@@ -73,8 +77,14 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
       res.status(401).json({ message: 'wrong password' });
       return;
     }
+    const jwtoken = jwt.sign({ username: req.param.user }, secret, {
+      expiresIn: '20000s'
+    });
     // eslint-disable-next-line no-underscore-dangle
-    res.status(201).json({ data: { id: results._id, ...results } });
+    res
+      .status(201)
+      // eslint-disable-next-line no-underscore-dangle
+      .json({ data: { id: results._id, ...results }, token: jwtoken });
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
@@ -294,26 +304,6 @@ webapp.get('/posts/:id/comments', async (req, res) => {
   }
 });
 
-// add like to a post
-webapp.post('/posts/:id/like', async (req, res) => {
-  try {
-    const results = await dbLib.getPostComments(req.params.id);
-    res.status(200).json({ data: results });
-  } catch (err) {
-    res.status(404).json({ message: 'post not found' });
-  }
-});
-
-// remove like from a post
-webapp.delete('/posts/:id/like', async (req, res) => {
-  try {
-    const results = await dbLib.getPostComments(req.params.id);
-    res.status(200).json({ data: results });
-  } catch (err) {
-    res.status(404).json({ message: 'post not found' });
-  }
-});
-
 // DELETE
 webapp.delete('/comments/:id', async (req, res) => {
   try {
@@ -335,6 +325,29 @@ webapp.put('/comments/:id', async (req, res) => {
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
+  }
+});
+
+/** ------------------------------ Like End Points ------------------------------*/
+// like or unlike a post
+webapp.post('/posts/:id/like', async (req, res) => {
+  // get the userId from jwt authorization header (will implement when auth ready):
+  // const token = req.headers.authoriztion.split('')[1];
+  // const decoded = jwt.verify(token, secret);
+  // const authId = decoded.userId;
+  let result;
+  console.log(req.params.id, req.body.userId);
+  try {
+    // find out if user have liked the post or not:
+    const liked = await dbLib.likeStatus(req.params.id, req.body.userId);
+    if (!liked) {
+      result = await dbLib.likePost(req.params.id, req.body.userId);
+    } else {
+      result = await dbLib.unlikePost(req.params.id, req.body.userId);
+    }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
   }
 });
 

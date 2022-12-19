@@ -14,7 +14,7 @@ const connect = async () => {
     });
     // Connected to db
     console.log(
-      `Connected to database: ${MongoConnection.db('photofolio').databaseName}`
+      `Connected to database: ${MongoConnection.db('hw5').databaseName}`
     );
     return MongoConnection;
   } catch (err) {
@@ -31,7 +31,7 @@ const getDB = async () => {
   if (!MongoConnection) {
     await connect();
   }
-  return MongoConnection.db('photofolio');
+  return MongoConnection.db('hw5');
 };
 
 const register = async (newUser) => {
@@ -210,9 +210,13 @@ const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
   let inserted;
   try {
-    inserted = await db
-      .collection('posts')
-      .insertOne({ ...newPost, comments: [] });
+    inserted = await db.collection('posts').insertOne({
+      ...newPost,
+      comments: [],
+      likedBy: [],
+      likes: 0,
+      date: new Date()
+    });
   } catch (error) {
     return error.message;
   }
@@ -334,14 +338,40 @@ const deleteComment = async (id) => {
   return results;
 };
 
+// find if the user have liked the post or not
+// returns true if have liked; false if have not liked
+const likeStatus = async (postId, userId) => {
+  const db = await getDB();
+  console.log('postId is', postId);
+  let result;
+  try {
+    const post = await db
+      .collection('posts')
+      .findOne({ _id: ObjectId(postId) });
+    console.log(
+      'liked status for post is',
+      post.likedBy.some((id) => id.equals(ObjectId(userId)))
+    );
+    if (!post) throw Error('post not found');
+    result = post.likedBy.some((id) => id.equals(ObjectId(userId)));
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+};
+
 // add like to a post
 const likePost = async (postId, userId) => {
+  console.log('in like post:', postId, userId);
   const db = await getDB();
   let result;
   try {
     await db
       .collection('posts')
-      .updateOne({ _id: ObjectId(postId) }, { $push: { likedBy: userId } });
+      .updateOne(
+        { _id: ObjectId(postId) },
+        { $push: { likedBy: ObjectId(userId) }, $inc: { likes: 1 } }
+      );
   } catch (err) {
     throw new Error(err);
   }
@@ -357,7 +387,7 @@ const unlikePost = async (postId, userId) => {
       .collection('posts')
       .updateOne(
         { _id: ObjectId(postId) },
-        { $pull: { likedBy: ObjectId(userId) } }
+        { $pull: { likedBy: ObjectId(userId) }, $inc: { likes: -1 } }
       );
   } catch (err) {
     throw new Error(err);
@@ -511,6 +541,7 @@ module.exports = {
   getPostComments,
   deleteComment,
   updateComment,
+  likeStatus,
   likePost,
   unlikePost,
   getFollowerIds,
