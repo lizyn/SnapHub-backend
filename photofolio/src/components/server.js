@@ -351,6 +351,22 @@ webapp.post('/posts/:id/like', async (req, res) => {
   }
 });
 
+// check if a user has liked a post
+webapp.post('/posts/:id/liked', async (req, res) => {
+  // get the userId from jwt authorization header (will implement when auth ready):
+  // const token = req.headers.authoriztion.split('')[1];
+  // const decoded = jwt.verify(token, secret);
+  // const authId = decoded.userId;
+  let result;
+  try {
+    // find out if user have liked the post or not:
+    result = await dbLib.likeStatus(req.params.id, req.body.userId);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
+  }
+});
+
 /** ------------------------------ Follow End Points ------------------------------*/
 // GET follower suggestioins
 webapp.get('/follower-suggestions/:id', async (req, res) => {
