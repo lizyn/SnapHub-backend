@@ -11,6 +11,14 @@ const cors = require('cors');
 // (3) create an instanece of our express app
 const webapp = express();
 
+const auth = require('./auth');
+
+//import JWT
+const jwt = require('jsonwebtoken');
+
+// secret key
+const secret = 'thi_iSz_a_Very_$trong&_$ecret_queYZ';
+
 // (4) enable cors
 webapp.use(cors());
 
@@ -68,15 +76,16 @@ const dbLib = require('./dbConnection');
 // login
 webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
   try {
-    console.log(req.params.user, req.params.pwd);
     const results = await dbLib.login(req.params.user, req.params.pwd);
+
     console.log(results);
     if (results === null) {
       res.status(401).json({ message: 'wrong password' });
       return;
     }
+    const jwtoken = jwt.sign({username: results._id.toString()}, secret, {expiresIn: "24h"});
     // eslint-disable-next-line no-underscore-dangle
-    res.status(201).json({ data: { id: results._id, ...results } });
+    res.status(201).json({ data: { id: results._id.toString(), ...results }, token: jwtoken });
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
