@@ -73,13 +73,21 @@ const dbLib = require('./dbConnection');
 
 // root endpoint / route
 
+const faileduser = [];
+
+
 // login
 webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
   try {
+    if(faileduser.includes(req.params.user)){
+      res.status(403).json({message: "lockout"});
+      return;
+    }
     const results = await dbLib.login(req.params.user, req.params.pwd);
 
     console.log(results);
     if (results === null) {
+      faileduser.push(req.params.user);
       res.status(401).json({ message: 'wrong password' });
       return;
     }
