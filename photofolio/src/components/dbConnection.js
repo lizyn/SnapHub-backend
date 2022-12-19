@@ -103,9 +103,7 @@ const getAUser = async (id) => {
 
 const getRandomUsers = async (num, excludeIds = []) => {
   if (num <= 0) return [];
-  const excludeObjectIds = excludeIds.map((id) =>
-    id instanceof ObjectId ? id : ObjectId(id)
-  );
+  const excludeObjectIds = excludeIds.map((id) => ObjectId(id));
   const db = await getDB(); // connect to database
   try {
     const randomUsers = await db
@@ -128,8 +126,6 @@ const getRandomUsers = async (num, excludeIds = []) => {
   }
 };
 
-// getRandomUsers(9, ['638682d7b47712e0d260ce8b', '63869afab587601c9ce1cbb7']);
-
 const addUser = async (newUser) => {
   const db = await getDB(); // connect to database
   db.collection('users').insertOne(newUser, (err, result) => {
@@ -139,6 +135,7 @@ const addUser = async (newUser) => {
     console.log(`Created user with id: ${result.insertedId}`);
   });
 };
+
 
 const hideAPost = async (userId, postId) => {
   console.log('try to hide', postId, 'for', userId);
@@ -156,6 +153,117 @@ const hideAPost = async (userId, postId) => {
     throw new Error(err);
   }
   return result;
+
+const getFollowerIds = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  const db = await getDB();
+  try {
+    const followData = await db
+      .collection('follows')
+      .find({ following: objectId }, { _id: 0, following: 0 })
+      .toArray();
+    const followerIds = followData.map((obj) => obj.follower);
+    return followerIds;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowingIds = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  const db = await getDB();
+  try {
+    const followData = await db
+      .collection('follows')
+      .find({ follower: objectId }, { _id: 0, follower: 0 })
+      .toArray();
+    const followingIds = followData.map((obj) => obj.following);
+    // console.log(followingIds);
+    return followingIds;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowers = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  try {
+    const followerIds = await getFollowerIds(objectId);
+    const followers = await getAFewUsers(followerIds);
+    // console.log(followers);
+    return followers;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowings = async (id) => {
+  const objectId = id instanceof ObjectId ? id : ObjectId(id);
+  try {
+    const followingIds = await getFollowingIds(objectId);
+    const followings = await getAFewUsers(followingIds);
+    // console.log(followings);
+    return followings;
+  } catch (err) {
+    return new Error(`${err.message}`);
+  }
+};
+
+const getFollowRelationshipBetween = async (follower, following) => {
+  const followerId =
+    follower instanceof ObjectId ? follower : ObjectId(follower);
+  const followingId =
+    following instanceof ObjectId ? following : ObjectId(following);
+  const db = await getDB();
+  try {
+    const result = await db
+      .collection('follows')
+      .findOne({ follower: followerId, following: followingId });
+    return result;
+  } catch (error) {
+    return error.message;
+  }
+};
+
+const follow = async (follower, following) => {
+  const followerId =
+    follower instanceof ObjectId ? follower : ObjectId(follower);
+  const followingId =
+    following instanceof ObjectId ? following : ObjectId(following);
+  const db = await getDB();
+  try {
+    const inserted = await db
+      .collection('follows')
+      .updateOne(
+        { follower: followerId, following: followingId },
+        { $set: { follower: followerId, following: followingId } },
+        { upsert: true }
+      );
+    // if (inserted.matchedCount !== 0)
+    //   throw Error('Follow relationship already exists');
+    return inserted; // e.g. {"acknowledged":true,"modifiedCount":0,"upsertedId":"638c388bcbe1fcaa3f29067a","upsertedCount":1,"matchedCount":0}
+  } catch (error) {
+    throw Error(error.message);
+  }
+};
+
+const unfollow = async (follower, following) => {
+  const db = await getDB();
+  const followerId =
+    follower instanceof ObjectId ? follower : ObjectId(follower);
+  const followingId =
+    following instanceof ObjectId ? following : ObjectId(following);
+  try {
+    const results = await db
+      .collection('follows')
+      .deleteOne({ follower: followerId, following: followingId });
+    if (results.deletedCount === 0)
+      throw Error("Follow relationship doesn't exist");
+    return results; // e.g. { acknowledged: true, deletedCount: 1 }
+  } catch (err) {
+    throw Error(err.message);
+  }
+
 };
 
 const getPosts = async () => {
@@ -194,9 +302,9 @@ const getFeed = async (id) => {
         }
       ])
       .toArray();
-    console.log(`Feed list: ${JSON.stringify(feed)}`);
+    // console.log(`Feed list: ${JSON.stringify(feed)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    // console.log(`error: ${err.message}`);
   }
   return feed;
 };
@@ -206,7 +314,10 @@ const getUserPosts = async (id) => {
   let posts;
   try {
     // save posts that has userId = the param id
-    posts = await db.collection('posts').find({ userId: id }).toArray();
+    posts = await db
+      .collection('posts')
+      .find({ userId: ObjectId(id) })
+      .toArray();
     if (posts.length === 0) {
       throw Error("user doesn't exist / doesn't have posts");
     }
@@ -239,13 +350,9 @@ const addPost = async (newPost) => {
   const db = await getDB(); // connect to database
   let inserted;
   try {
-    inserted = await db.collection('posts').insertOne({
-      ...newPost,
-      comments: [],
-      likedBy: [],
-      likes: 0,
-      date: new Date()
-    });
+    inserted = await db
+      .collection('posts')
+      .insertOne({ ...newPost, userId: ObjectId(newPost.userId) });
   } catch (error) {
     return error.message;
   }
@@ -257,12 +364,17 @@ const updatePost = async (id, newPost) => {
   const db = await getDB();
   let results;
   try {
-    results = await db
-      .collection('posts')
-      .updateOne(
-        { _id: ObjectId(id) },
-        { $set: { text: newPost.text, photo: newPost.photo } }
-      );
+    results = await db.collection('posts').updateOne(
+      { _id: ObjectId(id) },
+      {
+        $set: {
+          title: newPost.title,
+          photo: newPost.photo,
+          description: newPost.description || ''
+        }
+      }
+    );
+    console.log(`Post updated: ${JSON.stringify(results)}`);
   } catch (err) {
     throw new Error('invalid update');
   }
@@ -288,7 +400,12 @@ const addComment = async (newComment) => {
   // let commentId;
   let result;
   try {
-    result = await db.collection('comments').insertOne(newComment);
+    result = await db.collection('comments').insertOne({
+      ...newComment,
+      userId: ObjectId(newComment.userId),
+      postId: ObjectId(newComment.postId)
+    });
+    console.log(`comment id is ${result.insertedId}`);
     // commentId = result.insertedId;
     await db
       .collection('posts')
@@ -425,117 +542,6 @@ const unlikePost = async (postId, userId) => {
     throw new Error(err);
   }
   return result;
-};
-
-const getFollowerIds = async (id) => {
-  const objectId = id instanceof ObjectId ? id : ObjectId(id);
-  const db = await getDB();
-  try {
-    const followData = await db
-      .collection('follows')
-      .find({ following: objectId }, { _id: 0, following: 0 })
-      .toArray();
-    const followerIds = followData.map((obj) => obj.follower);
-    return followerIds;
-  } catch (err) {
-    return new Error(`${err.message}`);
-  }
-};
-
-const getFollowingIds = async (id) => {
-  const objectId = id instanceof ObjectId ? id : ObjectId(id);
-  const db = await getDB();
-  try {
-    const followData = await db
-      .collection('follows')
-      .find({ follower: objectId }, { _id: 0, follower: 0 })
-      .toArray();
-    const followingIds = followData.map((obj) => obj.following);
-    // console.log(followingIds);
-    return followingIds;
-  } catch (err) {
-    return new Error(`${err.message}`);
-  }
-};
-
-const getFollowers = async (id) => {
-  const objectId = id instanceof ObjectId ? id : ObjectId(id);
-  try {
-    const followerIds = await getFollowerIds(objectId);
-    const followers = await getAFewUsers(followerIds);
-    // console.log(followers);
-    return followers;
-  } catch (err) {
-    return new Error(`${err.message}`);
-  }
-};
-
-const getFollowings = async (id) => {
-  const objectId = id instanceof ObjectId ? id : ObjectId(id);
-  try {
-    const followingIds = await getFollowingIds(objectId);
-    const followings = await getAFewUsers(followingIds);
-    // console.log(followings);
-    return followings;
-  } catch (err) {
-    return new Error(`${err.message}`);
-  }
-};
-
-const getFollowRelationshipBetween = async (follower, following) => {
-  const followerId =
-    follower instanceof ObjectId ? follower : ObjectId(follower);
-  const followingId =
-    following instanceof ObjectId ? following : ObjectId(following);
-  const db = await getDB();
-  try {
-    const result = await db
-      .collection('follows')
-      .findOne({ follower: followerId, following: followingId });
-    return result;
-  } catch (error) {
-    return error.message;
-  }
-};
-
-const follow = async (follower, following) => {
-  const followerId =
-    follower instanceof ObjectId ? follower : ObjectId(follower);
-  const followingId =
-    following instanceof ObjectId ? following : ObjectId(following);
-  const db = await getDB();
-  try {
-    const inserted = await db
-      .collection('follows')
-      .updateOne(
-        { follower: followerId, following: followingId },
-        { $set: { follower: followerId, following: followingId } },
-        { upsert: true }
-      );
-    // if (inserted.matchedCount !== 0)
-    //   throw Error('Follow relationship already exists');
-    return inserted; // e.g. {"acknowledged":true,"modifiedCount":0,"upsertedId":"638c388bcbe1fcaa3f29067a","upsertedCount":1,"matchedCount":0}
-  } catch (error) {
-    throw Error(error.message);
-  }
-};
-
-const unfollow = async (follower, following) => {
-  const db = await getDB();
-  const followerId =
-    follower instanceof ObjectId ? follower : ObjectId(follower);
-  const followingId =
-    following instanceof ObjectId ? following : ObjectId(following);
-  try {
-    const results = await db
-      .collection('follows')
-      .deleteOne({ follower: followerId, following: followingId });
-    if (results.deletedCount === 0)
-      throw Error("Follow relationship doesn't exist");
-    return results; // e.g. { acknowledged: true, deletedCount: 1 }
-  } catch (err) {
-    throw Error(err.message);
-  }
 };
 
 // unfollow('638682d7b47712e0d260ce8b', '63869b13b587601c9ce1cbb8')

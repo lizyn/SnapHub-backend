@@ -30,6 +30,7 @@ webapp.use(express.json());
 const formidable = require('formidable');
 const s3manips = require('./s3manips');
 const dbLib = require('./dbConnection');
+const { ObjectID } = require('bson');
 
 // (8) declare a db reference variable
 // let db;
@@ -237,8 +238,11 @@ webapp.post('/posts/', async (req, res) => {
 
     const newPost = {
       ...fields,
-      photo: photoUrls[0]
+      photo: photoUrls[0],
+      comments: [],
+      date: new Date()
     };
+    console.log(newPost);
     if (!newPost.userId || !newPost.photo)
       res.status(409).json({ message: 'error creating post' });
     // console.log(newPost);
@@ -259,12 +263,45 @@ webapp.delete('/posts/:id', async (req, res) => {
 
 // PUT
 webapp.put('/posts/:id', async (req, res) => {
-  try {
-    const result = await dbLib.updatePost(req.params.id, req.body);
-    res.status(200).json({ message: result });
-  } catch (err) {
-    res.status(404).json({ message: 'there was error' });
-  }
+  // console.log('UPDATE a post');
+  const form = new formidable.IncomingForm();
+  form.multiples = true;
+  form.maxFileSize = 20 * 1024 * 1024; // 2MB
+  form.keepExtensions = true;
+
+  form.parse(req, async (err, fields, files) => {
+    if (err) {
+      res.status(409).json({ error: err.message });
+      return;
+    }
+
+    // upload new file to AWS s3
+    const photoUrls = [];
+    await Promise.all(
+      Object.keys(files).map(async (key) => {
+        const value = files[key];
+        try {
+          const data = await s3manips.uploadFile(value);
+          photoUrls.push(data.Location);
+        } catch (error) {
+          res.status(404).json({ error: error.message });
+        }
+      })
+    );
+
+    const newPost = {
+      ...fields,
+      photo: photoUrls[0] || fields.photo
+    };
+    console.log(newPost);
+
+    try {
+      const result = await dbLib.updatePost(req.params.id, newPost);
+      res.status(200).json({ message: result });
+    } catch (error) {
+      res.status(404).json({ message: 'there was error' });
+    }
+  });
 });
 
 // Hide a Post
@@ -384,7 +421,9 @@ webapp.post('/posts/:id/liked', async (req, res) => {
 webapp.get('/follower-suggestions/:id', async (req, res) => {
   try {
     // userId of whom the id is following
-    const followingIds = await dbLib.getFollowingIds(req.params.id);
+    const followingIds = await dbLib
+      .getFollowingIds(req.params.id)
+      .then((data) => data.map((id) => id.toString()));
     const followingIdSet = new Set(followingIds);
     // userIds of users who have similar taste to the id (following the same person)
     // excluding users whom the current user is already following
@@ -395,14 +434,20 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     const sameTasteCounts = {};
     await Promise.all(
       followingIds.map(async (followingId) => {
-        const candidates = await dbLib.getFollowerIds(followingId);
+        const candidates = await dbLib
+          .getFollowerIds(followingId)
+          .then((data) => data.map((id) => id.toString()));
         candidates.forEach((id) => {
           if (!followingIdSet.has(id)) sameTasteIds.push(id);
         });
       })
     );
     sameTasteIds.forEach((id) => {
-      if (id === req.params.id || id.toString() === req.params.id) return; // exclude the user themselves
+      if (
+        id.toString() === req.params.id || // exclude the user self
+        followingIdSet.has(id.toString()) // exclude users already following
+      )
+        return;
       const count = (sameTasteCounts[id] || 0) + 1;
       sameTasteCounts[id] = count;
       if (count === 3) suggestUserIdSet.add(id);
@@ -433,6 +478,10 @@ webapp.post('/follows/', async (req, res) => {
   // console.log(req.body);
   if (!req.body.follower || !req.body.following) {
     res.status(404).json({ message: 'missing follower or following' });
+    return;
+  }
+  if (req.body.follower === req.body.following) {
+    res.status(409).json({ message: 'cannot follow yourself' });
     return;
   }
   try {
