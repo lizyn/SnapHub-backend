@@ -230,11 +230,9 @@ const updatePost = async (id, newPost) => {
         { _id: ObjectId(id) },
         { $set: { text: newPost.text, photo: newPost.photo } }
       );
-    console.log(`Post updated: ${JSON.stringify(results)}`);
   } catch (err) {
     throw new Error('invalid update');
   }
-  console.log(results);
   return results;
 };
 
@@ -258,17 +256,16 @@ const addComment = async (newComment) => {
   let result;
   try {
     result = await db.collection('comments').insertOne(newComment);
-    console.log(`comment id is ${result.insertedId}`);
     // commentId = result.insertedId;
-    const updatedPost = await db
+    await db
       .collection('posts')
       .updateOne(
         { _id: ObjectId(newComment.postId) },
         { $push: { comments: result.insertedId } }
       );
-    console.log(`Post updated: ${JSON.stringify(updatedPost)}`);
+    // console.log(`Post updated: ${JSON.stringify(updatedPost)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    throw new Error(err);
   }
   return result;
 };
@@ -335,6 +332,37 @@ const deleteComment = async (id) => {
     throw Error();
   }
   return results;
+};
+
+// add like to a post
+const likePost = async (postId, userId) => {
+  const db = await getDB();
+  let result;
+  try {
+    await db
+      .collection('posts')
+      .updateOne({ _id: ObjectId(postId) }, { $push: { likedBy: userId } });
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+};
+
+// delete like from a post
+const unlikePost = async (postId, userId) => {
+  const db = await getDB();
+  let result;
+  try {
+    await db
+      .collection('posts')
+      .updateOne(
+        { _id: ObjectId(postId) },
+        { $pull: { likedBy: ObjectId(userId) } }
+      );
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
 };
 
 const getFollowerIds = async (id) => {
@@ -483,6 +511,8 @@ module.exports = {
   getPostComments,
   deleteComment,
   updateComment,
+  likePost,
+  unlikePost,
   getFollowerIds,
   getFollowingIds,
   getFollowers,

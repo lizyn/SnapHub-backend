@@ -294,6 +294,26 @@ webapp.get('/posts/:id/comments', async (req, res) => {
   }
 });
 
+// add like to a post
+webapp.post('/posts/:id/like', async (req, res) => {
+  try {
+    const results = await dbLib.getPostComments(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
+  }
+});
+
+// remove like from a post
+webapp.delete('/posts/:id/like', async (req, res) => {
+  try {
+    const results = await dbLib.getPostComments(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
+  }
+});
+
 // DELETE
 webapp.delete('/comments/:id', async (req, res) => {
   try {
