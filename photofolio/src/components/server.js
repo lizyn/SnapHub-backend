@@ -15,6 +15,14 @@ const secret = 'is_i$mysecret';
 // (3) create an instanece of our express app
 const webapp = express();
 
+const auth = require('./auth');
+
+//import JWT
+const jwt = require('jsonwebtoken');
+
+// secret key
+const secret = 'thi_iSz_a_Very_$trong&_$ecret_queYZ';
+
 // (4) enable cors
 webapp.use(cors());
 
@@ -70,22 +78,27 @@ const { ObjectID } = require('bson');
 
 // root endpoint / route
 
+const faileduser = [];
+
+
 // login
 webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
   try {
+    if(faileduser.includes(req.params.user)){
+      res.status(403).json({message: "lockout"});
+      return;
+    }
     const results = await dbLib.login(req.params.user, req.params.pwd);
+
     if (results === null) {
+      faileduser.push(req.params.user);
       res.status(401).json({ message: 'wrong password' });
       return;
     }
-    const jwtoken = jwt.sign({ username: req.param.user }, secret, {
-      expiresIn: '20000s'
-    });
-    // eslint-disable-next-line no-underscore-dangle
-    res
-      .status(201)
-      // eslint-disable-next-line no-underscore-dangle
-      .json({ data: { id: results._id, ...results }, token: jwtoken });
+
+    const jwtoken = jwt.sign({username: results._id.toString()}, secret, {expiresIn: "24h"});
+    res.status(201).json({ data: { id: results._id.toString(), ...results }, token: jwtoken });
+
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
@@ -93,12 +106,15 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
 
 // register
 webapp.post('/users', async (req, res) => {
-  if (!req.body || !req.body.username || !req.body.password) {
+  console.log(req.body);
+  if (!req.body || !req.body.username || !req.body.password || !req.body.firstname || !req.body.lastname) {
     res.status(404).json({ message: 'missing information in registration' });
     return;
   }
   const newUser = {
     username: req.body.username,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
     user_avatar: '/',
     following: [],
     followed: [],
