@@ -94,14 +94,14 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
 // register
 webapp.post('/users', async (req, res) => {
   console.log(req.body);
-  if (!req.body || !req.body.username || !req.body.password || !req.body.fstName || !req.body.lstName) {
+  if (!req.body || !req.body.username || !req.body.password || !req.body.firstname || !req.body.lastname) {
     res.status(404).json({ message: 'missing information in registration' });
     return;
   }
   const newUser = {
     username: req.body.username,
-    firstname: req.body.fstName,
-    lastname: req.body.lstName,
+    firstname: req.body.firstname,
+    lastname: req.body.lastname,
     user_avatar: '/',
     following: [],
     followed: [],
