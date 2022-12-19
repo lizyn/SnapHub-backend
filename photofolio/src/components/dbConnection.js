@@ -136,6 +136,24 @@ const addUser = async (newUser) => {
   });
 };
 
+
+const hideAPost = async (userId, postId) => {
+  console.log('try to hide', postId, 'for', userId);
+  const db = await getDB();
+  let result;
+  try {
+    result = await db
+      .collection('users')
+      .updateOne(
+        { _id: ObjectId(userId) },
+        { $push: { hiddenPosts: ObjectId(postId) } }
+      );
+    console.log(result);
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+
 const getFollowerIds = async (id) => {
   const objectId = id instanceof ObjectId ? id : ObjectId(id);
   const db = await getDB();
@@ -245,6 +263,7 @@ const unfollow = async (follower, following) => {
   } catch (err) {
     throw Error(err.message);
   }
+
 };
 
 const getPosts = async () => {
@@ -262,16 +281,26 @@ const getFeed = async (id) => {
   let feed;
   try {
     // (1) get the user to find feed for
-    // const curUser = await db.collection('users').findOne({ _id: ObjectId(id) });
-    // console.log(`Current User: ${JSON.stringify(curUser)}`);
-    // // (2) get the users this user is following
-    // const followed = curUser.following;
-    const followed = await getFollowingIds(id);
-    // console.log(`Following: ${followed}`);
+    const curUser = await db.collection('users').findOne({ _id: ObjectId(id) });
+    console.log(`Current User: ${JSON.stringify(curUser)}`);
+    // (2) get the users this user is following
+    let followed = await db
+      .collection('follows')
+      .find({ follower: ObjectId(id) }, { projection: { following: 1 } })
+      .toArray();
+    followed = followed.map((follow) => follow.following);
+    console.log(`Following: ${JSON.stringify(followed)}`);
     // (3) save the posts by every user in the following list to an array "feed"
     feed = await db
       .collection('posts')
-      .aggregate([{ $match: { userId: { $in: followed } } }])
+      .aggregate([
+        {
+          $match: {
+            userId: { $in: followed },
+            _id: { $nin: curUser.hiddenPosts }
+          }
+        }
+      ])
       .toArray();
     // console.log(`Feed list: ${JSON.stringify(feed)}`);
   } catch (err) {
@@ -349,7 +378,6 @@ const updatePost = async (id, newPost) => {
   } catch (err) {
     throw new Error('invalid update');
   }
-  console.log(results);
   return results;
 };
 
@@ -379,15 +407,15 @@ const addComment = async (newComment) => {
     });
     console.log(`comment id is ${result.insertedId}`);
     // commentId = result.insertedId;
-    const updatedPost = await db
+    await db
       .collection('posts')
       .updateOne(
         { _id: ObjectId(newComment.postId) },
         { $push: { comments: result.insertedId } }
       );
-    console.log(`Post updated: ${JSON.stringify(updatedPost)}`);
+    // console.log(`Post updated: ${JSON.stringify(updatedPost)}`);
   } catch (err) {
-    console.log(`error: ${err.message}`);
+    throw new Error(err);
   }
   return result;
 };
@@ -413,7 +441,10 @@ const getPostComments = async (id) => {
   const db = await getDB();
   let results;
   try {
-    results = await db.collection('comments').find({ postID: id }).toArray();
+    results = await db
+      .collection('comments')
+      .find({ postId: ObjectId(id) })
+      .toArray();
     if (results.length === 0) throw Error('no comment found');
   } catch (err) {
     throw Error();
@@ -456,6 +487,63 @@ const deleteComment = async (id) => {
   return results;
 };
 
+// find if the user have liked the post or not
+// returns true if have liked; false if have not liked
+const likeStatus = async (postId, userId) => {
+  const db = await getDB();
+  console.log('postId is', postId);
+  let result;
+  try {
+    const post = await db
+      .collection('posts')
+      .findOne({ _id: ObjectId(postId) });
+    console.log(
+      'liked status for post is',
+      post.likedBy.some((id) => id.equals(ObjectId(userId)))
+    );
+    if (!post) throw Error('post not found');
+    result = post.likedBy.some((id) => id.equals(ObjectId(userId)));
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+};
+
+// add like to a post
+const likePost = async (postId, userId) => {
+  console.log('in like post:', postId, userId);
+  const db = await getDB();
+  let result;
+  try {
+    await db
+      .collection('posts')
+      .updateOne(
+        { _id: ObjectId(postId) },
+        { $push: { likedBy: ObjectId(userId) }, $inc: { likes: 1 } }
+      );
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+};
+
+// delete like from a post
+const unlikePost = async (postId, userId) => {
+  const db = await getDB();
+  let result;
+  try {
+    await db
+      .collection('posts')
+      .updateOne(
+        { _id: ObjectId(postId) },
+        { $pull: { likedBy: ObjectId(userId) }, $inc: { likes: -1 } }
+      );
+  } catch (err) {
+    throw new Error(err);
+  }
+  return result;
+};
+
 // unfollow('638682d7b47712e0d260ce8b', '63869b13b587601c9ce1cbb8')
 //   .then((data) => console.log(data))
 //   .catch((err) => console.log(err.message));
@@ -486,11 +574,15 @@ module.exports = {
   addPost,
   updatePost,
   deletePost,
+  hideAPost,
   addComment,
   getAComment,
   getPostComments,
   deleteComment,
   updateComment,
+  likeStatus,
+  likePost,
+  unlikePost,
   getFollowerIds,
   getFollowingIds,
   getFollowers,

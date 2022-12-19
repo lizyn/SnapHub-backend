@@ -8,6 +8,10 @@ const express = require('express');
 // (cross-origin resource sharing)
 const cors = require('cors');
 
+const jwt = require('jsonwebtoken');
+
+const secret = 'is_i$mysecret';
+
 // (3) create an instanece of our express app
 const webapp = express();
 
@@ -69,15 +73,19 @@ const { ObjectID } = require('bson');
 // login
 webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
   try {
-    console.log(req.params.user, req.params.pwd);
     const results = await dbLib.login(req.params.user, req.params.pwd);
-    console.log(results);
     if (results === null) {
       res.status(401).json({ message: 'wrong password' });
       return;
     }
+    const jwtoken = jwt.sign({ username: req.param.user }, secret, {
+      expiresIn: '20000s'
+    });
     // eslint-disable-next-line no-underscore-dangle
-    res.status(201).json({ data: { id: results._id, ...results } });
+    res
+      .status(201)
+      // eslint-disable-next-line no-underscore-dangle
+      .json({ data: { id: results._id, ...results }, token: jwtoken });
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
@@ -85,7 +93,6 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
 
 // register
 webapp.post('/users', async (req, res) => {
-  console.log(req.body);
   if (!req.body || !req.body.username || !req.body.password) {
     res.status(404).json({ message: 'missing information in registration' });
     return;
@@ -109,7 +116,6 @@ webapp.post('/users', async (req, res) => {
 
 // implement the GET /students endpoint
 webapp.get('/users', async (req, res) => {
-  console.log('GET all users');
   try {
     // get the data from the db
     const results = await dbLib.getUsers();
@@ -122,7 +128,6 @@ webapp.get('/users', async (req, res) => {
 
 // implement the GET /users/:id endpoint
 webapp.get('/users/:id', async (req, res) => {
-  console.log('GET a user');
   try {
     // get the data from the db
     const results = await dbLib.getAUser(req.params.id);
@@ -136,7 +141,6 @@ webapp.get('/users/:id', async (req, res) => {
 
 // get a user's password based on id
 webapp.get('/users/:id', async (req, res) => {
-  console.log("GET user's password");
   try {
     // get the data from the db
     const results = await dbLib.getUser(req.params.id);
@@ -148,7 +152,6 @@ webapp.get('/users/:id', async (req, res) => {
 });
 
 webapp.put('/users/:id', async (req, res) => {
-  console.log("UPDATE a user's password");
   // parse the body of the request
   if (!req.body.password) {
     res.status(404).json({ message: 'missing password' });
@@ -167,7 +170,6 @@ webapp.put('/users/:id', async (req, res) => {
 
 // GET FEEDS for User
 webapp.get('/users/:id/feed', async (req, res) => {
-  console.log('GET feed for the user');
   try {
     const results = await dbLib.getFeed(req.params.id);
     res.status(200).json({ data: results });
@@ -178,7 +180,6 @@ webapp.get('/users/:id/feed', async (req, res) => {
 
 // GET Post by a User
 webapp.get('/users/:id/posts', async (req, res) => {
-  console.log('GET posts by a user');
   try {
     const results = await dbLib.getUserPosts(req.params.id);
     res.status(200).json({ data: results });
@@ -189,7 +190,6 @@ webapp.get('/users/:id/posts', async (req, res) => {
 
 // GET ONE
 webapp.get('/posts/:id', async (req, res) => {
-  console.log('GET a post');
   try {
     const results = await dbLib.getAPost(req.params.id);
     res.status(200).json({ data: results });
@@ -253,7 +253,6 @@ webapp.post('/posts/', async (req, res) => {
 
 // DELETE
 webapp.delete('/posts/:id', async (req, res) => {
-  console.log('DELETE a post');
   try {
     const result = await dbLib.deletePost(req.params.id);
     res.status(200).json({ data: result, message: 'post deleted' });
@@ -305,6 +304,17 @@ webapp.put('/posts/:id', async (req, res) => {
   });
 });
 
+// Hide a Post
+webapp.post('/users/hidden/:id', async (req, res) => {
+  console.log('try to hide post', req.params.id, req.body.userId);
+  try {
+    const result = await dbLib.hideAPost(req.body.userId, req.params.id);
+    res.status(200).json({ message: result });
+  } catch (err) {
+    res.status(404).json({ message: 'there was error' });
+  }
+});
+
 /** ------------------------------ The Comment End Points ------------------------------*/
 // POST
 webapp.post('/comments/', async (req, res) => {
@@ -333,9 +343,18 @@ webapp.get('/comments/:id', async (req, res) => {
   }
 });
 
+// get comments of a post
+webapp.get('/posts/:id/comments', async (req, res) => {
+  try {
+    const results = await dbLib.getPostComments(req.params.id);
+    res.status(200).json({ data: results });
+  } catch (err) {
+    res.status(404).json({ message: 'comment not found for the post' });
+  }
+});
+
 // DELETE
 webapp.delete('/comments/:id', async (req, res) => {
-  console.log('DELETE a comment');
   try {
     const result = await dbLib.deleteComment(req.params.id);
     res.status(200).json({ data: result });
@@ -346,7 +365,6 @@ webapp.delete('/comments/:id', async (req, res) => {
 
 // PUT
 webapp.put('/comments/:id', async (req, res) => {
-  console.log('UPDATE a comment');
   if (!req.body.text) {
     res.status(400).json({ message: 'must contain text content to update' });
     return;
@@ -356,6 +374,45 @@ webapp.put('/comments/:id', async (req, res) => {
     res.status(200).json({ data: result });
   } catch (err) {
     res.status(404).json({ message: 'there was error' });
+  }
+});
+
+/** ------------------------------ Like End Points ------------------------------*/
+// like or unlike a post
+webapp.post('/posts/:id/like', async (req, res) => {
+  // get the userId from jwt authorization header (will implement when auth ready):
+  // const token = req.headers.authoriztion.split('')[1];
+  // const decoded = jwt.verify(token, secret);
+  // const authId = decoded.userId;
+  let result;
+  console.log(req.params.id, req.body.userId);
+  try {
+    // find out if user have liked the post or not:
+    const liked = await dbLib.likeStatus(req.params.id, req.body.userId);
+    if (!liked) {
+      result = await dbLib.likePost(req.params.id, req.body.userId);
+    } else {
+      result = await dbLib.unlikePost(req.params.id, req.body.userId);
+    }
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
+  }
+});
+
+// check if a user has liked a post
+webapp.post('/posts/:id/liked', async (req, res) => {
+  // get the userId from jwt authorization header (will implement when auth ready):
+  // const token = req.headers.authoriztion.split('')[1];
+  // const decoded = jwt.verify(token, secret);
+  // const authId = decoded.userId;
+  let result;
+  try {
+    // find out if user have liked the post or not:
+    result = await dbLib.likeStatus(req.params.id, req.body.userId);
+    res.status(200).json({ data: result });
+  } catch (err) {
+    res.status(404).json({ message: 'post not found' });
   }
 });
 
