@@ -122,11 +122,8 @@ webapp.post('/users', async (req, res) => {
   }
   const newUser = {
     username: req.body.username,
-    firstname: req.body.firstname,
-    lastname: req.body.lastname,
-    user_avatar: '/',
-    following: [],
-    followed: [],
+    firstName: req.body.firstname,
+    lastName: req.body.lastname,
     password: req.body.password
   };
   try {
