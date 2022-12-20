@@ -136,7 +136,6 @@ const addUser = async (newUser) => {
   });
 };
 
-
 const hideAPost = async (userId, postId) => {
   console.log('try to hide', postId, 'for', userId);
   const db = await getDB();
@@ -153,6 +152,7 @@ const hideAPost = async (userId, postId) => {
     throw new Error(err);
   }
   return result;
+};
 
 const getFollowerIds = async (id) => {
   const objectId = id instanceof ObjectId ? id : ObjectId(id);
@@ -263,7 +263,6 @@ const unfollow = async (follower, following) => {
   } catch (err) {
     throw Error(err.message);
   }
-
 };
 
 const getPosts = async () => {
@@ -288,7 +287,7 @@ const getFeed = async (id) => {
       .collection('follows')
       .find({ follower: ObjectId(id) }, { projection: { following: 1 } })
       .toArray();
-    followed = followed.map((follow) => follow.following);
+    followed = followed.map((doc) => doc.following);
     console.log(`Following: ${JSON.stringify(followed)}`);
     // (3) save the posts by every user in the following list to an array "feed"
     feed = await db

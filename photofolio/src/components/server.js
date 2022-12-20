@@ -8,9 +8,9 @@ const express = require('express');
 // (cross-origin resource sharing)
 const cors = require('cors');
 
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
-const secret = 'is_i$mysecret';
+// const secret = 'is_i$mysecret';
 
 // (3) create an instanece of our express app
 const webapp = express();
@@ -80,12 +80,11 @@ const { ObjectID } = require('bson');
 
 const faileduser = [];
 
-
 // login
 webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
   try {
-    if(faileduser.includes(req.params.user)){
-      res.status(403).json({message: "lockout"});
+    if (faileduser.includes(req.params.user)) {
+      res.status(403).json({ message: 'lockout' });
       return;
     }
     const results = await dbLib.login(req.params.user, req.params.pwd);
@@ -96,9 +95,13 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
       return;
     }
 
-    const jwtoken = jwt.sign({username: results._id.toString()}, secret, {expiresIn: "24h"});
-    res.status(201).json({ data: { id: results._id.toString(), ...results }, token: jwtoken });
-
+    const jwtoken = jwt.sign({ username: results._id.toString() }, secret, {
+      expiresIn: '24h'
+    });
+    res.status(201).json({
+      data: { id: results._id.toString(), ...results },
+      token: jwtoken
+    });
   } catch (err) {
     res.status(404).json({ message: 'There is an login error' });
   }
@@ -107,7 +110,13 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
 // register
 webapp.post('/users', async (req, res) => {
   console.log(req.body);
-  if (!req.body || !req.body.username || !req.body.password || !req.body.firstname || !req.body.lastname) {
+  if (
+    !req.body ||
+    !req.body.username ||
+    !req.body.password ||
+    !req.body.firstname ||
+    !req.body.lastname
+  ) {
     res.status(404).json({ message: 'missing information in registration' });
     return;
   }
@@ -487,6 +496,20 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
     res.status(404).json({ message: `${err.message}` });
   }
 });
+
+// // GET see if following
+// webapp.get('/follows/:follower/:following', async (req, res) => {
+//   try {
+//     // userId of whom the id is following
+//     console.log(req.params.follower);
+//     const followRelation = await dbLib
+//       .getFollowRelationshipBetween(req.params.follower, req.params.following)
+//       .then((data) => data);
+//     res.status(200).json(followRelation);
+//   } catch (err) {
+//     res.status(404).json({ message: `${err.message}` });
+//   }
+// });
 
 // POST follow someone
 webapp.post('/follows/', async (req, res) => {
