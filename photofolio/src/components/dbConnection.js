@@ -438,13 +438,12 @@ const getAComment = async (id) => {
 
 const getPostComments = async (id) => {
   const db = await getDB();
-  let results;
+  let results = [];
   try {
     results = await db
       .collection('comments')
       .find({ postId: ObjectId(id) })
       .toArray();
-    if (results.length === 0) throw Error('no comment found');
   } catch (err) {
     throw Error();
   }
