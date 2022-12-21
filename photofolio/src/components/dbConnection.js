@@ -286,22 +286,39 @@ const getFeed = async (id) => {
     // (2) get the users this user is following
     let followed = await db
       .collection('follows')
-      .find({ follower: ObjectId(id) }, { projection: { following: 1 } })
+      .find({ following: ObjectId(id) }, { projection: { follower: 1 } })
       .toArray();
-    followed = followed.map((doc) => doc.following);
+    followed = followed.map((doc) => doc.follower);
     // console.log(`Following: ${JSON.stringify(followed)}`);
     // (3) save the posts by every user in the following list to an array "feed"
-    feed = await db
-      .collection('posts')
-      .aggregate([
-        {
-          $match: {
-            userId: { $in: followed },
-            _id: { $nin: curUser.hiddenPosts }
+    // console.log('followed', followed);
+    if (curUser.hiddenPost) {
+      feed = await db
+        .collection('posts')
+        .aggregate([
+          {
+            $match: {
+              userId: { $in: followed },
+              _id: { $nin: curUser.hiddenPost }
+            }
           }
-        }
-      ])
-      .toArray();
+        ])
+        .toArray();
+    }
+    if (!curUser.hiddenPost) {
+      feed = await db
+        .collection('posts')
+        .aggregate([
+          {
+            $match: {
+              userId: { $in: followed }
+            }
+          }
+        ])
+        .toArray();
+    }
+    // console.log('feed is: ', feed);
+
     // console.log(`Feed list: ${JSON.stringify(feed)}`);
   } catch (err) {
     // console.log(`error: ${err.message}`);
@@ -312,38 +329,23 @@ const getFeed = async (id) => {
 const getUserPosts = async (id) => {
   const db = await getDB();
   let posts = [];
-  try {
-    // save posts that has userId = the param id
-    posts = await db
-      .collection('posts')
-      .find({ userId: ObjectId(id) })
-      .toArray();
-    // if (posts.length === 0) {
-    //   throw Error("user doesn't exist / doesn't have posts");
-    // }
-  } catch (err) {
-    // console.log(`error: ${err.message}`);
-    throw err;
-  }
+  posts = await db
+    .collection('posts')
+    .find({ userId: ObjectId(id) })
+    .toArray();
   return posts;
 };
 
 const getAPost = async (id) => {
   const db = await getDB(); // connect to database
-  let results;
-  try {
-    results = await db
-      .collection('posts')
-      .find({ _id: ObjectId(id) })
-      .toArray();
-    if (results.length === 0) throw Error('post not found');
-    if (!results.likedBy) results.likedBy = [];
-    if (!results.likes) results.likes = 0;
-    console.log(`Post: ${JSON.stringify(results)}`);
-  } catch (err) {
-    // console.log(`error: ${err.message}`);
-    throw err;
-  }
+  let results = [];
+  results = await db
+    .collection('posts')
+    .find({ _id: ObjectId(id) })
+    .toArray();
+  if (results.length === 0) throw Error('post not found');
+  if (!results.likedBy) results.likedBy = [];
+  if (!results.likes) results.likes = 0;
   return results;
 };
 
@@ -362,7 +364,7 @@ const addPost = async (newPost) => {
 };
 
 const updatePost = async (id, newPost) => {
-  console.log('in updatepost', newPost, 'for', id);
+  // console.log('in updatepost', newPost, 'for', id);
   const db = await getDB();
   let results;
   try {
@@ -455,7 +457,7 @@ const getPostComments = async (id) => {
 const updateComment = async (id, newComment) => {
   const db = await getDB();
   try {
-    const results = await db
+    await db
       .collection('comments')
       .updateOne({ _id: ObjectId(id) }, { $set: { text: newComment.text } });
     // console.log(`comment updated: ${JSON.stringify(results)}`);
@@ -473,7 +475,7 @@ const deleteComment = async (id) => {
     if (!deleted) throw Error("comment doesn't exist");
     results = await db.collection('comments').deleteOne({ _id: ObjectId(id) });
     // console.log(`Comment removed: ${JSON.stringify(results)}`);
-    const updatedpost = await db
+    await db
       .collection('posts')
       .updateOne(
         { _id: ObjectId(deleted.postId) },
