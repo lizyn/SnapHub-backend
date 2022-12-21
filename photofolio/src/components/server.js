@@ -312,10 +312,12 @@ webapp.put('/posts/:id', async (req, res) => {
     );
 
     const newPost = {
-      ...fields,
-      photo: photoUrls[0] || fields.photo
+      title: fields.title,
+      photo: photoUrls[0] || fields.photo,
+      caption: fields.caption || '',
+      comments: fields.comments || [],
+      date: new Date()
     };
-    // console.log(newPost);
 
     try {
       const result = await dbLib.updatePost(req.params.id, newPost);
@@ -407,7 +409,7 @@ webapp.post('/posts/:id/like', async (req, res) => {
   // const decoded = jwt.verify(token, secret);
   // const authId = decoded.userId;
   let result;
-  // console.log(req.params.id, req.body.userId);
+
   try {
     // find out if user have liked the post or not:
     const liked = await dbLib.likeStatus(req.params.id, req.body.userId);
