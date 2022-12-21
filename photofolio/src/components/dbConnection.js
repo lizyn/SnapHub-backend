@@ -310,16 +310,16 @@ const getFeed = async (id) => {
 
 const getUserPosts = async (id) => {
   const db = await getDB();
-  let posts;
+  let posts = [];
   try {
     // save posts that has userId = the param id
     posts = await db
       .collection('posts')
       .find({ userId: ObjectId(id) })
       .toArray();
-    if (posts.length === 0) {
-      throw Error("user doesn't exist / doesn't have posts");
-    }
+    // if (posts.length === 0) {
+    //   throw Error("user doesn't exist / doesn't have posts");
+    // }
     console.log(`Posts by this user: ${JSON.stringify(posts)}`);
   } catch (err) {
     console.log(`error: ${err.message}`);
@@ -362,6 +362,7 @@ const addPost = async (newPost) => {
 };
 
 const updatePost = async (id, newPost) => {
+  console.log('in updatepost', newPost, 'for', id);
   const db = await getDB();
   let results;
   try {
@@ -370,8 +371,7 @@ const updatePost = async (id, newPost) => {
       {
         $set: {
           title: newPost.title,
-          photo: newPost.photo,
-          description: newPost.description || ''
+          photo: newPost.photo
         }
       }
     );
