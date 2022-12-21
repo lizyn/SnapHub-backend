@@ -338,7 +338,9 @@ const getAPost = async (id) => {
       .find({ _id: ObjectId(id) })
       .toArray();
     if (results.length === 0) throw Error('post not found');
-    // console.log(`Post: ${JSON.stringify(results)}`);
+    if (!results.likedBy) results.likedBy = [];
+    if (!results.likes) results.likes = 0;
+    console.log(`Post: ${JSON.stringify(results)}`);
   } catch (err) {
     // console.log(`error: ${err.message}`);
     throw err;
@@ -490,17 +492,13 @@ const deleteComment = async (id) => {
 // returns true if have liked; false if have not liked
 const likeStatus = async (postId, userId) => {
   const db = await getDB();
-  // console.log('postId is', postId);
   let result;
   try {
     const post = await db
       .collection('posts')
       .findOne({ _id: ObjectId(postId) });
-    // console.log(
-    //   'liked status for post is',
-    //   post.likedBy.some((id) => id.equals(ObjectId(userId)))
-    // );
     if (!post) throw Error('post not found');
+    if (!post.likedBy) return false;
     result = post.likedBy.some((id) => id.equals(ObjectId(userId)));
   } catch (err) {
     throw new Error(err);
@@ -510,7 +508,6 @@ const likeStatus = async (postId, userId) => {
 
 // add like to a post
 const likePost = async (postId, userId) => {
-  // console.log('in like post:', postId, userId);
   const db = await getDB();
   let result;
   try {
