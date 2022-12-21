@@ -87,7 +87,7 @@ const deleteFile = async (fileName) => {
         reject(err);
       } else {
         // console.log(Object.keys(data));
-        console.log(`File deleted successfully. ${JSON.stringify(data)}`);
+        // console.log(`File deleted successfully. ${JSON.stringify(data)}`);
         resolve(JSON.stringify(data));
       }
     });

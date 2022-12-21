@@ -17,7 +17,7 @@ const authenticateUser = async (token, key) => {
     const decoded = jwt.verify(token, key);
     // verify the user
     const user = await dbLib.getAUser(decoded.username);
-    console.log('user', user[0]);
+    // console.log('user', user[0]);
     // check the user
     if (!user[0]) {
       return false;
