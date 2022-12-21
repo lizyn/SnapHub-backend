@@ -250,6 +250,7 @@ webapp.post('/posts/', async (req, res) => {
       Object.keys(files).map(async (key) => {
         const value = files[key];
         try {
+          if (value.size > form.maxFileSize) throw Error('File too large');
           const data = await s3manips.uploadFile(value);
           photoUrls.push(data.Location);
         } catch (error) {
@@ -303,6 +304,7 @@ webapp.put('/posts/:id', async (req, res) => {
       Object.keys(files).map(async (key) => {
         const value = files[key];
         try {
+          if (value.size > form.maxFileSize) throw Error('File too large');
           const data = await s3manips.uploadFile(value);
           photoUrls.push(data.Location);
         } catch (error) {
