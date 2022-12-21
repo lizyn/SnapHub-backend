@@ -109,7 +109,7 @@ webapp.get('/account/username=:user&password=:pwd', async (req, res) => {
 
 // register
 webapp.post('/users', async (req, res) => {
-  console.log(req.body);
+  // console.log(req.body);
   if (
     !req.body ||
     !req.body.username ||
@@ -264,7 +264,7 @@ webapp.post('/posts/', async (req, res) => {
       comments: [],
       date: new Date()
     };
-    console.log(newPost);
+    // console.log(newPost);
     if (!newPost.userId || !newPost.photo)
       res.status(409).json({ message: 'error creating post' });
     // console.log(newPost);
@@ -315,7 +315,7 @@ webapp.put('/posts/:id', async (req, res) => {
       ...fields,
       photo: photoUrls[0] || fields.photo
     };
-    console.log(newPost);
+    // console.log(newPost);
 
     try {
       const result = await dbLib.updatePost(req.params.id, newPost);
@@ -328,7 +328,7 @@ webapp.put('/posts/:id', async (req, res) => {
 
 // Hide a Post
 webapp.post('/users/hidden/:id', async (req, res) => {
-  console.log('try to hide post', req.params.id, req.body.userId);
+  // console.log('try to hide post', req.params.id, req.body.userId);
   try {
     const result = await dbLib.hideAPost(req.body.userId, req.params.id);
     res.status(200).json({ message: result });
@@ -340,7 +340,7 @@ webapp.post('/users/hidden/:id', async (req, res) => {
 /** ------------------------------ The Comment End Points ------------------------------*/
 // POST
 webapp.post('/comments/', async (req, res) => {
-  console.log('CREATE a comment');
+  // console.log('CREATE a comment');
   if (!req.body.text || !req.body.userId) {
     res.status(404).json({ message: 'your comment must have text' });
     return;
@@ -355,12 +355,12 @@ webapp.post('/comments/', async (req, res) => {
 
 // GET ONE
 webapp.get('/comments/:id', async (req, res) => {
-  console.log('GET a comment');
+  // console.log('GET a comment');
   try {
     const results = await dbLib.getAComment(req.params.id);
     res.status(200).json({ data: results });
   } catch (err) {
-    console.log('server.js: error catched');
+    // console.log('server.js: error catched');
     res.status(404).json({ message: 'there was error' });
   }
 });
@@ -407,7 +407,7 @@ webapp.post('/posts/:id/like', async (req, res) => {
   // const decoded = jwt.verify(token, secret);
   // const authId = decoded.userId;
   let result;
-  console.log(req.params.id, req.body.userId);
+  // console.log(req.params.id, req.body.userId);
   try {
     // find out if user have liked the post or not:
     const liked = await dbLib.likeStatus(req.params.id, req.body.userId);
@@ -510,7 +510,7 @@ webapp.get('/follower-suggestions/:id', async (req, res) => {
 
 // POST follow someone
 webapp.post('/follows/', async (req, res) => {
-  console.log('CREATE a follow relationship');
+  // console.log('CREATE a follow relationship');
   // console.log(req.body);
   if (!req.body.follower || !req.body.following) {
     res.status(404).json({ message: 'missing follower or following' });
@@ -537,7 +537,7 @@ webapp.post('/follows/', async (req, res) => {
 
 // DELETE unfollow someone
 webapp.delete('/follows/', async (req, res) => {
-  console.log('DELETE a follow relationship');
+  // console.log('DELETE a follow relationship');
   if (!req.body.follower || !req.body.following) {
     res.status(404).json({ message: 'missing follower or following' });
     return;
