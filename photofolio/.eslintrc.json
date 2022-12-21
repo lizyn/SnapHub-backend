@@ -4,7 +4,7 @@
   "ignorePatterns": ["reportWebVitals.js"],
   "rules": {
     "prettier/prettier": 2 // Means error
-  }  ,
+  },
   "env": {
     "jest": true
   }
