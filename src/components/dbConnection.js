@@ -2,7 +2,7 @@ const { MongoClient, ObjectId } = require('mongodb');
 const keys = require('./keys');
 
 const { DB_USER, DB_PWD } = keys;
-const url = `mongodb+srv://${DB_USER}:${DB_PWD}@cluster557-project36.a1psu00.mongodb.net/?retryWrites=true&w=majority`;
+const url = `mongodb+srv://***`;
 
 let MongoConnection;
 

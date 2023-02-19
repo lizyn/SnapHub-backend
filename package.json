@@ -1,7 +1,7 @@
 {
-  "name": "photofolio",
+  "name": "snaphub",
   "version": "1.0.0",
-  "description": "backend of photofolio",
+  "description": "backend of snaphub",
   "main": "index.js",
   "scripts": {
     "lint": "./node_modules/.bin/eslint",
